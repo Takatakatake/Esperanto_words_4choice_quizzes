@@ -66,12 +66,18 @@ from streamlit_gsheets import GSheetsConnection
 # 事前に .streamlit/secrets.toml に認証情報を設定する必要がある
 
 def get_connection():
-    return st.connection("gsheets", type=GSheetsConnection)
+    try:
+        return st.connection("gsheets", type=GSheetsConnection)
+    except Exception as e:
+        st.error(f"Google Sheets 接続の初期化に失敗しました: {e}")
+        return None
 
 def load_scores():
     """Google Sheetsからスコアを読み込む"""
+    conn = get_connection()
+    if conn is None:
+        return []
     try:
-        conn = get_connection()
         # ワークシート "Scores" からデータを読み込む
         # キャッシュを無効化して最新データを取得 (ttl=0)
         df = conn.read(worksheet="Scores", ttl=0)
@@ -80,25 +86,30 @@ def load_scores():
         # DataFrameを辞書のリストに変換
         return df.to_dict(orient="records")
     except Exception as e:
-        # 接続エラーやシートがない場合などは空リストを返す（またはエラー表示）
-        # st.error(f"ランキングデータの読み込みに失敗しました: {e}")
+        st.error(f"ランキングデータの読み込みに失敗しました: {e}")
         return []
 
 def save_score(record: dict):
     """Google Sheetsにスコアを追記する"""
+    conn = get_connection()
+    if conn is None:
+        return False
     try:
-        conn = get_connection()
-        # 現在のデータを読み込む
+        # 現在のデータを読み込む（空の場合は空の DataFrame を生成）
         df = conn.read(worksheet="Scores", ttl=0)
-        
+        if df is None or df.empty:
+            df = pd.DataFrame()
+
         # 新しいレコードをDataFrame化して結合
         new_row = pd.DataFrame([record])
         updated_df = pd.concat([df, new_row], ignore_index=True)
-        
+
         # 更新（追記）
         conn.update(worksheet="Scores", data=updated_df)
+        return True
     except Exception as e:
         st.error(f"スコアの保存に失敗しました: {e}")
+        return False
 
 
 def get_stage_factor(stages):
@@ -647,8 +658,10 @@ def main():
                     "accuracy_bonus": accuracy_bonus,
                     "ts": now,
                 }
-                save_score(record)
-                st.success("保存しました")
+                if save_score(record):
+                    st.success("保存しました")
+                else:
+                    st.error("保存に失敗しました。秘密情報（secrets）の設定を確認してください。")
 
         scores = load_scores()
         if scores:
