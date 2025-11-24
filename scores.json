@@ -1,0 +1,84 @@
+[
+  {
+    "user": "yamauchi",
+    "group_id": "adjective:intermediate_1:g1",
+    "seed": 2,
+    "correct": 26,
+    "total": 26,
+    "accuracy": 1.0,
+    "points": 1092.0,
+    "raw_points": 1040.0,
+    "accuracy_bonus": 52.0
+  },
+  {
+    "user": "yamauchi",
+    "group_id": "adjective:beginner_3:g1",
+    "seed": 2,
+    "correct": 22,
+    "total": 22,
+    "accuracy": 1.0,
+    "points": 726.0,
+    "raw_points": 682.0,
+    "accuracy_bonus": 44.0
+  },
+  {
+    "user": "yamauchi",
+    "group_id": "noun:beginner_2:g3",
+    "seed": 2,
+    "correct": 23,
+    "total": 24,
+    "accuracy": 0.9583333333333334,
+    "points": 542.0,
+    "raw_points": 496.0,
+    "accuracy_bonus": 46.0,
+    "ts": "2025-11-23T19:08:23.567837"
+  },
+  {
+    "user": "yamauchi",
+    "group_id": "adjective:advanced_1:g1",
+    "seed": 1,
+    "correct": 24,
+    "total": 24,
+    "accuracy": 1.0,
+    "points": 1080.0,
+    "raw_points": 1032.0,
+    "accuracy_bonus": 48.0,
+    "ts": "2025-11-23T20:13:26.062293"
+  },
+  {
+    "user": "yamauchi",
+    "group_id": "adjective:advanced_1:g1",
+    "seed": 1,
+    "correct": 24,
+    "total": 24,
+    "accuracy": 1.0,
+    "points": 1080.0,
+    "raw_points": 1032.0,
+    "accuracy_bonus": 48.0,
+    "ts": "2025-11-23T20:15:10.850040"
+  },
+  {
+    "user": "yamauchi",
+    "group_id": "adjective:advanced_5:g1",
+    "seed": 1,
+    "correct": 24,
+    "total": 24,
+    "accuracy": 1.0,
+    "points": 1080.0,
+    "raw_points": 1032.0,
+    "accuracy_bonus": 48.0,
+    "ts": "2025-11-23T20:21:09.988679"
+  },
+  {
+    "user": "yamauchi",
+    "group_id": "adjective:beginner_1:g1",
+    "seed": 1,
+    "correct": 22,
+    "total": 22,
+    "accuracy": 1.0,
+    "points": 726.0,
+    "raw_points": 682.0,
+    "accuracy_bonus": 44.0,
+    "ts": "2025-11-24T06:27:45.521439"
+  }
+]

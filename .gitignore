@@ -1,0 +1,16 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+# OS noise
+.DS_Store
+*:Zone.Identifier
+
+# Streamlit secrets (do not commit real credentials)
+.streamlit/secrets.toml
+
+# Google service account keys (keep out of VCS)
+gen-lang-client-*.json
+gen-lang-client-*.json:Zone.Identifier
+*.serviceaccount.json
