@@ -58,7 +58,7 @@ def load_groups(seed: int):
     return vg.build_groups(CSV_PATH, seed=seed, audio_key_fn=vg._default_audio_key)
 
 
-from streamlit_gsheets import GSheetsConnection
+# from streamlit_gsheets import GSheetsConnection
 
 # -------- Google Sheets 連携 --------
 # ローカルのJSONではなく、Google Sheetsをデータベースとして使用する
