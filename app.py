@@ -27,8 +27,8 @@ STAGE_MULTIPLIER = {
 STREAK_BONUS = 2.0
 # 最終精度ボーナス: accuracy * 問題数 * この値
 ACCURACY_BONUS_PER_Q = 2.0
-# 殿堂入りライン
-HOF_THRESHOLD = 3000
+# 殿堂入りライン (20000点に引き上げ)
+HOF_THRESHOLD = 20000
 
 POS_JP = {
     "noun": "名詞",
@@ -76,12 +76,14 @@ def load_scores():
     """Google Sheetsからスコアを読み込む"""
     conn = get_connection()
     if conn is None:
+        st.session_state.score_load_error = "Google Sheets 接続を初期化できませんでした。"
         return []
     try:
         # ワークシート "Scores" からデータを読み込む
         # API制限（1分間に60リクエスト）を回避するため、キャッシュ有効時間を設定
         # ttl=60秒（1分間は再取得せずキャッシュを使う）
         df = conn.read(worksheet="Scores", ttl=60)
+        st.session_state.score_load_error = None
         if df.empty:
             return []
         # DataFrameを辞書のリストに変換
@@ -90,6 +92,7 @@ def load_scores():
         # エラー時はユーザーに通知せず静かに空リストを返す（頻繁なエラー表示を防ぐ）
         # st.error(f"ランキングデータの読み込みに失敗しました: {e}")
         print(f"Ranking load error: {e}")
+        st.session_state.score_load_error = f"ランキングの取得に失敗しました: {e}"
         return []
 
 def save_score(record: dict):
@@ -118,6 +121,72 @@ def save_score(record: dict):
     except Exception as e:
         st.error(f"スコアの保存に失敗しました: {e}")
         return False
+
+
+def update_user_stats(user: str, points: float, ts: str):
+    """UserStatsシート（累積スコア）を更新する"""
+    conn = get_connection()
+    if conn is None:
+        return
+
+    try:
+        # UserStatsシート読み込み
+        try:
+            stats_df = conn.read(worksheet="UserStats", ttl=0)
+        except Exception:
+            # シートがない場合などは空DF扱い
+            stats_df = pd.DataFrame(columns=["user", "total_points", "last_updated"])
+
+        if stats_df is None or stats_df.empty:
+             # もしUserStatsが空なら、既存のScoresから再構築（マイグレーション）
+             scores_df = conn.read(worksheet="Scores", ttl=0)
+             if scores_df is not None and not scores_df.empty:
+                 # 集計
+                 agg = scores_df.groupby("user")["points"].sum().reset_index()
+                 agg.columns = ["user", "total_points"]
+                 agg["last_updated"] = datetime.datetime.utcnow().isoformat()
+                 stats_df = agg
+             else:
+                 stats_df = pd.DataFrame(columns=["user", "total_points", "last_updated"])
+
+        # ユーザーの行を探す
+        if user in stats_df["user"].values:
+            # 更新
+            idx = stats_df.index[stats_df["user"] == user][0]
+            current_total = float(stats_df.at[idx, "total_points"])
+            stats_df.at[idx, "total_points"] = current_total + points
+            stats_df.at[idx, "last_updated"] = ts
+        else:
+            # 新規追加
+            new_row = pd.DataFrame([{"user": user, "total_points": points, "last_updated": ts}])
+            stats_df = pd.concat([stats_df, new_row], ignore_index=True)
+
+        # 保存
+        conn.update(worksheet="UserStats", data=stats_df)
+        return True
+    except Exception as e:
+        print(f"UserStats update error: {e}")
+        return False
+
+
+def load_rankings():
+    """ランキング用データをUserStatsから読み込む"""
+    conn = get_connection()
+    if conn is None:
+        return []
+    try:
+        df = conn.read(worksheet="UserStats", ttl=60)
+        if df is None or df.empty:
+            # UserStatsが空の場合、Scoresから復旧を試みる（初回移行用）
+            scores = load_scores()
+            if scores:
+                # ここでは簡易的にScoresを返す（次回保存時にUserStatsが作られる）
+                # 本来はここでmigrateしてもよいが、読み込み速度優先
+                return [] 
+            return []
+        return df.to_dict(orient="records")
+    except Exception:
+        return []
 
 
 def get_stage_factor(stages):
@@ -176,13 +245,78 @@ def summarize_scores(scores):
     return totals, totals_today, totals_month, hof
 
 
+def summarize_rankings_from_stats(stats_data):
+    """UserStatsデータからランキングを作成"""
+    # UserStatsは累積のみ持っているため、本日・今月はScores（ログ）から計算する必要がある
+    # しかし、スケーラビリティのため、ランキング表示は「累積（殿堂）」をメインにする
+    # 本日・今月は直近ログ（例えば最新1000件）から計算するか、
+    # UserStatsに today_points, month_points を持たせる設計変更が必要。
+    # 今回は「累積」はUserStatsから、「本日・今月」はScoresから計算するハイブリッド方式とする。
+    
+    # 累積（高速）
+    totals = {}
+    
+    # データ形式の自動判別（Raw Log vs Aggregated Stats）
+    is_raw_log = False
+    if stats_data and isinstance(stats_data, list) and len(stats_data) > 0:
+        first_row = stats_data[0]
+        # total_pointsがなく、pointsがある場合はRaw Logとみなす
+        if "total_points" not in first_row and "points" in first_row:
+            is_raw_log = True
+            # st.warning("UserStatsシートにRawデータが含まれています。自動集計します。")
+
+    if is_raw_log:
+        # Raw Log形式の場合、ここで集計する（フォールバック）
+        for r in stats_data:
+            user = r.get("user")
+            pts = float(r.get("points", 0))
+            totals[user] = totals.get(user, 0) + pts
+    else:
+        # Aggregated Stats形式の場合（本来の想定）
+        for r in stats_data:
+            user = r.get("user")
+            if not user:
+                continue
+            
+            val = r.get("total_points")
+            if val is None:
+                # カラム名の揺らぎ対応
+                for k in r.keys():
+                    if "total_points" in k:
+                        val = r[k]
+                        break
+            
+            try:
+                totals[user] = float(val) if val is not None else 0.0
+            except (ValueError, TypeError):
+                totals[user] = 0.0
+
+    hof = {u: p for u, p in totals.items() if p >= HOF_THRESHOLD}
+    
+    # 本日・今月（Scoresから計算 - ただし全件取得は重いので直近のみ...といきたいが
+    # 現状は load_scores() が全件取得しているので、それをそのまま使う。
+    # 将来的には load_scores(limit=1000) のように制限する）
+    scores = load_scores() # キャッシュされているはず
+    _, totals_today, totals_month, _ = summarize_scores(scores)
+    
+    return totals, totals_today, totals_month, hof
+
+
 def rank_dict(d, top_n=None):
     items = sorted(d.items(), key=lambda x: x[1], reverse=True)
     return items[:top_n] if top_n else items
 
 
-def show_rankings(scores):
-    totals, totals_today, totals_month, hof = summarize_scores(scores)
+def show_rankings(stats_data):
+    # --- DEBUG START ---
+    with st.expander("Debug: Raw UserStats Data"):
+        st.write("Raw Data:", stats_data)
+        if st.button("Clear Cache & Rerun"):
+            st.cache_data.clear()
+            st.rerun()
+    # --- DEBUG END ---
+
+    totals, totals_today, totals_month, hof = summarize_rankings_from_stats(stats_data)
     tabs = st.tabs(["累積", "本日", "今月", f"殿堂（{HOF_THRESHOLD}点以上）"])
     import pandas as pd
 
@@ -513,6 +647,15 @@ def init_state():
     st.session_state.setdefault("answers", [])
     st.session_state.setdefault("playback_rate", 1.0)
     st.session_state.setdefault("loop_enabled", False)
+    st.session_state.setdefault("score_saved", False)
+    st.session_state.setdefault("last_saved_key", None)
+    st.session_state.setdefault("score_load_error", None)
+    # UI State
+    st.session_state.setdefault("showing_result", False)
+    st.session_state.setdefault("last_result_msg", "")
+    st.session_state.setdefault("last_is_correct", False)
+    st.session_state.setdefault("last_correct_answer", "")
+    st.session_state.setdefault("score_saved", False)
 
 
 def start_quiz(group, rng):
@@ -523,10 +666,20 @@ def start_quiz(group, rng):
     st.session_state.points = 0.0
     st.session_state.streak = 0
     st.session_state.answers = []
+    st.session_state.score_saved = False
+    st.session_state.last_saved_key = None
+    st.session_state.showing_result = False
 
 
 def main():
     init_state()
+
+    st.set_page_config(
+        page_title="エスペラント単語クイズ",
+        page_icon="💚",
+        layout="centered",
+        initial_sidebar_state="expanded",
+    )
 
     # エスペラント・グリーン (#009900) を基調としたテーマ設定
     st.markdown(
@@ -588,14 +741,15 @@ def main():
 
     with st.sidebar:
         st.header("設定")
-        st.session_state.user_name = st.text_input("ユーザー名 (スコア保存用)", st.session_state.user_name)
-        seed = st.number_input("ランダムシード (1-8192)", min_value=1, max_value=8192, value=st.session_state.get("seed", 1), step=1)
-        st.session_state.seed = seed
+        # keyを指定することでステート管理をStreamlitに任せる
+        user_name = st.text_input("ユーザー名 (スコア保存用)", key="user_name")
+        seed = st.number_input("ランダムシード (1-8192)", min_value=1, max_value=8192, step=1, key="seed")
+        # st.session_state.seed = seed # key="seed"にしたので不要
         # st.session_state.shuffle_every_time = st.checkbox("毎回ランダムに並べる（シード無視）", value=st.session_state.shuffle_every_time)
         groups = load_groups(seed)
         pos_list = sorted({g.pos for g in groups})
         pos_label_map = {p: POS_JP.get(p, p) for p in pos_list}
-        pos_choice = st.selectbox("品詞を選択", pos_list, format_func=lambda p: pos_label_map.get(p, p))
+        pos_choice = st.selectbox("品詞を選択", pos_list, format_func=lambda p: pos_label_map.get(p, p), key="pos_select")
         group_options = [g for g in groups if g.pos == pos_choice]
         group_labels = [format_group_label(g) for g in group_options]
         choice = st.selectbox("グループを選択", group_labels)
@@ -616,9 +770,14 @@ def main():
             st.session_state.points = 0.0
             st.session_state.streak = 0
             st.session_state.answers = []
+            st.session_state.showing_result = False
+            st.session_state.score_saved = False
+            st.session_state.last_saved_key = None
             st.rerun()
 
     scores = load_scores()
+    if st.session_state.get("score_load_error"):
+        st.warning(st.session_state.score_load_error)
     if st.session_state.user_name and scores:
         user_total = sum(r.get("points", 0) for r in scores if r.get("user") == st.session_state.user_name)
         st.info(f"現在の累積得点（{st.session_state.user_name}）: {user_total:.1f}")
@@ -652,31 +811,39 @@ def main():
             existing_users = {r.get("user") for r in load_scores()}
             if st.session_state.user_name in existing_users:
                 st.info("このユーザー名は既にスコアがあります。累積に加算します。")
-            if st.button("スコアを保存"):
-                now = datetime.datetime.utcnow().isoformat()
-                record = {
-                    "user": st.session_state.user_name,
-                    "group_id": st.session_state.group_id,
-                    "seed": st.session_state.seed,
-                    "correct": correct,
-                    "total": total,
-                    "accuracy": accuracy,
-                    "points": points,
-                    "raw_points": raw_points,
-                    "accuracy_bonus": accuracy_bonus,
-                    "ts": now,
-                }
-                if save_score(record):
-                    st.success("保存しました")
-                else:
-                    st.error("保存に失敗しました。秘密情報（secrets）の設定を確認してください。")
+            if st.session_state.score_saved:
+                st.success("スコアを保存しました！")
+            else:
+                if st.button("スコアを保存", key="save_score_btn"):
+                    now = datetime.datetime.utcnow().isoformat()
+                    record = {
+                        "user": st.session_state.user_name,
+                        "group_id": st.session_state.group_id,
+                        "seed": st.session_state.seed,
+                        "correct": correct,
+                        "total": total,
+                        "accuracy": accuracy,
+                        "points": points,
+                        "raw_points": raw_points,
+                        "accuracy_bonus": accuracy_bonus,
+                        "ts": now,
+                    }
+                    # UserStats更新（累積）
+                    update_user_stats(st.session_state.user_name, points, now)
+                    
+                    # Scores更新（ログ）
+                    if save_score(record):
+                        st.session_state.score_saved = True
+                        st.rerun()
+                    else:
+                        st.error("保存に失敗しました。秘密情報（secrets）の設定を確認してください。")
 
         scores = load_scores()
         if scores:
             st.write("最近のスコア")
             st.dataframe(scores)
             st.subheader("ランキング")
-            show_rankings(scores)
+            show_rankings(load_rankings())
 
         # 復習セクション
         st.subheader("復習")
@@ -705,7 +872,7 @@ def main():
             st.markdown("### 正解した問題（確認用）")
             for c in correct_list:
                 st.write(f"- {c['prompt']}: {c['answer']} / {c['answer_eo']}")
-        if st.button("もう一度同じグループで再挑戦"):
+        if st.button("もう一度同じグループで再挑戦", key="retry_btn"):
             group = next((g for g in load_groups(st.session_state.seed) if g.id == st.session_state.group_id), None)
             if group:
                 rng = random.Random()
@@ -717,6 +884,7 @@ def main():
     st.subheader(f"Q{q_index+1}/{len(questions)}: {question['prompt']}")
     audio_key = question["options"][question["answer_index"]]["audio_key"]
     if audio_key:
+        # ユーザー要望により、結果画面（不正解時）でも音声を再生する（復習のため）
         audio_player(audio_key, autoplay=True)
 
     # 固定サイズボタン（2x2）で見やすく配置
@@ -743,6 +911,27 @@ def main():
         """,
         unsafe_allow_html=True,
     )
+    # 結果表示モードの場合
+    if st.session_state.showing_result:
+        # 結果を表示
+        if st.session_state.last_is_correct:
+            st.success(st.session_state.last_result_msg)
+        else:
+            st.error(st.session_state.last_result_msg)
+        
+        # 選択肢ボタンは無効化して表示（あるいは非表示でもよいが、レイアウト維持のため無効化表示が望ましい）
+        # ここではシンプルに「次へ」ボタンを表示する
+        
+        # 自動再生されない場合のために、ここでも音声再生ボタンなどを置く手もあるが、
+        # 上部の audio_player はそのまま残るのでOK。
+        
+        if st.button("次へ進む", type="primary", use_container_width=True, key=f"next_btn_{st.session_state.q_index}"):
+            st.session_state.q_index += 1
+            st.session_state.showing_result = False
+            st.rerun()
+        return
+
+    # 回答待ちモード
     option_labels = [f"{opt['japanese']}" for opt in question["options"]]
     clicked_index = None
     for row_start in range(0, len(option_labels), 2):
@@ -765,19 +954,29 @@ def main():
                 "correct": question["answer_index"],
             }
         )
+        
         if is_correct:
-            st.success("正解！")
+            # 正解時は即座に次へ（ユーザー要望）
             st.session_state.correct += 1
             factor = get_stage_factor(question["stages"])
             st.session_state.streak += 1
             streak_bonus = max(0, st.session_state.streak - 1) * STREAK_BONUS
             st.session_state.points += BASE_POINTS * factor + streak_bonus
+            
+            st.session_state.q_index += 1
+            st.session_state.showing_result = False
+            st.rerun()
         else:
-            st.error(f"不正解。正解: {option_labels[question['answer_index']]}")
+            # 不正解時は正解を表示して一時停止
+            msg = f"不正解。正解: {option_labels[question['answer_index']]}"
             st.session_state.streak = 0
-
-        st.session_state.q_index += 1
-        st.rerun()
+            
+            # 結果表示モードへ移行
+            st.session_state.showing_result = True
+            st.session_state.last_result_msg = msg
+            st.session_state.last_is_correct = False
+            st.session_state.last_correct_answer = option_labels[question['answer_index']]
+            st.rerun()
 
 
 if __name__ == "__main__":
