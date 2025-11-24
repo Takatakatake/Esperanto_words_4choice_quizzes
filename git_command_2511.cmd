@@ -75,12 +75,6 @@ function Get-CurrentBranch {
     return $branch
 }
 
-function Wait-User {
-    Write-Host ""
-    Write-Host "Press any key to return to menu..." -NoNewline -ForegroundColor Gray
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-}
-
 # --- 個別ロジック ---
 
 function Invoke-GitCommit {
@@ -133,7 +127,7 @@ function Invoke-StashPullRebase {
 # --- メインメニュー ---
 
 while ($true) {
-    Clear-Host
+    Write-Host ""
     $cur = Get-CurrentBranch
     Write-Host "=======================================" -ForegroundColor Yellow
     Write-Host "       Git Helper (PowerShell)" -ForegroundColor Yellow
@@ -204,6 +198,4 @@ while ($true) {
             if ($choice -notin "h","H") { Write-Host "Invalid choice." -ForegroundColor Red }
         }
     }
-    
-    if ($choice -ne "0") { Wait-User }
 }

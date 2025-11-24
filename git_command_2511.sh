@@ -7,7 +7,7 @@
 #   - evalの廃止によるセキュリティとファイル名処理の安全性向上
 #   - 現在のブランチを自動検知してPull/Rebaseを実行
 #   - 失敗時の安全なStash処理フロー
-#   - 視認性の高いメニューと結果確認の一時停止機能
+#   - 視認性の高いメニューと即時リターン
 ###############################################################################
 
 # --- 設定セクション ---
@@ -56,16 +56,9 @@ get_current_branch() {
     git symbolic-ref --short HEAD 2>/dev/null || echo "HEAD"
 }
 
-# 処理の一時停止（結果を確認するため）
-pause_prompt() {
-    echo ""
-    read -n 1 -s -r -p "Press any key to return to menu..."
-    echo ""
-}
-
 # ヘッダ表示
 show_header() {
-    clear
+    echo ""
     echo -e "${YELLOW}========================================"
     echo "       Git Helper Script (Safe Mode)"
     echo -e "========================================${NC}"
@@ -104,7 +97,6 @@ show_help() {
     echo "  3. pull が成功した場合のみ、stash pop を実行"
     echo "  ※ pull でコンフリクトした場合は stash pop を中断します。"
     echo "---------------------------------"
-    pause_prompt
 }
 
 # --- 個別コマンド処理 ---
@@ -230,6 +222,4 @@ while true; do
             echo -e "${RED}Invalid choice.${NC}"
             ;;
     esac
-
-    pause_prompt
 done
