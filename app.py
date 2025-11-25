@@ -548,7 +548,38 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             // これにより、古いiframeがplay()を呼んでも無視される
             parentWin._esperantoBlockOldAudio = myTimestamp;
 
-            // 古いオーディオと古いiframeのカードを全て破棄・非表示にする関数
+            // ★★★ 新アプローチ: 親ウィンドウにクリーンアップ関数リストを管理 ★★★
+            // 各iframeが自分自身を非表示にする関数を登録
+            // 新しいiframeが来たら、古い関数を全て呼び出して非表示にする
+            if (!parentWin._esperantoCleanupFunctions) {
+              parentWin._esperantoCleanupFunctions = [];
+            }
+
+            // 自分自身を非表示にする関数
+            function hideMyself() {
+              const card = document.querySelector('.audio-card');
+              if (card) {
+                card.style.display = 'none';
+                console.log('[Esperanto Audio] hideMyself called for:', debugAudioKey);
+              }
+              // 音声も停止
+              if (a) {
+                a.pause();
+                a.src = '';
+              }
+            }
+
+            // 古いクリーンアップ関数を全て実行（自分より前のiframeを全て非表示に）
+            const oldFunctions = parentWin._esperantoCleanupFunctions.slice();
+            oldFunctions.forEach((fn) => {
+              try { fn(); } catch (e) {}
+            });
+            // リストをクリアして自分の関数だけを登録
+            parentWin._esperantoCleanupFunctions = [hideMyself];
+
+            console.log('[Esperanto Audio] Registered cleanup, cleared', oldFunctions.length, 'old functions');
+
+            // 古いオーディオと古いiframeのカードを全て破棄・非表示にする関数（従来方式も併用）
             function destroyAllOtherAudio() {
               let destroyed = 0;
               try {
@@ -618,34 +649,33 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             // ★重要: 自分が最新でなくなったら自分自身を非表示にする
             function hideIfNotLatest() {
               if (!isLatest()) {
-                const card = document.querySelector('.audio-card');
-                if (card && card.style.display !== 'none') {
-                  card.style.display = 'none';
-                  console.log('[Esperanto Audio] Hiding old iframe:', debugAudioKey);
-                }
-                // 音声も停止
-                if (a) {
-                  a.pause();
-                  a.src = '';
-                }
+                hideMyself();  // 新しいクリーンアップ関数を使用
                 return true; // 非表示にした
               }
               return false;
             }
 
-            // ★永続的に監視（1秒後も継続、ただし頻度を下げる）
+            // ★より積極的な監視: 最初の500msは高頻度（30ms）、その後は低頻度（200ms）
             let checkCount = 0;
-            const hideCheckInterval = setInterval(() => {
+            const fastCheckInterval = setInterval(() => {
               checkCount++;
               if (hideIfNotLatest()) {
-                // 非表示にしたらインターバル停止
-                clearInterval(hideCheckInterval);
+                clearInterval(fastCheckInterval);
+                return;
               }
-              // 10秒後も生き残っていたら停止（メモリリーク防止）
-              if (checkCount > 100) {
-                clearInterval(hideCheckInterval);
+              // 500ms後は低頻度チェックに切り替え
+              if (checkCount > 16) {  // 30ms * 16 ≈ 500ms
+                clearInterval(fastCheckInterval);
+                // 低頻度チェックを開始
+                let slowCount = 0;
+                const slowCheckInterval = setInterval(() => {
+                  slowCount++;
+                  if (hideIfNotLatest() || slowCount > 50) {  // 最大10秒
+                    clearInterval(slowCheckInterval);
+                  }
+                }, 200);
               }
-            }, 100);
+            }, 30);
 
             const btn = document.getElementById('$audio_id-play');
             const bar = document.getElementById('$audio_id-bar');
@@ -791,11 +821,24 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
 
             // ボタンクリック
             btn.onclick = () => {
+              // ★最新チェック - 古いiframeのボタンは無効化
+              if (!isLatest()) {
+                console.log('[Esperanto Audio] Button click ignored - not latest:', debugAudioKey);
+                hideMyself();  // 自分を非表示にする
+                return;
+              }
+
               const audio = createAudio();
               if (!audio) return;
 
               if (audio.paused) {
                 audio.play().then(() => {
+                  // 再生成功後も最新チェック
+                  if (!isLatest()) {
+                    audio.pause();
+                    hideMyself();
+                    return;
+                  }
                   resetBtnStyle();
                   btn.textContent = "⏸";
                   sessionStorage.setItem('esperanto_audio_unlocked', 'true');
