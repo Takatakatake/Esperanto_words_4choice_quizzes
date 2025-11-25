@@ -113,10 +113,10 @@ def save_score(record: dict):
 
         # 更新（追記）
         conn.update(worksheet="Scores", data=updated_df)
-        
+
         # 保存成功後、キャッシュをクリアして次の読み込みで最新が反映されるようにする
         st.cache_data.clear()
-        
+
         return True
     except Exception as e:
         st.error(f"スコアの保存に失敗しました: {e}")
@@ -182,7 +182,7 @@ def load_rankings():
             if scores:
                 # ここでは簡易的にScoresを返す（次回保存時にUserStatsが作られる）
                 # 本来はここでmigrateしてもよいが、読み込み速度優先
-                return [] 
+                return []
             return []
         return df.to_dict(orient="records")
     except Exception:
@@ -252,10 +252,10 @@ def summarize_rankings_from_stats(stats_data):
     # 本日・今月は直近ログ（例えば最新1000件）から計算するか、
     # UserStatsに today_points, month_points を持たせる設計変更が必要。
     # 今回は「累積」はUserStatsから、「本日・今月」はScoresから計算するハイブリッド方式とする。
-    
+
     # 累積（高速）
     totals = {}
-    
+
     # データ形式の自動判別（Raw Log vs Aggregated Stats）
     is_raw_log = False
     if stats_data and isinstance(stats_data, list) and len(stats_data) > 0:
@@ -277,7 +277,7 @@ def summarize_rankings_from_stats(stats_data):
             user = r.get("user")
             if not user:
                 continue
-            
+
             val = r.get("total_points")
             if val is None:
                 # カラム名の揺らぎ対応
@@ -285,20 +285,20 @@ def summarize_rankings_from_stats(stats_data):
                     if "total_points" in k:
                         val = r[k]
                         break
-            
+
             try:
                 totals[user] = float(val) if val is not None else 0.0
             except (ValueError, TypeError):
                 totals[user] = 0.0
 
     hof = {u: p for u, p in totals.items() if p >= HOF_THRESHOLD}
-    
+
     # 本日・今月（Scoresから計算 - ただし全件取得は重いので直近のみ...といきたいが
     # 現状は load_scores() が全件取得しているので、それをそのまま使う。
     # 将来的には load_scores(limit=1000) のように制限する）
     scores = load_scores() # キャッシュされているはず
     _, totals_today, totals_month, _ = summarize_scores(scores)
-    
+
     return totals, totals_today, totals_month, hof
 
 
@@ -381,6 +381,7 @@ def audio_player(akey: str, autoplay: bool = True):
     b64 = base64.b64encode(data).decode("utf-8")
 
     # HTML/JS template
+    # モバイル対応: Web Audio API + ユーザージェスチャー追跡
     tmpl = Template(
         """
         <style>
@@ -618,6 +619,8 @@ def audio_player(akey: str, autoplay: bool = True):
             function attemptPlay() {
               return a.play().then(() => {
                   btn.textContent = "⏸";
+                  // モバイルで一度再生成功したらフラグを立てる
+                  sessionStorage.setItem('esperanto_audio_unlocked', 'true');
                   return true;
               }).catch((err) => {
                   console.warn("Auto play blocked, waiting for user gesture", err);
@@ -628,17 +631,47 @@ def audio_player(akey: str, autoplay: bool = True):
 
             function setupAutoplayUnlock() {
               if (!$autoplay_bool) return;
-              // Try immediately; if blocked (mobile), retry on first tap
+
+              // モバイル判定
+              const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+              // まず再生を試みる（PCでもモバイルでも）
               setTimeout(() => {
                 attemptPlay().then((ok) => {
-                  if (ok) return;
-                  const handler = () => {
-                    attemptPlay();
-                  };
-                  document.addEventListener('touchstart', handler, { once: true });
-                  document.addEventListener('click', handler, { once: true });
+                  if (ok) {
+                    // 成功 -> ボタンをノーマル状態に
+                    btn.style.background = '';
+                    btn.style.color = '';
+                    btn.style.animation = '';
+                    return;
+                  }
+
+                  // 失敗した場合
+                  if (isMobile) {
+                    // モバイルで失敗 -> 目立つ再生ボタンを表示
+                    btn.style.background = '#009900';
+                    btn.style.color = '#fff';
+                    btn.style.animation = 'pulse 1s infinite';
+                    btn.textContent = "🔊 タップ";
+
+                    // スタイルを動的に追加
+                    if (!document.getElementById('pulse-style')) {
+                      const style = document.createElement('style');
+                      style.id = 'pulse-style';
+                      style.textContent = '@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }';
+                      document.head.appendChild(style);
+                    }
+
+                    // このボタン自体のクリックでも再生を試みる（既に btn.onclick で設定済み）
+                  } else {
+                    // PCでブロックされた場合のフォールバック
+                    const handler = () => {
+                      attemptPlay();
+                    };
+                    document.addEventListener('click', handler, { once: true });
+                  }
                 });
-              }, 50);
+              }, 100);  // 少し長めの遅延でDOMの準備を待つ
             }
 
             setupAutoplayUnlock();
@@ -751,6 +784,51 @@ def main():
         """,
         unsafe_allow_html=True
     )
+
+    # モバイル用: 音声自動再生のアンロックスクリプト（グローバルに1回だけ挿入）
+    # ユーザーが画面のどこかをタップしたら、サイレント音声を再生して
+    # 以降の自動再生を可能にする
+    st.markdown(
+        """
+        <script>
+        (function() {
+            // 既にアンロック済みならスキップ
+            if (window._esperantoAudioUnlocked) return;
+
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (!isMobile) {
+                window._esperantoAudioUnlocked = true;
+                return;
+            }
+
+            // sessionStorageでページ間のアンロック状態を維持
+            if (sessionStorage.getItem('esperanto_audio_unlocked') === 'true') {
+                window._esperantoAudioUnlocked = true;
+                return;
+            }
+
+            function unlockAudio() {
+                // サイレントな短いオーディオを再生してブラウザの制限を解除
+                const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+                silentAudio.volume = 0.01;
+                silentAudio.play().then(() => {
+                    console.log('Audio unlocked for mobile');
+                    window._esperantoAudioUnlocked = true;
+                    sessionStorage.setItem('esperanto_audio_unlocked', 'true');
+                }).catch((e) => {
+                    console.log('Silent audio play failed:', e);
+                });
+            }
+
+            // 最初のユーザー操作でアンロック
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+        })();
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.write("品詞×レベルでグルーピングした単語から出題します。シードを変えるとグループ分けと順番が変わります。")
     with st.expander("スコア計算ルール"):
         st.markdown(
@@ -851,7 +929,7 @@ def main():
                     }
                     # UserStats更新（累積）
                     update_user_stats(st.session_state.user_name, points, now)
-                    
+
                     # Scores更新（ログ）
                     if save_score(record):
                         st.session_state.score_saved = True
@@ -939,13 +1017,13 @@ def main():
             st.success(st.session_state.last_result_msg)
         else:
             st.error(st.session_state.last_result_msg)
-        
+
         # 選択肢ボタンは無効化して表示（あるいは非表示でもよいが、レイアウト維持のため無効化表示が望ましい）
         # ここではシンプルに「次へ」ボタンを表示する
-        
+
         # 自動再生されない場合のために、ここでも音声再生ボタンなどを置く手もあるが、
         # 上部の audio_player はそのまま残るのでOK。
-        
+
         if st.button("次へ進む", type="primary", use_container_width=True, key=f"next_btn_{st.session_state.q_index}"):
             st.session_state.q_index += 1
             st.session_state.showing_result = False
@@ -975,7 +1053,7 @@ def main():
                 "correct": question["answer_index"],
             }
         )
-        
+
         if is_correct:
             # 正解時は即座に次へ（ユーザー要望）
             st.session_state.correct += 1
@@ -983,7 +1061,7 @@ def main():
             st.session_state.streak += 1
             streak_bonus = max(0, st.session_state.streak - 1) * STREAK_BONUS
             st.session_state.points += BASE_POINTS * factor + streak_bonus
-            
+
             st.session_state.q_index += 1
             st.session_state.showing_result = False
             st.rerun()
@@ -991,7 +1069,7 @@ def main():
             # 不正解時は正解を表示して一時停止
             msg = f"不正解。正解: {option_labels[question['answer_index']]}"
             st.session_state.streak = 0
-            
+
             # 結果表示モードへ移行
             st.session_state.showing_result = True
             st.session_state.last_result_msg = msg
