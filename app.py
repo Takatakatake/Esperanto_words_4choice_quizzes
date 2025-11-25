@@ -548,6 +548,12 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             // これにより、古いiframeがplay()を呼んでも無視される
             parentWin._esperantoBlockOldAudio = myTimestamp;
 
+            // ★★★ 最終手段: 親ウィンドウに正しい音声データを保存 ★★★
+            // 古いiframeが再生しようとしても、親ウィンドウの音声データを使うことで
+            // 常に正しい音声が再生される
+            parentWin._esperantoCorrectAudioSrc = audioSrc;
+            parentWin._esperantoCorrectWord = debugAudioKey;
+
             // ★★★ 新アプローチ: 親ウィンドウにクリーンアップ関数リストを管理 ★★★
             // 各iframeが自分自身を非表示にする関数を登録
             // 新しいiframeが来たら、古い関数を全て呼び出して非表示にする
@@ -578,6 +584,22 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             parentWin._esperantoCleanupFunctions = [hideMyself];
 
             console.log('[Esperanto Audio] Registered cleanup, cleared', oldFunctions.length, 'old functions');
+
+            // ★★★ 初期化直後の即座チェック ★★★
+            // 新しいiframeが来た直後に古いiframeが自分を隠すため
+            // 数ms後に再度チェック（新しいiframeが変数を設定した後）
+            setTimeout(() => {
+              if (parentWin._esperantoCorrectWord && parentWin._esperantoCorrectWord !== debugAudioKey) {
+                console.log('[Esperanto Audio] Delayed check: hiding old iframe', debugAudioKey, 'current:', parentWin._esperantoCorrectWord);
+                hideMyself();
+              }
+            }, 10);
+            setTimeout(() => {
+              if (parentWin._esperantoCorrectWord && parentWin._esperantoCorrectWord !== debugAudioKey) {
+                console.log('[Esperanto Audio] Delayed check 2: hiding old iframe', debugAudioKey, 'current:', parentWin._esperantoCorrectWord);
+                hideMyself();
+              }
+            }, 50);
 
             // 古いオーディオと古いiframeのカードを全て破棄・非表示にする関数（従来方式も併用）
             function destroyAllOtherAudio() {
@@ -633,9 +655,14 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             // 即座に古いオーディオを破棄
             destroyAllOtherAudio();
 
-            // 最新チェック（より厳密に）
+            // 最新チェック（より厳密に - 単語名チェックも追加）
             function isLatest() {
               try {
+                // ★★★ 最重要: 単語名チェック ★★★
+                // 親ウィンドウの現在の単語と自分の単語が異なれば古い
+                if (parentWin._esperantoCorrectWord && parentWin._esperantoCorrectWord !== debugAudioKey) {
+                  return false;
+                }
                 // タイムスタンプチェック
                 if (parentWin._esperantoLatestTimestamp > myTimestamp) return false;
                 // AudioIDチェック
@@ -748,8 +775,18 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               // 最新チェック - 古いならaudioを作らない
               if (!isLatest()) {
                 console.log('[Esperanto Audio] Not creating - not latest:', debugAudioKey);
+                hideMyself();
                 return null;
               }
+
+              // ★★★ 二重チェック: 親ウィンドウの単語と自分の単語が一致するか確認 ★★★
+              try {
+                if (parentWin._esperantoCorrectWord && parentWin._esperantoCorrectWord !== debugAudioKey) {
+                  console.log('[Esperanto Audio] Word mismatch! Expected:', parentWin._esperantoCorrectWord, 'Got:', debugAudioKey);
+                  hideMyself();
+                  return null;
+                }
+              } catch (e) {}
 
               // 生成直前にもう一度他のaudioを破棄
               destroyAllOtherAudio();
