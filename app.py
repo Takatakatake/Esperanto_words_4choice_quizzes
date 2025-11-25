@@ -498,7 +498,7 @@ def audio_player(akey: str, autoplay: bool = True):
             <label><input type="checkbox" id="$audio_id-loop"> ループ</label>
           </div>
         </div>
-        <audio id="$audio_id" src="data:$mime;base64,$b64"></audio>
+        <audio id="$audio_id" src="data:$mime;base64,$b64" preload="auto" playsinline></audio>
         <script>
           (function() {
             const a = document.getElementById('$audio_id');
@@ -615,12 +615,33 @@ def audio_player(akey: str, autoplay: bool = True):
             // Initial update
             updateBar();
 
-            if ($autoplay_bool) {
-              // Small delay to ensure rate is applied before playing
+            function attemptPlay() {
+              return a.play().then(() => {
+                  btn.textContent = "⏸";
+                  return true;
+              }).catch((err) => {
+                  console.warn("Auto play blocked, waiting for user gesture", err);
+                  btn.textContent = "▶︎";
+                  return false;
+              });
+            }
+
+            function setupAutoplayUnlock() {
+              if (!$autoplay_bool) return;
+              // Try immediately; if blocked (mobile), retry on first tap
               setTimeout(() => {
-                  a.play().then(() => { btn.textContent = "⏸"; }).catch(() => { btn.textContent = "▶︎"; });
+                attemptPlay().then((ok) => {
+                  if (ok) return;
+                  const handler = () => {
+                    attemptPlay();
+                  };
+                  document.addEventListener('touchstart', handler, { once: true });
+                  document.addEventListener('click', handler, { once: true });
+                });
               }, 50);
             }
+
+            setupAutoplayUnlock();
           })();
         </script>
         """
