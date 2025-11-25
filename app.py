@@ -504,11 +504,11 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
         <audio id="$audio_id" src="data:$mime;base64,$b64" preload="auto" playsinline></audio>
         <script>
           (function() {
-            // iPhone Firefox対策: 親ウィンドウのスコープでグローバル変数を管理
-            // Streamlitはst.components.v1.htmlを別々のiframeで描画するため、
-            // iframe間で変数を共有するには親ウィンドウを使う必要がある
+            // iPhone Firefox対策: タイムスタンプベースの排他制御
+            // 問題を速く回答したときの競合状態（Race Condition）を防ぐ
             const currentQuestionIndex = $question_index;
             const currentAudioId = '$audio_id';
+            const myTimestamp = Date.now();  // このスクリプトが実行された時刻
 
             // 親ウィンドウにアクセス（Streamlit本体のスコープ）
             let parentWin;
@@ -518,54 +518,67 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               parentWin = window;
             }
 
-            // 親ウィンドウにグローバル変数を設定
+            // 親ウィンドウにタイムスタンプを設定（最新のものが常に勝つ）
+            parentWin._esperantoLatestTimestamp = myTimestamp;
             parentWin._esperantoCurrentQuestionIndex = currentQuestionIndex;
             parentWin._esperantoCurrentAudioId = currentAudioId;
 
-            // 古いオーディオを停止するための関数を親ウィンドウに登録
-            if (!parentWin._esperantoStopAllAudio) {
-              parentWin._esperantoStopAllAudio = function(exceptId) {
-                // 親ウィンドウ内の全iframeを検索
-                try {
-                  const iframes = parentWin.document.querySelectorAll('iframe');
-                  iframes.forEach((iframe) => {
-                    try {
-                      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                      const audios = iframeDoc.querySelectorAll('audio');
-                      audios.forEach((audio) => {
-                        if (audio.id !== exceptId) {
-                          audio.pause();
-                          audio.currentTime = 0;
-                          audio.src = '';
-                          audio.load();
-                        }
-                      });
-                    } catch (e) {
-                      // クロスオリジンエラーは無視
-                    }
-                  });
-                } catch (e) {
-                  console.log('Failed to stop audio in iframes:', e);
+            // 古いオーディオを即座に停止する関数
+            function stopAllOtherAudio() {
+              // 親ウィンドウ内の全iframeを検索して停止
+              try {
+                const iframes = parentWin.document.querySelectorAll('iframe');
+                iframes.forEach((iframe) => {
+                  try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    const audios = iframeDoc.querySelectorAll('audio');
+                    audios.forEach((audio) => {
+                      if (audio.id !== currentAudioId) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                        // srcをクリアして完全に無効化
+                        audio.src = '';
+                        audio.load();
+                      }
+                    });
+                  } catch (e) {
+                    // クロスオリジンエラーは無視
+                  }
+                });
+              } catch (e) {
+                console.log('Failed to stop audio in iframes:', e);
+              }
+
+              // 現在のiframe内のaudio要素も停止（自分以外）
+              document.querySelectorAll('audio').forEach((oldAudio) => {
+                if (oldAudio.id !== currentAudioId) {
+                  try {
+                    oldAudio.pause();
+                    oldAudio.currentTime = 0;
+                    oldAudio.src = '';
+                    oldAudio.load();
+                  } catch (e) {}
                 }
-              };
+              });
             }
 
-            // 古いオーディオをすべて停止
-            parentWin._esperantoStopAllAudio(currentAudioId);
+            // 即座に古いオーディオを停止
+            stopAllOtherAudio();
 
-            // 現在のiframe内のaudio要素も念のため停止（自分以外）
-            document.querySelectorAll('audio').forEach((oldAudio) => {
-              if (oldAudio.id !== '$audio_id') {
-                try {
-                  oldAudio.pause();
-                  oldAudio.currentTime = 0;
-                  oldAudio.src = '';
-                  oldAudio.load();
-                } catch (e) {
-                  console.log('Failed to stop old audio:', e);
+            // このaudioが最新かどうかをチェックする関数
+            function isLatestAudio() {
+              try {
+                // タイムスタンプで比較（自分より新しいものがあれば自分は古い）
+                if (parentWin._esperantoLatestTimestamp > myTimestamp) {
+                  return false;
                 }
-              }
-            });
+                // audioIdでも確認
+                if (parentWin._esperantoCurrentAudioId !== currentAudioId) {
+                  return false;
+                }
+              } catch (e) {}
+              return true;
+            }
 
             const a = document.getElementById('$audio_id');
             const btn = document.getElementById('$audio_id-play');
@@ -698,25 +711,26 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             updateBar();
 
             function attemptPlay() {
-              // iPhone Firefox対策: 親ウィンドウの変数をチェック
-              // 現在のaudioIdが親ウィンドウに登録されているものと一致しない場合は再生しない
-              try {
-                const pw = window.parent || window;
-                if (pw._esperantoCurrentAudioId && pw._esperantoCurrentAudioId !== currentAudioId) {
-                  console.log('Skipping play for old audio:', currentAudioId, 'current:', pw._esperantoCurrentAudioId);
-                  return Promise.resolve(false);
-                }
-                if (pw._esperantoCurrentQuestionIndex !== undefined && pw._esperantoCurrentQuestionIndex !== currentQuestionIndex) {
-                  console.log('Skipping play for old question:', currentQuestionIndex, 'current:', pw._esperantoCurrentQuestionIndex);
-                  return Promise.resolve(false);
-                }
-              } catch (e) {
-                // クロスオリジンエラーは無視
+              // iPhone Firefox対策: タイムスタンプで最新かどうかチェック
+              if (!isLatestAudio()) {
+                console.log('Skipping play - not latest audio:', currentAudioId, 'ts:', myTimestamp);
+                // 古いaudioなので再生せず、むしろ停止しておく
+                a.pause();
+                a.src = '';
+                return Promise.resolve(false);
               }
 
+              // 再生前にもう一度他のaudioを停止
+              stopAllOtherAudio();
+
               return a.play().then(() => {
+                  // 再生開始後も最新かチェック（再生中に新しいのが来た場合）
+                  if (!isLatestAudio()) {
+                    console.log('Stopping play - newer audio arrived');
+                    a.pause();
+                    return false;
+                  }
                   btn.textContent = "⏸";
-                  // モバイルで一度再生成功したらフラグを立てる
                   sessionStorage.setItem('esperanto_audio_unlocked', 'true');
                   return true;
               }).catch((err) => {
@@ -734,16 +748,12 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
               // まず再生を試みる（PCでもモバイルでも）
+              // 遅延を短くして競合を減らす（ただしDOMの準備は必要）
               setTimeout(() => {
-                // 再度チェック: 親ウィンドウの変数で現在のaudioかどうか確認
-                try {
-                  const pw = window.parent || window;
-                  if (pw._esperantoCurrentAudioId && pw._esperantoCurrentAudioId !== currentAudioId) {
-                    console.log('Audio changed, skipping autoplay for:', currentAudioId);
-                    return;
-                  }
-                } catch (e) {
-                  // クロスオリジンエラーは無視
+                // タイムスタンプで最新かチェック
+                if (!isLatestAudio()) {
+                  console.log('Autoplay cancelled - not latest audio');
+                  return;
                 }
 
                 attemptPlay().then((ok) => {
