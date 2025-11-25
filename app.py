@@ -378,8 +378,12 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
         st.info("音声ファイルなし")
         return
     # 問題ごとにユニークなIDを生成（question_indexを含めて確実に区別）
-    audio_id = f"audio-q{question_index}-{uuid.uuid4().hex[:8]}"
+    unique_suffix = uuid.uuid4().hex[:8]
+    audio_id = f"audio-q{question_index}-{unique_suffix}"
     b64 = base64.b64encode(data).decode("utf-8")
+
+    # デバッグ用: audio_keyを埋め込む（コンソールログで確認可能）
+    debug_audio_key = akey
 
     # HTML/JS template
     # モバイル対応: Web Audio API + ユーザージェスチャー追跡
@@ -510,8 +514,12 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             // 古いaudioが先に再生される問題を防ぐ
             const currentQuestionIndex = $question_index;
             const currentAudioId = '$audio_id';
+            const debugAudioKey = '$debug_audio_key';  // デバッグ用: 単語名
             const audioSrc = 'data:$mime;base64,$b64';
             const myTimestamp = Date.now();
+
+            // デバッグログ
+            console.log('[Esperanto Audio] Init:', debugAudioKey, 'Q' + currentQuestionIndex, currentAudioId);
 
             // 親ウィンドウにアクセス
             let parentWin;
@@ -521,12 +529,16 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               parentWin = window;
             }
 
+            // 親ウィンドウに現在の単語名も保存（デバッグ用）
+            parentWin._esperantoCurrentWord = debugAudioKey;
+
             // 親ウィンドウにタイムスタンプを設定（最新のものが常に勝つ）
             parentWin._esperantoLatestTimestamp = myTimestamp;
             parentWin._esperantoCurrentAudioId = currentAudioId;
 
             // 古いオーディオを全て破棄する関数
             function destroyAllOtherAudio() {
+              let destroyed = 0;
               try {
                 const iframes = parentWin.document.querySelectorAll('iframe');
                 iframes.forEach((iframe) => {
@@ -535,23 +547,33 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
                     const audios = iframeDoc.querySelectorAll('audio');
                     audios.forEach((audio) => {
                       if (audio.id !== currentAudioId) {
+                        const word = audio.getAttribute('data-word') || audio.id;
+                        console.log('[Esperanto Audio] Destroying:', word);
                         audio.pause();
                         audio.src = '';
                         audio.remove();  // DOMから完全に削除
+                        destroyed++;
                       }
                     });
                   } catch (e) {}
                 });
               } catch (e) {}
-              
+
               // 現在のiframe内も
               document.querySelectorAll('audio').forEach((audio) => {
                 if (audio.id !== currentAudioId) {
+                  const word = audio.getAttribute('data-word') || audio.id;
+                  console.log('[Esperanto Audio] Destroying (local):', word);
                   audio.pause();
                   audio.src = '';
                   audio.remove();
+                  destroyed++;
                 }
               });
+
+              if (destroyed > 0) {
+                console.log('[Esperanto Audio] Total destroyed:', destroyed, 'for new word:', debugAudioKey);
+              }
             }
 
             // 即座に古いオーディオを破棄
@@ -633,20 +655,25 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             // audio要素を動的に生成する関数
             function createAudio() {
               if (audioCreated) return a;
-              
+
               // 最新チェック - 古いならaudioを作らない
               if (!isLatest()) {
-                console.log('Not creating audio - not latest:', currentAudioId);
+                console.log('[Esperanto Audio] Not creating - not latest:', debugAudioKey);
                 return null;
               }
 
               // 生成直前にもう一度他のaudioを破棄
               destroyAllOtherAudio();
 
+              console.log('[Esperanto Audio] Creating audio element for:', debugAudioKey);
+
               a = document.createElement('audio');
               a.id = currentAudioId;
               a.preload = 'auto';
               a.setAttribute('playsinline', '');
+              // data属性で単語名を保存（デバッグ用）
+              a.setAttribute('data-word', debugAudioKey);
+              a.setAttribute('data-question', currentQuestionIndex);
               a.src = audioSrc;
               container.appendChild(a);
               audioCreated = true;
@@ -660,6 +687,9 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               a.addEventListener('timeupdate', updateBar);
               a.addEventListener('loadedmetadata', updateBar);
               a.addEventListener('durationchange', updateBar);
+              a.addEventListener('play', () => {
+                console.log('[Esperanto Audio] PLAYING:', debugAudioKey, 'expected:', parentWin._esperantoCurrentWord);
+              });
               a.addEventListener('ended', () => {
                 if (!a.loop) {
                   btn.textContent = "▶︎";
@@ -704,7 +734,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             btn.onclick = () => {
               const audio = createAudio();
               if (!audio) return;
-              
+
               if (audio.paused) {
                 audio.play().then(() => {
                   resetBtnStyle();
@@ -723,16 +753,17 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             function attemptAutoplay() {
               // 最新チェック
               if (!isLatest()) {
-                console.log('Autoplay cancelled - not latest:', currentAudioId);
+                console.log('[Esperanto Audio] Autoplay cancelled - not latest:', debugAudioKey);
                 return;
               }
 
+              console.log('[Esperanto Audio] Attempting autoplay for:', debugAudioKey);
               const audio = createAudio();
               if (!audio) return;
 
               // 再度最新チェック（createAudio中に変わった可能性）
               if (!isLatest()) {
-                console.log('Autoplay cancelled after create - not latest');
+                console.log('[Esperanto Audio] Autoplay cancelled after create - not latest:', debugAudioKey);
                 audio.pause();
                 audio.src = '';
                 return;
@@ -741,21 +772,22 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               audio.play().then(() => {
                 // 再生開始後も最新チェック
                 if (!isLatest()) {
-                  console.log('Stopping - newer audio arrived');
+                  console.log('[Esperanto Audio] Stopping after play() - newer audio arrived:', debugAudioKey);
                   audio.pause();
                   return;
                 }
+                console.log('[Esperanto Audio] Autoplay SUCCESS:', debugAudioKey);
                 resetBtnStyle();
                 btn.textContent = "⏸";
                 sessionStorage.setItem('esperanto_audio_unlocked', 'true');
               }).catch((err) => {
-                console.warn("Autoplay blocked:", err);
+                console.warn("[Esperanto Audio] Autoplay blocked:", debugAudioKey, err);
                 btn.textContent = "▶︎";
-                
+
                 // モバイルで失敗した場合の目立つボタン
                 const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                
+
                 if (isMobile) {
                   btn.style.background = '#009900';
                   btn.style.color = '#fff';
@@ -765,7 +797,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
                   btn.style.fontWeight = 'bold';
                   btn.textContent = isIOS ? "🔊 ここをタップして発音を聞く" : "🔊 タップして再生";
                   btn.style.animation = 'pulse 1s infinite';
-                  
+
                   if (!document.getElementById('pulse-style')) {
                     const style = document.createElement('style');
                     style.id = 'pulse-style';
@@ -795,7 +827,9 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
         b64=b64,
         autoplay_bool=str(autoplay).lower(),
         question_index=question_index,
+        debug_audio_key=debug_audio_key,
     )
+    # st.components.v1.html()はkeyパラメータをサポートしていない
     st.components.v1.html(html, height=190)
 
 
