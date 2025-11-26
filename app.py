@@ -114,9 +114,6 @@ def save_score(record: dict):
         # 更新（追記）
         conn.update(worksheet="Scores", data=updated_df)
 
-        # 保存成功後、キャッシュをクリアして次の読み込みで最新が反映されるようにする
-        st.cache_data.clear()
-
         return True
     except Exception as e:
         st.error(f"スコアの保存に失敗しました: {e}")
@@ -387,7 +384,7 @@ def inject_audio_signal(session_id: str, target_audio_key: str):
                 const targetKey = '{target_audio_key}';
                 const storageKey = 'esperanto_audio_target_' + sessionId;
                 localStorage.setItem(storageKey, targetKey);
-                console.log('[Signal] Set target:', targetKey);
+                localStorage.setItem(storageKey, targetKey);
             }} catch(e) {{
                 console.error('[Signal] Error:', e);
             }}
@@ -403,10 +400,10 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
     if not data:
         st.info("音声ファイルなし")
         return
-    
+
     # セッションIDを取得
     session_id = st.session_state.get("session_id", "default")
-    
+
     # 問題ごとにユニークなIDを生成（question_indexを含めて確実に区別）
     unique_suffix = uuid.uuid4().hex[:8]
     audio_id = f"audio-q{question_index}-{unique_suffix}"
@@ -551,7 +548,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             // 1. LocalStorageを監視し、ターゲット単語が自分でない場合は即停止
             // 2. isConnected チェックも併用
             // 3. Blob URL使用
-            
+
             const currentQuestionIndex = $question_index;
             const currentAudioId = '$audio_id';
             const debugAudioKey = '$debug_audio_key';
@@ -576,11 +573,9 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               }
               return new Blob(byteArrays, {type: contentType});
             }
-            
+
             const audioBlob = b64ToBlob(b64Data, mimeType);
             const audioUrl = URL.createObjectURL(audioBlob);
-
-            console.log('[Esperanto Audio] Init:', debugAudioKey, 'Session:', sessionId);
 
             // 自分自身を非表示にする関数
             function hideMyself() {
@@ -604,7 +599,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               if (!document.documentElement.isConnected) {
                   return false;
               }
-              
+
               // 2. LocalStorageチェック (最強の同期手段)
               try {
                   const target = localStorage.getItem(storageKey);
@@ -612,13 +607,12 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
                   // (targetがまだセットされていない場合は、Signal Iframeが遅れている可能性があるので許容するか、
                   //  あるいは安全側に倒して停止するか。ここでは安全側に倒すが、初期ロード時の競合に注意)
                   if (target && target !== debugAudioKey) {
-                      console.log('[Esperanto Audio] Stale detected via LS. Target:', target, 'Me:', debugAudioKey);
                       return false;
                   }
               } catch(e) {
                   console.error(e);
               }
-              
+
               return true;
             }
 
@@ -805,7 +799,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               }).catch((err) => {
                 console.warn("[Esperanto Audio] Autoplay blocked:", debugAudioKey, err);
                 btn.textContent = "▶︎";
-                
+
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                 if (isMobile) {
                   btn.style.background = '#009900';
@@ -816,7 +810,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
                   btn.style.fontWeight = 'bold';
                   btn.textContent = "🔊 タップして再生";
                   btn.style.animation = 'pulse 1s infinite';
-                  
+
                   if (!document.getElementById('pulse-style')) {
                     const style = document.createElement('style');
                     style.id = 'pulse-style';
@@ -833,11 +827,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               const delay = isMobile ? 300 : 50;
               setTimeout(() => {
                 if (isLatest()) {
-                   if (isMobile) {
-                       setTimeout(() => { if (isLatest()) attemptAutoplay(); }, 100);
-                   } else {
-                       attemptAutoplay();
-                   }
+                   attemptAutoplay();
                 }
               }, delay);
             }
@@ -880,7 +870,9 @@ def init_state():
     st.session_state.setdefault("last_result_msg", "")
     st.session_state.setdefault("last_is_correct", False)
     st.session_state.setdefault("last_correct_answer", "")
+    st.session_state.setdefault("last_correct_answer", "")
     st.session_state.setdefault("score_saved", False)
+    st.session_state.setdefault("cached_scores", [])
     if "session_id" not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
 
@@ -1033,7 +1025,28 @@ def main():
             st.session_state.last_saved_key = None
             st.rerun()
 
-    scores = load_scores()
+            st.session_state.score_saved = False
+            st.session_state.last_saved_key = None
+            # ホームに戻る時はスコアを再読み込み
+            st.session_state.cached_scores = load_scores()
+            st.rerun()
+
+    # スコア読み込み戦略:
+    # 1. クイズ中（questionsがあり、結果画面でない）はAPIを呼ばない（キャッシュ使用）
+    # 2. ホーム画面、結果画面、スコア保存直後はAPIを呼ぶ
+    should_load = (
+        not st.session_state.questions or 
+        st.session_state.showing_result or 
+        st.session_state.score_saved or
+        not st.session_state.cached_scores
+    )
+    
+    if should_load:
+        scores = load_scores()
+        st.session_state.cached_scores = scores
+    else:
+        scores = st.session_state.cached_scores
+
     if st.session_state.get("score_load_error"):
         st.warning(st.session_state.score_load_error)
     if st.session_state.user_name and scores:
@@ -1140,7 +1153,7 @@ def main():
 
     question = questions[q_index]
     audio_key = question["options"][question["answer_index"]]["audio_key"]
-    
+
     # Signal Iframeを注入して、LocalStorageを即座に更新
     # これにより、古いiframe（ゴースト）が自分が古いことを検知して停止する
     if audio_key:
