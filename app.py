@@ -329,13 +329,13 @@ def show_rankings(stats_data):
         return pd.DataFrame(data)
 
     with tabs[0]:
-        st.dataframe(to_df(totals), width='stretch', hide_index=True)
+        st.dataframe(to_df(totals), use_container_width=True, hide_index=True)
     with tabs[1]:
-        st.dataframe(to_df(totals_today), width='stretch', hide_index=True)
+        st.dataframe(to_df(totals_today), use_container_width=True, hide_index=True)
     with tabs[2]:
-        st.dataframe(to_df(totals_month), width='stretch', hide_index=True)
+        st.dataframe(to_df(totals_month), use_container_width=True, hide_index=True)
     with tabs[3]:
-        st.dataframe(to_df(hof), width='stretch', hide_index=True)
+        st.dataframe(to_df(hof), use_container_width=True, hide_index=True)
 
 
 def format_stage_label(stages):
@@ -1275,4 +1275,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
