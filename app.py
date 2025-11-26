@@ -859,145 +859,6 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
 
 
 
-def init_state():
-    st.session_state.setdefault("user_name", "")
-    st.session_state.setdefault("seed", 1)
-    st.session_state.setdefault("group_id", None)
-    st.session_state.setdefault("questions", [])
-    st.session_state.setdefault("q_index", 0)
-    st.session_state.setdefault("correct", 0)
-    st.session_state.setdefault("points", 0.0)
-    st.session_state.setdefault("streak", 0)
-    st.session_state.setdefault("answers", [])
-    st.session_state.setdefault("playback_rate", 1.0)
-    st.session_state.setdefault("loop_enabled", False)
-    st.session_state.setdefault("score_saved", False)
-    st.session_state.setdefault("last_saved_key", None)
-    st.session_state.setdefault("score_load_error", None)
-    # UI State
-    st.session_state.setdefault("showing_result", False)
-    st.session_state.setdefault("last_result_msg", "")
-    st.session_state.setdefault("last_is_correct", False)
-    st.session_state.setdefault("last_correct_answer", "")
-    st.session_state.setdefault("score_saved", False)
-
-
-def start_quiz(group, rng):
-    questions = vg.build_questions_for_group(group, rng=rng, min_options=2, max_options=4)
-    st.session_state.questions = questions
-    st.session_state.q_index = 0
-    st.session_state.correct = 0
-    st.session_state.points = 0.0
-    st.session_state.streak = 0
-    st.session_state.answers = []
-    st.session_state.score_saved = False
-    st.session_state.last_saved_key = None
-    st.session_state.showing_result = False
-
-
-def main():
-    init_state()
-
-    st.set_page_config(
-        page_title="エスペラント単語クイズ",
-        page_icon="💚",
-        layout="centered",
-        initial_sidebar_state="expanded",
-    )
-
-    # エスペラント・グリーン (#009900) を基調としたテーマ設定
-    st.markdown(
-        """
-        <style>
-        /* プライマリボタン（st.button type="primary"）の色変更 */
-        div.stButton > button[kind="primary"] {
-            background-color: #009900 !important;
-            border-color: #009900 !important;
-            color: white !important;
-        }
-        div.stButton > button[kind="primary"]:hover {
-            background-color: #007700 !important;
-            border-color: #007700 !important;
-        }
-        div.stButton > button[kind="primary"]:active {
-            background-color: #005500 !important;
-            border-color: #005500 !important;
-        }
-        /* 通常ボタンのボーダーなども緑系に */
-        div.stButton > button[kind="secondary"] {
-            border-color: #009900 !important;
-            color: #009900 !important;
-        }
-        div.stButton > button[kind="secondary"]:hover {
-            border-color: #007700 !important;
-            color: #007700 !important;
-            background-color: #f0fff0 !important;
-        }
-        /* サイドバーのボタンは横幅いっぱいに広げる */
-        section[data-testid="stSidebar"] .stButton button {
-            width: 100% !important;
-        }
-        /* ヘッダーの装飾など */
-        h1, h2, h3 {
-            color: #006600 !important;
-        }
-        .main-title {
-            font-size: 2.0rem; /* Slightly smaller to fit on one line */
-            color: #006600; /* Esperanto Green Dark */
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 20px;
-            white-space: nowrap; /* Prevent wrapping */
-        }
-        </style>
-        <div class="main-title">エスペラント単語４択クイズ</div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # モバイル用: 音声自動再生のアンロックスクリプト（グローバルに1回だけ挿入）
-    # ユーザーが画面のどこかをタップしたら、サイレント音声を再生して
-    # 以降の自動再生を可能にする
-    st.markdown(
-        """
-        <script>
-        (function() {
-            // 既にアンロック済みならスキップ
-            if (window._esperantoAudioUnlocked) return;
-
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            if (!isMobile) {
-                window._esperantoAudioUnlocked = true;
-                return;
-            }
-
-            // sessionStorageでページ間のアンロック状態を維持
-            if (sessionStorage.getItem('esperanto_audio_unlocked') === 'true') {
-                window._esperantoAudioUnlocked = true;
-                return;
-            }
-
-            function unlockAudio() {
-                // サイレントな短いオーディオを再生してブラウザの制限を解除
-                const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
-                silentAudio.volume = 0.01;
-                silentAudio.play().then(() => {
-                    console.log('Audio unlocked for mobile');
-                    window._esperantoAudioUnlocked = true;
-                    sessionStorage.setItem('esperanto_audio_unlocked', 'true');
-                }).catch((e) => {
-                    console.log('Silent audio play failed:', e);
-                });
-            }
-
-            // 最初のユーザー操作でアンロック
-            document.addEventListener('touchstart', unlockAudio, { once: true });
-            document.addEventListener('click', unlockAudio, { once: true });
-        })();
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
 
 def init_state():
     st.session_state.setdefault("user_name", "")
@@ -1079,6 +940,50 @@ def main():
         }
         </style>
         <div class="main-title">エスペラント単語４択クイズ</div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # モバイル用: 音声自動再生のアンロックスクリプト（グローバルに1回だけ挿入）
+    # ユーザーが画面のどこかをタップしたら、サイレント音声を再生して
+    # 以降の自動再生を可能にする
+    st.markdown(
+        """
+        <script>
+        (function() {
+            // 既にアンロック済みならスキップ
+            if (window._esperantoAudioUnlocked) return;
+
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (!isMobile) {
+                window._esperantoAudioUnlocked = true;
+                return;
+            }
+
+            // sessionStorageでページ間のアンロック状態を維持
+            if (sessionStorage.getItem('esperanto_audio_unlocked') === 'true') {
+                window._esperantoAudioUnlocked = true;
+                return;
+            }
+
+            function unlockAudio() {
+                // サイレントな短いオーディオを再生してブラウザの制限を解除
+                const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+                silentAudio.volume = 0.01;
+                silentAudio.play().then(() => {
+                    console.log('Audio unlocked for mobile');
+                    window._esperantoAudioUnlocked = true;
+                    sessionStorage.setItem('esperanto_audio_unlocked', 'true');
+                }).catch((e) => {
+                    console.log('Silent audio play failed:', e);
+                });
+            }
+
+            // 最初のユーザー操作でアンロック
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+        })();
+        </script>
         """,
         unsafe_allow_html=True
     )
