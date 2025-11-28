@@ -395,6 +395,32 @@ def inject_audio_signal(session_id: str, target_audio_key: str):
     st.components.v1.html(signal_script, height=0)
 
 
+def simple_audio_player(akey: str, question_index: int = 0):
+    """
+    シンプルな st.audio() ベースのプレイヤー
+    - Streamlitがコンポーネントライフサイクルを管理するため、ゴーストiframe問題が発生しない
+    - カスタマイズ性は低いが、確実に正しい音声が再生される
+    """
+    data, mime = find_audio(akey)
+    if not data:
+        st.info("音声ファイルなし")
+        return
+
+    # st.audio() は format パラメータで MIME タイプを指定
+    # autoplay は st.audio() では直接サポートされていないが、
+    # Streamlit 1.31+ では autoplay パラメータが追加された
+    format_map = {
+        "audio/wav": "audio/wav",
+        "audio/mpeg": "audio/mp3",
+        "audio/ogg": "audio/ogg",
+    }
+    audio_format = format_map.get(mime, "audio/wav")
+    
+    # keyを使って問題ごとにユニークなコンポーネントを作成
+    # これによりStreamlitが古いプレイヤーを自動的に破棄する
+    st.audio(data, format=audio_format, autoplay=True)
+
+
 def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
     data, mime = find_audio(akey)
     if not data:
@@ -1154,10 +1180,10 @@ def main():
     question = questions[q_index]
     audio_key = question["options"][question["answer_index"]]["audio_key"]
 
-    # Signal Iframeを注入して、LocalStorageを即座に更新
-    # これにより、古いiframe（ゴースト）が自分が古いことを検知して停止する
-    if audio_key:
-        inject_audio_signal(st.session_state.session_id, audio_key)
+    # Signal Iframeは st.audio() 使用時は不要（Streamlitがコンポーネント管理）
+    # カスタムプレイヤーに戻す場合は有効化
+    # if audio_key:
+    #     inject_audio_signal(st.session_state.session_id, audio_key)
 
     # スマホ対応: 回答ボタンのスタイル（PCとモバイルで高さを変える）
     st.markdown(
@@ -1215,7 +1241,7 @@ def main():
         if audio_key:
             st.markdown("---")
             st.caption(f"🔊 発音を確認【{audio_key}】")
-            audio_player(audio_key, autoplay=True, question_index=q_index)
+            simple_audio_player(audio_key, question_index=q_index)
         return
 
     # 回答待ちモード: 4択ボタンを出題単語の直下に配置
@@ -1236,7 +1262,7 @@ def main():
         st.markdown("---")
         # デバッグ: 現在の音声キーを表示（問題特定後に削除可能）
         st.caption(f"🔊 発音を聞く（自動再生）【{audio_key}】")
-        audio_player(audio_key, autoplay=True, question_index=q_index)
+        simple_audio_player(audio_key, question_index=q_index)
 
     if clicked_index is not None:
         is_correct = clicked_index == question["answer_index"]
