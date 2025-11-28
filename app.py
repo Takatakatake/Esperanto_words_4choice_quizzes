@@ -369,17 +369,25 @@ def find_audio(akey: str):
     return None, None
 
 
-def inject_audio_signal(session_id: str, target_audio_key: str, sequence: int):
+def inject_audio_signal(session_id: str, target_audio_key: str):
     """
-    Signal Iframe: 廃止予定だが、フォールバックとして残す
-    Audio Player自身がLocalStorageを管理するため、このiframeは補助的な役割のみ
+    Signal Iframe:
+    Writes the target audio key to LocalStorage immediately.
+    This runs in a separate, lightweight iframe that loads faster than the heavy audio player.
+    Old iframes (ghosts) will see this change in LocalStorage and kill themselves.
     """
     signal_script = f"""
     <script>
         (function() {{
-            // Signal Iframeは補助的な役割のみ
-            // メインのLocalStorage管理はAudio Player側で行う
-            console.log('[Signal] Loaded (auxiliary):', '{target_audio_key}', 'seq:', {sequence});
+            try {{
+                const sessionId = '{session_id}';
+                const targetKey = '{target_audio_key}';
+                const storageKey = 'esperanto_audio_target_' + sessionId;
+                localStorage.setItem(storageKey, targetKey);
+                localStorage.setItem(storageKey, targetKey);
+            }} catch(e) {{
+                console.error('[Signal] Error:', e);
+            }}
         }})();
     </script>
     """
@@ -387,7 +395,7 @@ def inject_audio_signal(session_id: str, target_audio_key: str, sequence: int):
     st.components.v1.html(signal_script, height=0)
 
 
-def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequence: int = 0):
+def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
     data, mime = find_audio(akey)
     if not data:
         st.info("音声ファイルなし")
@@ -403,9 +411,6 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
 
     # デバッグ用: audio_keyを埋め込む（コンソールログで確認可能）
     debug_audio_key = akey
-
-    # シーケンス番号をJavaScriptに渡す
-    audio_sequence = sequence
 
     # HTML/JS template
     # モバイル対応: Web Audio API + ユーザージェスチャー追跡
@@ -539,21 +544,10 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
         <div id="$audio_id-container"></div>
         <script>
           (function() {
-            // 【新方式】Audio Player自身がLocalStorageを管理
-            //
-            // 問題点: Signal IframeとAudio Playerの実行順序が保証されない
-            // 解決策: Audio Player自身が起動時にLocalStorageに書き込む
-            //
-            // ロジック:
-            // 1. 起動時に自分のsequence + audio_keyをLocalStorageに書き込む
-            //    （ただし、既存のsequenceより大きい or 同じ場合のみ）
-            // 2. 少し待つ（他のiframeが書き込む時間を確保）
-            // 3. LocalStorageを読み取り、自分の値と一致すれば再生
-            //
-            // これにより:
-            // - 古いiframe (seq=4) が書き込んでも、新しいiframe (seq=5) が上書き
-            // - 待機後、古いiframeは「seq=5」を見て停止
-            // - 新しいiframeは「seq=5, audio=自分」を見て再生
+            // iPhone Firefox対策: LocalStorage同期 + Signal Iframe
+            // 1. LocalStorageを監視し、ターゲット単語が自分でない場合は即停止
+            // 2. isConnected チェックも併用
+            // 3. Blob URL使用
 
             const currentQuestionIndex = $question_index;
             const currentAudioId = '$audio_id';
@@ -561,27 +555,8 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
             const mimeType = '$mime';
             const b64Data = '$b64';
             const sessionId = '$session_id';
-            const mySequence = $audio_sequence;
-            const storageKeyAudio = 'esperanto_audio_target_' + sessionId;
-            const storageKeySeq = 'esperanto_audio_seq_' + sessionId;
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            
-            // 【重要】起動直後にLocalStorageに書き込む
-            // 自分のsequenceが現在以上なら上書き（同じでも上書き）
-            let didWrite = false;
-            try {
-              const currentSeq = parseInt(localStorage.getItem(storageKeySeq) || '0', 10);
-              if (mySequence >= currentSeq) {
-                localStorage.setItem(storageKeySeq, mySequence.toString());
-                localStorage.setItem(storageKeyAudio, debugAudioKey);
-                didWrite = true;
-                console.log('[Audio] Registered:', debugAudioKey, 'seq:', mySequence, '(was:', currentSeq, ')');
-              } else {
-                console.log('[Audio] Skipped write (old):', debugAudioKey, 'mySeq:', mySequence, 'currentSeq:', currentSeq);
-              }
-            } catch(e) {
-              console.error('[Audio] LocalStorage write failed:', e);
-            }
+            const storageKey = 'esperanto_audio_target_' + sessionId;
+            const myTimestamp = Date.now();
 
             // Blob URLの生成
             function b64ToBlob(b64Data, contentType='', sliceSize=512) {
@@ -618,46 +593,31 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
               }
             }
 
-            // 最新チェック（シーケンス番号 + audio_key）
-            // 戻り値: true = 自分が最新, false = 古い
+            // 最新チェック（LocalStorageベース）
             function isLatest() {
-              // 1. 書き込めなかった場合は確実に古い
-              if (!didWrite) {
-                  return false;
-              }
-
-              // 2. DOM接続チェック
+              // 1. DOM接続チェック
               if (!document.documentElement.isConnected) {
                   return false;
               }
 
-              // 3. LocalStorageチェック
+              // 2. LocalStorageチェック (最強の同期手段)
               try {
-                  const targetSeq = parseInt(localStorage.getItem(storageKeySeq) || '0', 10);
-                  const targetAudio = localStorage.getItem(storageKeyAudio);
-
-                  // 自分のシーケンスより大きいものがある → 古い
-                  if (mySequence < targetSeq) {
+                  const target = localStorage.getItem(storageKey);
+                  // targetが存在し、かつ自分と異なる場合は古いとみなす
+                  // (targetがまだセットされていない場合は、Signal Iframeが遅れている可能性があるので許容するか、
+                  //  あるいは安全側に倒して停止するか。ここでは安全側に倒すが、初期ロード時の競合に注意)
+                  if (target && target !== debugAudioKey) {
                       return false;
                   }
-
-                  // シーケンスが同じ以上で、audio_keyが一致 → 最新
-                  if (mySequence >= targetSeq && targetAudio === debugAudioKey) {
-                      return true;
-                  }
-
-                  // シーケンスは同じだがaudio_keyが違う → レース状態
-                  // （まだ他のiframeが書き込んでいる可能性）
-                  return false;
               } catch(e) {
                   console.error(e);
-                  return false;
               }
+
+              return true;
             }
 
             function checkAndStop() {
                 if (!isLatest()) {
-                    console.log('[Audio] Stopping old iframe:', debugAudioKey, 'seq:', mySequence);
                     hideMyself();
                     return true;
                 }
@@ -738,8 +698,6 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
 
             function createAudio() {
               if (audioCreated) return a;
-
-              // 古い場合は作成しない
               if (!isLatest()) {
                 hideMyself();
                 return null;
@@ -826,32 +784,23 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
             };
 
             function attemptAutoplay() {
-              // 最新チェック
-              if (!isLatest()) {
-                console.log('[Audio] Skipping (not latest):', debugAudioKey, 'seq:', mySequence);
-                return;
-              }
-
-              console.log('[Audio] Attempting autoplay:', debugAudioKey, 'seq:', mySequence);
+              if (!isLatest()) return;
 
               const audio = createAudio();
               if (!audio) return;
 
               audio.play().then(() => {
-                // 再生開始後に再度チェック（古いなら停止）
                 if (!isLatest()) {
-                  console.log('[Audio] Stopping after play (now old):', debugAudioKey);
                   audio.pause();
-                  hideMyself();
                   return;
                 }
-                console.log('[Audio] Playing successfully:', debugAudioKey);
                 resetBtnStyle();
                 btn.textContent = "⏸";
               }).catch((err) => {
                 console.warn("[Esperanto Audio] Autoplay blocked:", debugAudioKey, err);
                 btn.textContent = "▶︎";
 
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                 if (isMobile) {
                   btn.style.background = '#009900';
                   btn.style.color = '#fff';
@@ -872,59 +821,15 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
               });
             }
 
-            // リトライ付き自動再生
-            // 他のiframeがLocalStorageを書き込む時間を待ってから再生
-            function autoplayWithRetry(maxRetries, interval) {
-              let retries = 0;
-
-              function tryPlay() {
-                const latest = isLatest();
-                console.log('[Audio] tryPlay attempt', retries, 'isLatest:', latest, 'audio:', debugAudioKey, 'didWrite:', didWrite);
-
-                if (latest) {
-                  // 最新確定 → 再生
-                  console.log('[Audio] Confirmed latest, playing:', debugAudioKey);
-                  attemptAutoplay();
-                  return;
-                }
-
-                // まだ最新でない → リトライ
-                retries++;
-                if (retries < maxRetries) {
-                  setTimeout(tryPlay, interval);
-                } else {
-                  // タイムアウト: それでもdidWriteがtrueなら再生を試みる
-                  // （レース条件で一時的にfalseになっている可能性があるため）
-                  if (didWrite) {
-                    console.log('[Audio] Timeout but didWrite=true, forcing play:', debugAudioKey);
-                    // LocalStorageを再度自分の値で上書き
-                    try {
-                      localStorage.setItem(storageKeyAudio, debugAudioKey);
-                    } catch(e) {}
-                    attemptAutoplay();
-                  } else {
-                    console.log('[Audio] Timeout, giving up (didWrite=false):', debugAudioKey);
-                  }
-                }
-              }
-
-              tryPlay();
-            }
-
             if ($autoplay_bool) {
-              // PC: 30ms後に即再生（Signal Iframeは十分速い）
-              // Mobile: リトライ付きで確実に再生
-              const initialDelay = isMobile ? 80 : 30;
+              const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+              // Signal IframeがLocalStorageを更新するのを待つため、少し遅延を増やす
+              const delay = isMobile ? 300 : 50;
               setTimeout(() => {
-                if (isMobile) {
-                  // モバイル: 40ms間隔で最大15回リトライ (= 最大600ms)
-                  // これでSignal Iframeが確実に実行される時間を確保
-                  autoplayWithRetry(15, 40);
-                } else {
-                  // PC: シンプルに即再生（速度重視）
-                  attemptAutoplay();
+                if (isLatest()) {
+                   attemptAutoplay();
                 }
-              }, initialDelay);
+              }, delay);
             }
           })();
         </script>
@@ -938,7 +843,6 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
         question_index=question_index,
         debug_audio_key=debug_audio_key,
         session_id=session_id,
-        audio_sequence=audio_sequence,
     )
     # st.components.v1.html()はkeyパラメータをサポートしていない
     st.components.v1.html(html, height=190)
@@ -969,9 +873,6 @@ def init_state():
     st.session_state.setdefault("last_correct_answer", "")
     st.session_state.setdefault("score_saved", False)
     st.session_state.setdefault("cached_scores", [])
-    # Audio sequence: 問題が変わるたびにインクリメント
-    # これにより古いiframeを確実に識別できる
-    st.session_state.setdefault("audio_sequence", 0)
     if "session_id" not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
 
@@ -987,8 +888,6 @@ def start_quiz(group, rng):
     st.session_state.score_saved = False
     st.session_state.last_saved_key = None
     st.session_state.showing_result = False
-    # クイズ開始時にシーケンスをインクリメント
-    st.session_state.audio_sequence = st.session_state.get("audio_sequence", 0) + 1
 
 
 def main():
@@ -1255,15 +1154,10 @@ def main():
     question = questions[q_index]
     audio_key = question["options"][question["answer_index"]]["audio_key"]
 
-    # 問題が変わるたびにシーケンスをインクリメント
-    # q_indexとaudio_keyの組み合わせでユニークなシーケンスを生成
-    # これにより、同じ問題でもrerunごとに新しいシーケンスになる
-    current_sequence = st.session_state.get("audio_sequence", 0) + q_index + 1
-
     # Signal Iframeを注入して、LocalStorageを即座に更新
     # これにより、古いiframe（ゴースト）が自分が古いことを検知して停止する
     if audio_key:
-        inject_audio_signal(st.session_state.session_id, audio_key, current_sequence)
+        inject_audio_signal(st.session_state.session_id, audio_key)
 
     # スマホ対応: 回答ボタンのスタイル（PCとモバイルで高さを変える）
     st.markdown(
@@ -1320,8 +1214,8 @@ def main():
         # 音声プレイヤーは下に配置（不正解時の復習用）
         if audio_key:
             st.markdown("---")
-            st.caption(f"🔊 発音を確認【{audio_key}】(seq:{current_sequence})")
-            audio_player(audio_key, autoplay=True, question_index=q_index, sequence=current_sequence)
+            st.caption(f"🔊 発音を確認【{audio_key}】")
+            audio_player(audio_key, autoplay=True, question_index=q_index)
         return
 
     # 回答待ちモード: 4択ボタンを出題単語の直下に配置
@@ -1340,9 +1234,9 @@ def main():
     # 音声プレイヤーは4択ボタンの下に配置
     if audio_key:
         st.markdown("---")
-        # デバッグ: 現在の音声キーとシーケンス番号を表示
-        st.caption(f"🔊 発音を聞く（自動再生）【{audio_key}】(seq:{current_sequence})")
-        audio_player(audio_key, autoplay=True, question_index=q_index, sequence=current_sequence)
+        # デバッグ: 現在の音声キーを表示（問題特定後に削除可能）
+        st.caption(f"🔊 発音を聞く（自動再生）【{audio_key}】")
+        audio_player(audio_key, autoplay=True, question_index=q_index)
 
     if clicked_index is not None:
         is_correct = clicked_index == question["answer_index"]
