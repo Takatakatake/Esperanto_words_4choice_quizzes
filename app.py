@@ -371,39 +371,15 @@ def find_audio(akey: str):
 
 def inject_audio_signal(session_id: str, target_audio_key: str, sequence: int):
     """
-    Signal Iframe:
-    Writes the target audio key AND sequence number to LocalStorage immediately.
-    This runs in a separate, lightweight iframe that loads faster than the heavy audio player.
-    Old iframes (ghosts) will see this change in LocalStorage and kill themselves.
-
-    シーケンス番号により、古いSignal Iframeが後から実行されても
-    新しいシーケンスを上書きしないようにする。
+    Signal Iframe: 廃止予定だが、フォールバックとして残す
+    Audio Player自身がLocalStorageを管理するため、このiframeは補助的な役割のみ
     """
     signal_script = f"""
     <script>
         (function() {{
-            try {{
-                const sessionId = '{session_id}';
-                const targetKey = '{target_audio_key}';
-                const mySequence = {sequence};
-                const storageKeyAudio = 'esperanto_audio_target_' + sessionId;
-                const storageKeySeq = 'esperanto_audio_seq_' + sessionId;
-
-                // 現在のシーケンスを読み取り
-                const currentSeq = parseInt(localStorage.getItem(storageKeySeq) || '0', 10);
-
-                // 自分のシーケンスが現在より大きい場合のみ書き込む
-                // これにより、古いSignal Iframeが後から実行されても上書きしない
-                if (mySequence > currentSeq) {{
-                    localStorage.setItem(storageKeySeq, mySequence.toString());
-                    localStorage.setItem(storageKeyAudio, targetKey);
-                    console.log('[Signal] Updated:', targetKey, 'seq:', mySequence);
-                }} else {{
-                    console.log('[Signal] Skipped (old seq):', targetKey, 'mySeq:', mySequence, 'currentSeq:', currentSeq);
-                }}
-            }} catch(e) {{
-                console.error('[Signal] Error:', e);
-            }}
+            // Signal Iframeは補助的な役割のみ
+            // メインのLocalStorage管理はAudio Player側で行う
+            console.log('[Signal] Loaded (auxiliary):', '{target_audio_key}', 'seq:', {sequence});
         }})();
     </script>
     """
@@ -563,18 +539,21 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
         <div id="$audio_id-container"></div>
         <script>
           (function() {
-            // iPhone Firefox対策: LocalStorage同期 + Signal Iframe + シーケンス番号
+            // 【新方式】Audio Player自身がLocalStorageを管理
             //
-            // 【シーケンス番号方式】
-            // - Python側で問題ごとにシーケンス番号を管理
-            // - Signal IframeとAudio Playerの両方に同じシーケンス番号を渡す
-            // - LocalStorageには「audio_key」と「sequence」の両方を保存
-            // - Audio Playerは「自分のsequence >= LocalStorageのsequence」かつ
-            //   「自分のaudio_key == LocalStorageのaudio_key」なら再生
+            // 問題点: Signal IframeとAudio Playerの実行順序が保証されない
+            // 解決策: Audio Player自身が起動時にLocalStorageに書き込む
+            //
+            // ロジック:
+            // 1. 起動時に自分のsequence + audio_keyをLocalStorageに書き込む
+            //    （ただし、既存のsequenceより大きい or 同じ場合のみ）
+            // 2. 少し待つ（他のiframeが書き込む時間を確保）
+            // 3. LocalStorageを読み取り、自分の値と一致すれば再生
             //
             // これにより:
-            // - 古いiframeは古いシーケンス番号を持つ → 常に停止
-            // - 新しいiframeは最新のシーケンス番号を持つ → 再生
+            // - 古いiframe (seq=4) が書き込んでも、新しいiframe (seq=5) が上書き
+            // - 待機後、古いiframeは「seq=5」を見て停止
+            // - 新しいiframeは「seq=5, audio=自分」を見て再生
 
             const currentQuestionIndex = $question_index;
             const currentAudioId = '$audio_id';
@@ -586,6 +565,23 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
             const storageKeyAudio = 'esperanto_audio_target_' + sessionId;
             const storageKeySeq = 'esperanto_audio_seq_' + sessionId;
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            // 【重要】起動直後にLocalStorageに書き込む
+            // 自分のsequenceが現在以上なら上書き（同じでも上書き）
+            let didWrite = false;
+            try {
+              const currentSeq = parseInt(localStorage.getItem(storageKeySeq) || '0', 10);
+              if (mySequence >= currentSeq) {
+                localStorage.setItem(storageKeySeq, mySequence.toString());
+                localStorage.setItem(storageKeyAudio, debugAudioKey);
+                didWrite = true;
+                console.log('[Audio] Registered:', debugAudioKey, 'seq:', mySequence, '(was:', currentSeq, ')');
+              } else {
+                console.log('[Audio] Skipped write (old):', debugAudioKey, 'mySeq:', mySequence, 'currentSeq:', currentSeq);
+              }
+            } catch(e) {
+              console.error('[Audio] LocalStorage write failed:', e);
+            }
 
             // Blob URLの生成
             function b64ToBlob(b64Data, contentType='', sliceSize=512) {
@@ -622,60 +618,45 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
               }
             }
 
-            // 最新チェック（シーケンス番号ベース）
-            // 戻り値: 'latest' = 自分が最新, 'old' = 古い, 'pending' = まだ判定できない
-            function checkLatestStatus() {
-              // 1. DOM接続チェック
-              if (!document.documentElement.isConnected) {
-                  return 'old';
+            // 最新チェック（シーケンス番号 + audio_key）
+            // 戻り値: true = 自分が最新, false = 古い
+            function isLatest() {
+              // 1. 書き込めなかった場合は確実に古い
+              if (!didWrite) {
+                  return false;
               }
 
-              // 2. LocalStorageチェック（シーケンス番号とaudio_keyの両方）
+              // 2. DOM接続チェック
+              if (!document.documentElement.isConnected) {
+                  return false;
+              }
+
+              // 3. LocalStorageチェック
               try {
                   const targetSeq = parseInt(localStorage.getItem(storageKeySeq) || '0', 10);
                   const targetAudio = localStorage.getItem(storageKeyAudio);
 
-                  // シーケンス番号がまだ設定されていない
-                  if (targetSeq === 0 && !targetAudio) {
-                      return 'pending';
-                  }
-
-                  // 自分のシーケンスが古い → 確実に古い
+                  // 自分のシーケンスより大きいものがある → 古い
                   if (mySequence < targetSeq) {
-                      console.log('[Audio] Old sequence:', debugAudioKey, 'mySeq:', mySequence, 'targetSeq:', targetSeq);
-                      return 'old';
+                      return false;
                   }
 
-                  // 自分のシーケンスが同じか新しい場合
-                  if (mySequence >= targetSeq) {
-                      // audio_keyも一致するなら最新
-                      if (targetAudio === debugAudioKey) {
-                          return 'latest';
-                      }
-                      // audio_keyが違う場合、Signal Iframeがまだ更新していない可能性
-                      // シーケンスが同じでaudio_keyが違う → pending（Signal待ち）
-                      if (mySequence === targetSeq) {
-                          return 'pending';
-                      }
-                      // シーケンスが新しい → 自分が最新（Signal Iframeより先に実行された）
-                      return 'latest';
+                  // シーケンスが同じ以上で、audio_keyが一致 → 最新
+                  if (mySequence >= targetSeq && targetAudio === debugAudioKey) {
+                      return true;
                   }
 
-                  return 'pending';
+                  // シーケンスは同じだがaudio_keyが違う → レース状態
+                  // （まだ他のiframeが書き込んでいる可能性）
+                  return false;
               } catch(e) {
                   console.error(e);
-                  return 'pending';
+                  return false;
               }
             }
 
-            // 後方互換のためのラッパー
-            function isLatest() {
-              return checkLatestStatus() === 'latest';
-            }
-
             function checkAndStop() {
-                const status = checkLatestStatus();
-                if (status === 'old') {
+                if (!isLatest()) {
                     console.log('[Audio] Stopping old iframe:', debugAudioKey, 'seq:', mySequence);
                     hideMyself();
                     return true;
@@ -758,12 +739,11 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
             function createAudio() {
               if (audioCreated) return a;
 
-              const status = checkLatestStatus();
-              if (status === 'old') {
+              // 古い場合は作成しない
+              if (!isLatest()) {
                 hideMyself();
                 return null;
               }
-              // 'latest' または 'pending' なら作成を許可
 
               a = document.createElement('audio');
               a.id = currentAudioId;
@@ -820,19 +800,16 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
             };
 
             btn.onclick = () => {
-              const status = checkLatestStatus();
-              if (status === 'old') {
+              if (!isLatest()) {
                 hideMyself();
                 return;
               }
-              // pending または latest の場合は再生を許可
-              // （ボタンクリック時はユーザーの明示的操作なので、pendingでも許可）
               const audio = createAudio();
               if (!audio) return;
 
               if (audio.paused) {
                 audio.play().then(() => {
-                  if (checkLatestStatus() === 'old') {
+                  if (!isLatest()) {
                     audio.pause();
                     hideMyself();
                     return;
@@ -849,29 +826,20 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
             };
 
             function attemptAutoplay() {
-              const status = checkLatestStatus();
-
-              if (status === 'old') {
-                // 古い音声 → 何もしない（既にhideMyselfされるはず）
-                console.log('[Audio] Skipping old audio:', debugAudioKey);
+              // 最新チェック
+              if (!isLatest()) {
+                console.log('[Audio] Skipping (not latest):', debugAudioKey, 'seq:', mySequence);
                 return;
               }
 
-              // 【重要な変更】
-              // 'latest' または 'pending' → 再生を試みる
-              // pendingの場合でも再生を試みる理由:
-              // - Signal Iframeの実行がAudio Playerより遅れることがある（特にモバイル）
-              // - pendingで待機し続けると、タイムアウト後も再生されない問題が発生
-              // - 再生開始後にoldと判定されたら停止するので、誤った音声が流れ続けることはない
-              console.log('[Audio] Attempting autoplay:', debugAudioKey, 'status:', status);
+              console.log('[Audio] Attempting autoplay:', debugAudioKey, 'seq:', mySequence);
 
               const audio = createAudio();
               if (!audio) return;
 
               audio.play().then(() => {
                 // 再生開始後に再度チェック（古いなら停止）
-                const postPlayStatus = checkLatestStatus();
-                if (postPlayStatus === 'old') {
+                if (!isLatest()) {
                   console.log('[Audio] Stopping after play (now old):', debugAudioKey);
                   audio.pause();
                   hideMyself();
@@ -904,36 +872,39 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, sequ
               });
             }
 
-            // リトライ付き自動再生（Signal Iframeを待つ）
+            // リトライ付き自動再生
+            // 他のiframeがLocalStorageを書き込む時間を待ってから再生
             function autoplayWithRetry(maxRetries, interval) {
               let retries = 0;
 
               function tryPlay() {
-                const status = checkLatestStatus();
-                console.log('[Audio] tryPlay attempt', retries, 'status:', status, 'audio:', debugAudioKey);
+                const latest = isLatest();
+                console.log('[Audio] tryPlay attempt', retries, 'isLatest:', latest, 'audio:', debugAudioKey, 'didWrite:', didWrite);
 
-                if (status === 'old') {
-                  // 古い → 諦める（別の音声が再生されるはず）
-                  console.log('[Audio] Giving up (old):', debugAudioKey);
-                  return;
-                }
-
-                if (status === 'latest') {
+                if (latest) {
                   // 最新確定 → 再生
                   console.log('[Audio] Confirmed latest, playing:', debugAudioKey);
                   attemptAutoplay();
                   return;
                 }
 
-                // pending → リトライ
+                // まだ最新でない → リトライ
                 retries++;
                 if (retries < maxRetries) {
                   setTimeout(tryPlay, interval);
                 } else {
-                  // タイムアウト: LocalStorageがまだ更新されていないが、
-                  // 自分が最新である可能性が高いので再生を試みる
-                  console.log('[Audio] Timeout, attempting anyway:', debugAudioKey);
-                  attemptAutoplay();
+                  // タイムアウト: それでもdidWriteがtrueなら再生を試みる
+                  // （レース条件で一時的にfalseになっている可能性があるため）
+                  if (didWrite) {
+                    console.log('[Audio] Timeout but didWrite=true, forcing play:', debugAudioKey);
+                    // LocalStorageを再度自分の値で上書き
+                    try {
+                      localStorage.setItem(storageKeyAudio, debugAudioKey);
+                    } catch(e) {}
+                    attemptAutoplay();
+                  } else {
+                    console.log('[Audio] Timeout, giving up (didWrite=false):', debugAudioKey);
+                  }
                 }
               }
 
