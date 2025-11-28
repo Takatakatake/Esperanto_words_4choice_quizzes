@@ -369,12 +369,15 @@ def find_audio(akey: str):
     return None, None
 
 
-def inject_audio_signal(session_id: str, target_audio_key: str):
+def inject_audio_signal(session_id: str, target_audio_key: str, signal_ts: int):
     """
     Signal Iframe:
-    Writes the target audio key to LocalStorage immediately.
+    Writes the target audio key AND timestamp to LocalStorage immediately.
     This runs in a separate, lightweight iframe that loads faster than the heavy audio player.
     Old iframes (ghosts) will see this change in LocalStorage and kill themselves.
+
+    タイムスタンプを使うことで、古いiframeが新しいiframeより先にLocalStorageを
+    チェックしても、確実に古いと判定できるようになる。
     """
     signal_script = f"""
     <script>
@@ -382,9 +385,19 @@ def inject_audio_signal(session_id: str, target_audio_key: str):
             try {{
                 const sessionId = '{session_id}';
                 const targetKey = '{target_audio_key}';
-                const storageKey = 'esperanto_audio_target_' + sessionId;
-                localStorage.setItem(storageKey, targetKey);
-                localStorage.setItem(storageKey, targetKey);
+                const signalTs = {signal_ts};
+                const storageKeyName = 'esperanto_audio_target_' + sessionId;
+                const storageKeyTs = 'esperanto_audio_ts_' + sessionId;
+
+                // タイムスタンプと音声キーの両方を保存
+                localStorage.setItem(storageKeyName, targetKey);
+                localStorage.setItem(storageKeyTs, signalTs.toString());
+
+                // 確実に書き込むため2回
+                localStorage.setItem(storageKeyName, targetKey);
+                localStorage.setItem(storageKeyTs, signalTs.toString());
+
+                console.log('[Signal] Set:', targetKey, 'ts:', signalTs);
             }} catch(e) {{
                 console.error('[Signal] Error:', e);
             }}
@@ -395,7 +408,7 @@ def inject_audio_signal(session_id: str, target_audio_key: str):
     st.components.v1.html(signal_script, height=0)
 
 
-def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
+def audio_player(akey: str, autoplay: bool = True, question_index: int = 0, signal_ts: int = 0):
     data, mime = find_audio(akey)
     if not data:
         st.info("音声ファイルなし")
@@ -411,6 +424,11 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
 
     # デバッグ用: audio_keyを埋め込む（コンソールログで確認可能）
     debug_audio_key = akey
+
+    # signal_tsが0の場合は現在時刻を使用（後方互換性）
+    if signal_ts == 0:
+        import time
+        signal_ts = int(time.time() * 1000)
 
     # HTML/JS template
     # モバイル対応: Web Audio API + ユーザージェスチャー追跡
@@ -544,11 +562,11 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
         <div id="$audio_id-container"></div>
         <script>
           (function() {
-            // iPhone Firefox対策: LocalStorage同期 + Signal Iframe
+            // iPhone Firefox対策: LocalStorage同期 + Signal Iframe + タイムスタンプ比較
             // 1. LocalStorageを監視し、ターゲット単語が自分でない場合は即停止
             // 2. isConnected チェックも併用
             // 3. Blob URL使用
-            // 4. 【改善】自分が最新の場合はリトライして確実に再生
+            // 4. 【改善】タイムスタンプ比較で確実に最新/古いを判定
 
             const currentQuestionIndex = $question_index;
             const currentAudioId = '$audio_id';
@@ -556,8 +574,9 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
             const mimeType = '$mime';
             const b64Data = '$b64';
             const sessionId = '$session_id';
-            const storageKey = 'esperanto_audio_target_' + sessionId;
-            const myTimestamp = Date.now();
+            const mySignalTs = $signal_ts;  // Python側から渡されたタイムスタンプ
+            const storageKeyName = 'esperanto_audio_target_' + sessionId;
+            const storageKeyTs = 'esperanto_audio_ts_' + sessionId;
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             // Blob URLの生成
@@ -595,26 +614,41 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
               }
             }
 
-            // 最新チェック（LocalStorageベース）
-            // 戻り値: 'latest' = 自分が最新, 'old' = 古い, 'pending' = まだ判定できない
+            // 【重要】タイムスタンプベースの確実な最新チェック
+            // - LocalStorageのタイムスタンプと自分のタイムスタンプを比較
+            // - 自分のタイムスタンプ >= LocalStorageのタイムスタンプ → 最新（再生OK）
+            // - 自分のタイムスタンプ < LocalStorageのタイムスタンプ → 古い（ブロック）
+            // - LocalStorageにまだ何もない → pending（リトライ）
+            //
+            // この方式により、古いiframeが新しいiframeより先にチェックしても
+            // 確実に「古い」と判定される（タイムスタンプが小さいため）
             function checkLatestStatus() {
               // 1. DOM接続チェック
               if (!document.documentElement.isConnected) {
                   return 'old';
               }
 
-              // 2. LocalStorageチェック
+              // 2. LocalStorageのタイムスタンプと比較
               try {
-                  const target = localStorage.getItem(storageKey);
-                  if (!target) {
+                  const storedTsStr = localStorage.getItem(storageKeyTs);
+                  if (!storedTsStr) {
                       // まだSignal Iframeが更新していない → 待機
                       return 'pending';
                   }
-                  if (target === debugAudioKey) {
-                      // 自分が最新！
+
+                  const storedTs = parseInt(storedTsStr, 10);
+                  if (isNaN(storedTs)) {
+                      return 'pending';
+                  }
+
+                  // 【核心のロジック】
+                  // 自分のタイムスタンプがLocalStorageのタイムスタンプ以上なら最新
+                  // （同じタイムスタンプは同一問題なので再生OK）
+                  if (mySignalTs >= storedTs) {
                       return 'latest';
                   } else {
-                      // 別の音声がターゲット → 古い
+                      // 自分のタイムスタンプがLocalStorageより古い → 古いiframe
+                      console.log('[Audio] Blocking old iframe:', debugAudioKey, 'myTs:', mySignalTs, 'storedTs:', storedTs);
                       return 'old';
                   }
               } catch(e) {
@@ -910,6 +944,7 @@ def audio_player(akey: str, autoplay: bool = True, question_index: int = 0):
         question_index=question_index,
         debug_audio_key=debug_audio_key,
         session_id=session_id,
+        signal_ts=signal_ts,
     )
     # st.components.v1.html()はkeyパラメータをサポートしていない
     st.components.v1.html(html, height=190)
@@ -1221,10 +1256,14 @@ def main():
     question = questions[q_index]
     audio_key = question["options"][question["answer_index"]]["audio_key"]
 
+    # タイムスタンプを生成（ミリ秒）- Signal IframeとAudio Playerで共有
+    import time
+    signal_ts = int(time.time() * 1000)
+
     # Signal Iframeを注入して、LocalStorageを即座に更新
     # これにより、古いiframe（ゴースト）が自分が古いことを検知して停止する
     if audio_key:
-        inject_audio_signal(st.session_state.session_id, audio_key)
+        inject_audio_signal(st.session_state.session_id, audio_key, signal_ts)
 
     # スマホ対応: 回答ボタンのスタイル（PCとモバイルで高さを変える）
     st.markdown(
@@ -1282,7 +1321,7 @@ def main():
         if audio_key:
             st.markdown("---")
             st.caption(f"🔊 発音を確認【{audio_key}】")
-            audio_player(audio_key, autoplay=True, question_index=q_index)
+            audio_player(audio_key, autoplay=True, question_index=q_index, signal_ts=signal_ts)
         return
 
     # 回答待ちモード: 4択ボタンを出題単語の直下に配置
@@ -1303,7 +1342,7 @@ def main():
         st.markdown("---")
         # デバッグ: 現在の音声キーを表示（問題特定後に削除可能）
         st.caption(f"🔊 発音を聞く（自動再生）【{audio_key}】")
-        audio_player(audio_key, autoplay=True, question_index=q_index)
+        audio_player(audio_key, autoplay=True, question_index=q_index, signal_ts=signal_ts)
 
     if clicked_index is not None:
         is_correct = clicked_index == question["answer_index"]
