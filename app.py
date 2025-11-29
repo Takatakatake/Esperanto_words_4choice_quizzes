@@ -392,10 +392,10 @@ def simple_audio_player(akey: str, question_index: int = 0, instance: str = "def
         "audio/ogg": "audio/ogg",
     }
     audio_format = format_map.get(mime, "audio/wav")
-    # Streamlitのaudio要素は同一パラメータだと重複IDエラーになるため、start_timeを微妙にずらして差分を持たせる
-    # instance を基に小さなオフセットを与える
-    offset = (abs(hash(f"{instance}-{question_index}")) % 1000) / 1_000_000
-    st.audio(data, format=audio_format, autoplay=True, start_time=offset)
+    # start_timeにランダムな微小オフセットを付与してID衝突を防ぐ（key引数は使えないため）
+    offset = random.random() / 1000.0 + 1e-6
+    with st.container():
+        st.audio(data, format=audio_format, autoplay=True, start_time=offset)
 
 
 def init_state():
@@ -871,7 +871,7 @@ def main():
         prompt_display = question["prompt"]
         option_labels = [opt["japanese"] for opt in question["options"]]
         # エス→日では問題文の音声を出題時に自動再生（下部には重複表示しない）
-        if audio_key:
+        if audio_key and not st.session_state.showing_result:
             st.caption(f"🔊 発音を聞く（問題文・自動再生）【{audio_key}】")
             simple_audio_player(audio_key, question_index=q_index, instance="prompt")
 

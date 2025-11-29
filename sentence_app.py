@@ -8,21 +8,25 @@ from streamlit_gsheets import GSheetsConnection
 
 import vocab_grouping as vg
 
-# ベースディレクトリ（リポジトリルート）
-BASE_DIR = Path(__file__).resolve().parent.parent
+# パス設定（単独アプリとして実行）
+BASE_DIR = Path(__file__).resolve().parent
 PHRASE_CSV = BASE_DIR / "phrases_eo_en_ja_zh_ko_ru_fulfilled_251130.csv"
 PHRASE_AUDIO_DIR = BASE_DIR / "Esperanto例文5000文_収録音声"
 
-# スコア設定（文章用）
-# 基礎点は level + 11.5 として、連続正解ボーナスのみ1.5倍に強化する
+# スコア設定
 STREAK_BONUS = 0.5
 STREAK_BONUS_SCALE = 1.5
-ACCURACY_BONUS_PER_Q = 5.0 * 1.5  # 精度ボーナスも文章は1.5倍
-SPARTAN_SCORE_MULTIPLIER = 0.7  # 将来スパルタ対応するときのために定数だけ共有
+ACCURACY_BONUS_PER_Q = 5.0 * 1.5  # 文章は精度ボーナスも1.5倍
+SPARTAN_SCORE_MULTIPLIER = 0.7
 SCORES_SHEET = "Scores"
 USER_STATS_SHEET = "UserStatsSentence"
-USER_STATS_MAIN = "UserStats"  # 単語版の累積（表示用）
+USER_STATS_MAIN = "UserStats"  # 単語と共通累積
 HOF_THRESHOLD = 1000000
+
+
+@st.cache_data
+def load_phrase_df():
+    return pd.read_csv(PHRASE_CSV)
 
 
 def get_connection():
@@ -31,6 +35,113 @@ def get_connection():
     except Exception as e:
         st.error(f"Google Sheets 接続の初期化に失敗しました: {e}")
         return None
+
+
+def base_points_for_level(level: int) -> float:
+    return level + 11.5
+
+
+def _phrase_audio_key(phrase_id: int, phrase: str) -> str:
+    prefix = f"{int(phrase_id) - 155:04d}"
+    suffix = vg._default_audio_key(phrase)
+    return f"{prefix}_{suffix}"
+
+
+def find_phrase_audio(phrase_id: int, phrase: str):
+    key = _phrase_audio_key(phrase_id, phrase)
+    for ext, mime in [(".wav", "audio/wav"), (".mp3", "audio/mpeg"), (".ogg", "audio/ogg")]:
+        fp = PHRASE_AUDIO_DIR / f"{key}{ext}"
+        if fp.exists():
+            return fp.read_bytes(), mime, key
+    legacy_key = key.replace("_", "")
+    for ext, mime in [(".wav", "audio/wav"), (".mp3", "audio/mpeg"), (".ogg", "audio/ogg")]:
+        fp = PHRASE_AUDIO_DIR / f"{legacy_key}{ext}"
+        if fp.exists():
+            return fp.read_bytes(), mime, legacy_key
+    return None, None, key
+
+
+def play_phrase_audio(
+    phrase_id: int,
+    phrase: str,
+    autoplay: bool = False,
+    caption: str = "",
+    instance: str = "default",
+):
+    data, mime, key = find_phrase_audio(phrase_id, phrase)
+    if not data:
+        return
+    cap = caption or f"🔊 発音を聞く【{key}】"
+    st.caption(cap)
+    offset = (abs(hash(f"{instance}-{phrase_id}-{key}-{random.random()}")) % 1000000) / 1_000_000 + 1e-6
+    st.audio(data, format=mime, start_time=offset, autoplay=autoplay)
+
+
+def _get_col(df: pd.DataFrame, candidates):
+    for c in candidates:
+        if c in df.columns:
+            return c
+    raise KeyError(f"None of the columns found: {candidates}")
+
+
+def build_groups(df: pd.DataFrame):
+    col_eo = _get_col(df, ["Esperanto", "Phrase"])
+    col_ja = _get_col(df, ["日本語", "Japanese"])
+    col_level = _get_col(df, ["LevelID", "Level"])
+    col_topic = _get_col(df, ["TopicName_EN", "Topic"])
+    col_subtopic = _get_col(df, ["SubtopicName_EN", "Subtopic"])
+    col_id = _get_col(df, ["PhraseID", "ID"])
+
+    groups = {}
+    for _, row in df.iterrows():
+        topic = str(row[col_topic]).strip()
+        subtopic = str(row[col_subtopic]).strip()
+        key = (topic, subtopic)
+        groups.setdefault(key, []).append(
+            {
+                "phrase_id": int(row[col_id]),
+                "phrase": str(row[col_eo]).strip(),
+                "japanese": str(row[col_ja]).strip(),
+                "level": int(row[col_level]),
+            }
+        )
+    return groups
+
+
+def filter_by_levels(entries, levels):
+    return [e for e in entries if e["level"] in levels]
+
+
+def build_questions(entries, levels, rng: random.Random):
+    eligible = filter_by_levels(entries, levels)
+    if len(eligible) < 4:
+        return []
+    rng.shuffle(eligible)
+    questions = []
+    for correct in eligible:
+        others = [e for e in eligible if e is not correct]
+        if len(others) < 3:
+            continue
+        options = rng.sample(others, 3) + [correct]
+        rng.shuffle(options)
+        answer_idx = options.index(correct)
+        questions.append(
+            {
+                "prompt_eo": correct["phrase"],
+                "prompt_ja": correct["japanese"],
+                "answer_index": answer_idx,
+                "options": [
+                    {
+                        "phrase": opt["phrase"],
+                        "japanese": opt["japanese"],
+                        "level": opt["level"],
+                        "phrase_id": opt["phrase_id"],
+                    }
+                    for opt in options
+                ],
+            }
+        )
+    return questions
 
 
 def load_scores():
@@ -114,7 +225,6 @@ def load_rankings():
 
 
 def load_main_rankings():
-    """単語版の累積ランキングを表示用に取得（読み取りのみ）"""
     conn = get_connection()
     if conn is None:
         return []
@@ -195,7 +305,7 @@ def summarize_rankings_from_stats(stats_data):
                 totals[user] = 0.0
 
     hof = {u: p for u, p in totals.items() if p >= HOF_THRESHOLD}
-    scores = load_scores()  # sentence用
+    scores = load_scores()
     _, totals_today, totals_month, _ = summarize_scores(scores)
     return totals, totals_today, totals_month, hof
 
@@ -228,124 +338,6 @@ def show_rankings(stats_data):
         st.dataframe(to_df(hof), use_container_width=True, hide_index=True)
 
 
-@st.cache_data
-def load_phrase_df():
-    return pd.read_csv(PHRASE_CSV)
-
-
-def base_points_for_level(level: int) -> float:
-    return level + 11.5
-
-
-def _phrase_audio_key(phrase_id: int, phrase: str) -> str:
-    """
-    ファイル名形式: <PhraseID-155を4桁ゼロ埋め>_<x形式表記>.wav
-    """
-    prefix = f"{int(phrase_id) - 155:04d}"
-    suffix = vg._default_audio_key(phrase)
-    return f"{prefix}_{suffix}"
-
-
-def find_phrase_audio(phrase_id: int, phrase: str):
-    key = _phrase_audio_key(phrase_id, phrase)
-    for ext, mime in [(".wav", "audio/wav"), (".mp3", "audio/mpeg"), (".ogg", "audio/ogg")]:
-        fp = PHRASE_AUDIO_DIR / f"{key}{ext}"
-        if fp.exists():
-            return fp.read_bytes(), mime, key
-    # 旧形式（アンダーバーなし）のフォールバック
-    legacy_key = key.replace("_", "")
-    for ext, mime in [(".wav", "audio/wav"), (".mp3", "audio/mpeg"), (".ogg", "audio/ogg")]:
-        fp = PHRASE_AUDIO_DIR / f"{legacy_key}{ext}"
-        if fp.exists():
-            return fp.read_bytes(), mime, legacy_key
-    return None, None, key
-
-
-def play_phrase_audio(
-    phrase_id: int,
-    phrase: str,
-    autoplay: bool = False,
-    caption: str = "",
-    instance: str = "default",
-):
-    """単語モードに近いシンプルプレイヤー"""
-    data, mime, key = find_phrase_audio(phrase_id, phrase)
-    if not data:
-        return
-    cap = caption or f"🔊 発音を聞く【{key}】"
-    st.caption(cap)
-    # audioは同一引数で重複配置するとID衝突するため、インスタンスごとに微小なstart_timeを付与
-    offset = (abs(hash(f"{instance}-{phrase_id}")) % 1000) / 1_000_000
-    st.audio(data, format=mime, start_time=offset, autoplay=autoplay)
-
-
-def _get_col(df: pd.DataFrame, candidates):
-    for c in candidates:
-        if c in df.columns:
-            return c
-    raise KeyError(f"None of the columns found: {candidates}")
-
-
-def build_groups(df: pd.DataFrame):
-    col_eo = _get_col(df, ["Esperanto", "Phrase"])
-    col_ja = _get_col(df, ["日本語", "Japanese"])
-    col_level = _get_col(df, ["LevelID", "Level"])
-    col_topic = _get_col(df, ["TopicName_EN", "Topic"])
-    col_subtopic = _get_col(df, ["SubtopicName_EN", "Subtopic"])
-    col_id = _get_col(df, ["PhraseID", "ID"])
-
-    groups = {}
-    for _, row in df.iterrows():
-        topic = str(row[col_topic]).strip()
-        subtopic = str(row[col_subtopic]).strip()
-        key = (topic, subtopic)
-        groups.setdefault(key, []).append(
-            {
-                "phrase_id": int(row[col_id]),
-                "phrase": str(row[col_eo]).strip(),
-                "japanese": str(row[col_ja]).strip(),
-                "level": int(row[col_level]),
-            }
-        )
-    return groups
-
-
-def filter_by_levels(entries, levels):
-    return [e for e in entries if e["level"] in levels]
-
-
-def build_questions(entries, levels, rng: random.Random):
-    eligible = filter_by_levels(entries, levels)
-    if len(eligible) < 4:
-        return []
-    rng.shuffle(eligible)
-    questions = []
-    for correct in eligible:
-        others = [e for e in eligible if e is not correct]
-        if len(others) < 3:
-            continue
-        options = rng.sample(others, 3) + [correct]
-        rng.shuffle(options)
-        answer_idx = options.index(correct)
-        questions.append(
-            {
-                "prompt_eo": correct["phrase"],
-                "prompt_ja": correct["japanese"],
-                "answer_index": answer_idx,
-                "options": [
-                    {
-                        "phrase": opt["phrase"],
-                        "japanese": opt["japanese"],
-                        "level": opt["level"],
-                        "phrase_id": opt["phrase_id"],
-                    }
-                    for opt in options
-                ],
-            }
-        )
-    return questions
-
-
 def main():
     st.set_page_config(
         page_title="エスペラント例文クイズ",
@@ -354,7 +346,7 @@ def main():
     )
 
     st.title("エスペラント例文 4択クイズ")
-    # ボタンスタイル（単語モードに寄せた見た目）
+    # スタイル（単語版に寄せた緑ボタン）
     st.markdown(
         """
         <style>
@@ -470,7 +462,7 @@ def main():
                 st.session_state.spartan_current_q_idx = None
                 st.rerun()
 
-    # スコア読み込み（必要なタイミングのみ）
+    # スコア読み込み
     should_load = (
         not st.session_state.questions
         or st.session_state.showing_result
@@ -484,7 +476,6 @@ def main():
         scores = st.session_state.cached_scores
 
     questions = st.session_state.questions
-    # 古いセッション形式へのフォールバック（キーがない場合はリセットを促す）
     if questions:
         q0 = questions[0]
         if "prompt_eo" not in q0 or "prompt_ja" not in q0:
@@ -504,12 +495,10 @@ def main():
     if not questions:
         st.info("サイドバーでトピック/サブトピックとレベルを選んで開始してください。")
         st.caption("単語版に近い操作感で、例文の4択クイズを遊べます。")
-        # ランキング（文章）を単語版と同じUIで表示
         sentence_rank = load_rankings()
         if sentence_rank:
             st.subheader("ランキング")
             show_rankings(sentence_rank)
-        # 単語版の累積も参考として表示
         main_rank = load_main_rankings()
         if main_rank:
             st.subheader("ランキング（全体）")
@@ -518,7 +507,8 @@ def main():
 
     direction = st.session_state.direction
     q_idx = st.session_state.q_index
-    # スパルタ移行判定
+
+    # スパルタ判定
     if (
         q_idx >= len(questions)
         and st.session_state.spartan_mode
@@ -528,7 +518,6 @@ def main():
     if st.session_state.in_spartan_round and not st.session_state.spartan_pending:
         st.session_state.in_spartan_round = False
 
-    # スパルタ復習中は結果画面をスキップして復習に入る
     if q_idx >= len(questions) and not st.session_state.in_spartan_round:
         total = len(questions)
         accuracy = st.session_state.correct / total if total else 0
@@ -566,7 +555,6 @@ def main():
                     }
                     if save_score(record):
                         update_user_stats(st.session_state.sentence_user_name, points, now)
-                        # 単語と共通の累積にも加算
                         update_user_stats_main(st.session_state.sentence_user_name, points, now)
                         st.session_state.score_saved = True
                         st.rerun()
@@ -584,14 +572,13 @@ def main():
         if main_rank:
             st.subheader("ランキング（全体）")
             show_rankings(main_rank)
-        # 復習セクション（単語版に近づける）
         st.subheader("復習")
         wrong = []
         correct_list = []
         for ans in st.session_state.answers:
             idx = ans.get("q_idx", -1)
             if idx < 0 or idx >= len(st.session_state.questions):
-                continue  # 壊れたセッション/範囲外のものはスキップ
+                continue
             q = st.session_state.questions[idx]
             selected = ans["selected"]
             correct_idx = ans["correct"]
@@ -660,7 +647,6 @@ def main():
         prompt_text = question["prompt_ja"]
     title_prefix = "復習" if in_spartan else f"Q{q_idx+1}/{len(questions)}"
     st.subheader(f"{title_prefix}: {prompt_text}")
-    # 出題時の問題文音声（結果表示中は再生しない）
     if direction == "eo_to_ja" and not st.session_state.showing_result:
         play_phrase_audio(
             question["options"][question["answer_index"]]["phrase_id"],
@@ -675,7 +661,6 @@ def main():
             st.success(st.session_state.last_result_msg)
         else:
             st.error(st.session_state.last_result_msg)
-        # 正解の音声を自動再生（単語モードと同様の挙動）
         correct_opt = question["options"][question["answer_index"]]
         play_phrase_audio(
             correct_opt["phrase_id"],
@@ -685,8 +670,12 @@ def main():
             instance=f"result-{q_idx}",
         )
         if st.button("次へ", type="primary", use_container_width=True):
-            st.session_state.q_index += 1
-            st.session_state.showing_result = False
+            if in_spartan:
+                st.session_state.showing_result = False
+                st.session_state.spartan_current_q_idx = None
+            else:
+                st.session_state.q_index += 1
+                st.session_state.showing_result = False
             st.rerun()
         return
 
@@ -699,9 +688,8 @@ def main():
             if idx >= len(option_labels):
                 continue
             with cols[j]:
-                if st.button(option_labels[idx], key=f"opt-{q_idx}-{idx}", use_container_width=True, type="primary"):
+                if st.button(option_labels[idx], key=f"opt-{current_q_idx}-{idx}", use_container_width=True, type="primary"):
                     clicked = idx
-                # 各選択肢の音声（エスペラント表示のときのみ）
                 opt = question["options"][idx]
                 if direction == "ja_to_eo":
                     play_phrase_audio(
@@ -709,14 +697,14 @@ def main():
                         opt["phrase"],
                         autoplay=False,
                         caption="🔊 発音を聞く",
-                        instance=f"option-{q_idx}-{idx}",
+                        instance=f"option-{current_q_idx}-{idx}",
                     )
 
     if clicked is not None:
         is_correct = clicked == question["answer_index"]
         st.session_state.answers.append(
             {
-                "q_idx": q_idx,
+                "q_idx": current_q_idx,
                 "selected": clicked,
                 "correct": question["answer_index"],
             }
@@ -730,7 +718,9 @@ def main():
             earned = base_points_for_level(opt["level"]) + streak_bonus
             if in_spartan:
                 earned *= SPARTAN_SCORE_MULTIPLIER
-                st.session_state.spartan_pending = [idx for idx in st.session_state.spartan_pending if idx != current_q_idx]
+                st.session_state.spartan_pending = [
+                    idx for idx in st.session_state.spartan_pending if idx != current_q_idx
+                ]
                 st.session_state.spartan_current_q_idx = None
                 if not st.session_state.spartan_pending:
                     st.session_state.in_spartan_round = False
