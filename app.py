@@ -78,7 +78,7 @@ def get_connection():
         st.error(f"Google Sheets 接続の初期化に失敗しました: {e}")
         return None
 
-def load_scores():
+def load_scores(force_refresh: bool = False):
     """Google Sheetsからスコアを読み込む"""
     conn = get_connection()
     if conn is None:
@@ -88,7 +88,7 @@ def load_scores():
         # ワークシート "Scores" からデータを読み込む
         # API制限（1分間に60リクエスト）を回避するため、キャッシュ有効時間を設定
         # ttl=60秒（1分間は再取得せずキャッシュを使う）
-        df = conn.read(worksheet="Scores", ttl=60)
+        df = conn.read(worksheet="Scores", ttl=0 if force_refresh else 60)
         st.session_state.score_load_error = None
         if df.empty:
             return []
@@ -367,7 +367,12 @@ def format_group_label(group):
     return f"{POS_JP.get(group.pos, group.pos)} / {stage_label} / グループ{gid_num} ({group.size}語)"
 
 
+@st.cache_data(show_spinner=False, max_entries=1024)
 def find_audio(akey: str):
+    """
+    音声ファイルの読み込みをキャッシュして重複I/Oを防ぐ。
+    キャッシュはヒット/ミス両方を保持する。
+    """
     for ext, mime in [(".wav", "audio/wav"), (".mp3", "audio/mpeg"), (".ogg", "audio/ogg")]:
         fp = AUDIO_DIR / f"{akey}{ext}"
         if fp.exists():
@@ -425,6 +430,7 @@ def init_state():
     st.session_state.setdefault("last_is_correct", False)
     st.session_state.setdefault("last_correct_answer", "")
     st.session_state.setdefault("cached_scores", [])
+    st.session_state.setdefault("show_option_audio", True)
 
 
 def start_quiz(group, rng):
@@ -539,10 +545,14 @@ def main():
     st.write("品詞×レベルでグルーピングした単語から出題します。シードを変えるとグループ分けと順番が変わります。")
     with st.expander("スコア計算ルール"):
         st.markdown(
-            f"- 基礎点: {BASE_POINTS} × レベル倍率 (初級1.0 / 中級1.3 / 上級1.6)\\n"
-            f"- 連続正解ボーナス: 2問目以降の連続正解1回につき +{STREAK_BONUS}\\n"
-            f"- 精度ボーナス: 最終正答率 × 問題数 × {ACCURACY_BONUS_PER_Q}\\n"
-            "- グループを出し切ると結果画面でボーナス込みの合計を表示します。"
+            "\n".join(
+                [
+                    f"- 基礎点: {BASE_POINTS} × レベル倍率 (初級1.0 / 中級1.3 / 上級1.6)",
+                    f"- 連続正解ボーナス: 2問目以降の連続正解1回につき +{STREAK_BONUS}",
+                    f"- 精度ボーナス: 最終正答率 × 問題数 × {ACCURACY_BONUS_PER_Q}",
+                    "- グループを出し切ると結果画面でボーナス込みの合計を表示します。",
+                ]
+            )
         )
 
     with st.sidebar:
@@ -571,6 +581,12 @@ def main():
             format_func=lambda k: QUIZ_DIRECTIONS[k],
             key="quiz_direction",
             disabled=bool(st.session_state.questions),
+        )
+        st.checkbox(
+            "選択肢の音声を表示",
+            value=st.session_state.show_option_audio,
+            key="show_option_audio",
+            help="オフにすると選択肢ごとの音声プレイヤーを非表示にして軽量化します。",
         )
         if st.button("クイズ開始", disabled=not selected_group, use_container_width=True):
             # 出題順は常にランダム（シードはグループ分けのみに使用）
@@ -602,30 +618,74 @@ def main():
             st.session_state.score_saved = False
             st.session_state.last_saved_key = None
             # ホームに戻る時はスコアを再読み込み
-            st.session_state.cached_scores = load_scores()
+            st.session_state.cached_scores = load_scores(force_refresh=True)
             st.rerun()
 
     # スコア読み込み戦略:
     # 1. クイズ中（questionsがあり、結果画面でない）はAPIを呼ばない（キャッシュ使用）
     # 2. ホーム画面、結果画面、スコア保存直後はAPIを呼ぶ
+    finished_quiz = (
+        bool(st.session_state.questions)
+        and st.session_state.q_index >= len(st.session_state.questions)
+        and not st.session_state.in_spartan_round
+    )
     should_load = (
-        not st.session_state.questions or
-        st.session_state.showing_result or
-        st.session_state.score_saved or
-        not st.session_state.cached_scores
+        not st.session_state.questions
+        or finished_quiz
+        or st.session_state.score_saved
+        or not st.session_state.cached_scores
     )
 
     if should_load:
-        scores = load_scores()
+        scores = load_scores(force_refresh=True)
         st.session_state.cached_scores = scores
     else:
         scores = st.session_state.cached_scores
 
     if st.session_state.get("score_load_error"):
         st.warning(st.session_state.score_load_error)
+    # サイドバーでユーザー名が入力されていれば累積を案内（scores読み込み後）
+    user_total_vocab = None
+    user_total_overall = None
+    user_total_sentence = None
     if st.session_state.user_name and scores:
-        user_total = sum(r.get("points", 0) for r in scores if r.get("user") == st.session_state.user_name)
-        st.info(f"現在の累積得点（{st.session_state.user_name}）: {user_total:.1f}")
+        with st.sidebar:
+            st.markdown("---")
+            user_total_vocab = sum(
+                r.get("points", 0)
+                for r in scores
+                if r.get("user") == st.session_state.user_name and r.get("mode") != "sentence"
+            )
+            st.info(f"現在の累積（単語）: {user_total_vocab:.1f}")
+            user_total_sentence = sum(
+                r.get("points", 0)
+                for r in scores
+                if r.get("user") == st.session_state.user_name and r.get("mode") == "sentence"
+            )
+            # 全体累積（UserStats優先、なければログから集計）
+            user_total_overall = None
+            # クイズ中はネットアクセスを避け、ログ合計を優先
+            in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
+            overall_stats = None if in_quiz else load_rankings()
+            if overall_stats:
+                for row in overall_stats:
+                    if row.get("user") == st.session_state.user_name:
+                        try:
+                            user_total_overall = float(row.get("total_points", 0))
+                        except (ValueError, TypeError):
+                            user_total_overall = 0.0
+                        break
+            # ログからの最新合計（語彙+文章）
+            log_total = sum(r.get("points", 0) for r in scores if r.get("user") == st.session_state.user_name)
+            if user_total_overall is None:
+                user_total_overall = log_total
+            else:
+                # UserStatsが古い場合はログ合計を優先
+                user_total_overall = max(user_total_overall, log_total)
+            st.info(f"現在の累積（全体）: {user_total_overall:.1f}")
+            if user_total_sentence is not None:
+                if abs((user_total_vocab + user_total_sentence) - user_total_overall) > 0.5:
+                    st.warning("累積（単語＋文章）と全体の合計に差分があります。少し時間をおいて再読み込みしてください。")
 
     # 古いセッション（フィールド欠落）を検出してリセット
     if st.session_state.questions:
@@ -684,19 +744,16 @@ def main():
         st.subheader("結果")
         st.metric("正答率", f"{accuracy*100:.1f}%")
         st.metric("得点", f"{points:.1f}")
-        if st.session_state.spartan_mode:
+        if st.session_state.spartan_mode and sp_attempts:
             st.caption(f"スパルタモード: 復習分を通常の{SPARTAN_SCORE_MULTIPLIER*100:.0f}%で加算")
-            if sp_attempts:
-                st.caption(f"スパルタ精度: {sp_accuracy*100:.1f}% ({sp_correct}/{sp_attempts})")
-        if st.session_state.user_name:
-            user_total = sum(r.get("points", 0) for r in scores if r.get("user") == st.session_state.user_name)
-            st.metric("累積得点", f"{user_total + points:.1f}（今回{points:.1f}加算前 {user_total:.1f}）")
+            st.caption(f"スパルタ精度: {sp_accuracy*100:.1f}% ({sp_correct}/{sp_attempts})")
         st.write(f"正解 {correct} / {total}")
         st.write(
             f"内訳: 本編 基礎+難易度 {raw_points_main:.1f} / 精度ボーナス {accuracy_bonus:.1f}"
             f" / スパルタ 基礎+難易度 {raw_points_spartan:.1f} / 精度ボーナス {accuracy_bonus_spartan:.1f}"
             f" → 加算 {spartan_scaled:.1f}（{SPARTAN_SCORE_MULTIPLIER*100:.0f}%）"
         )
+        st.caption("音声で再確認できます。")
         if st.session_state.user_name:
             existing_users = {r.get("user") for r in load_scores()}
             if st.session_state.user_name in existing_users:
@@ -741,7 +798,14 @@ def main():
         scores = load_scores()
         if scores:
             st.write("最近のスコア")
-            st.dataframe(scores)
+            # 列順を軽く整える（存在する列のみ）
+            import pandas as pd
+            preferred_cols = ["ts", "user", "points", "accuracy", "correct", "total", "group_id", "seed", "direction", "spartan_mode"]
+            df_recent = pd.DataFrame(scores)
+            cols = [c for c in preferred_cols if c in df_recent.columns]
+            if cols:
+                df_recent = df_recent[cols + [c for c in df_recent.columns if c not in cols]]
+            st.dataframe(df_recent, hide_index=True, use_container_width=True)
             st.subheader("ランキング")
             show_rankings(load_rankings())
 
@@ -774,6 +838,7 @@ def main():
 
         if wrong:
             st.markdown("### 間違えた問題")
+            st.caption("音声で再確認できます。")
             for w in wrong:
                 st.write(f"- {w['prompt']}: 正解「{w['answer']} / {w['answer_eo']}」、あなたの回答「{w['selected']}」 ({w['phase']})")
                 if w.get("audio_key"):
@@ -782,6 +847,7 @@ def main():
                         st.audio(data, format=mime, start_time=0)
         if correct_list:
             st.markdown("### 正解した問題（確認用）")
+            st.caption("音声で確認だけできます。")
             for c in correct_list:
                 st.write(f"- {c['prompt']}: {c['answer']} / {c['answer_eo']} ({c['phase']})")
                 if c.get("audio_key"):
@@ -817,9 +883,14 @@ def main():
     direction = st.session_state.quiz_direction
 
     # スマホ対応: 回答ボタンのスタイル（PCとモバイルで高さを変える）
-    # 日本語→エスペラント方向ではフォントを少し大きめにする
-    base_font = "24px" if direction == "ja_to_eo" else "16px"
-    mobile_font = "20px" if direction == "ja_to_eo" else "14px"
+    # 日本語の意味表示（eo_to_ja）は文字数が多いので少し小さめに
+    # 長い日本語が入る eo_to_ja では少しフォントを落とす
+    if direction == "eo_to_ja":
+        base_font = "20px"
+        mobile_font = "18px"
+    else:
+        base_font = "24px"
+        mobile_font = "20px"
     st.markdown(
         f"""
         <style>
@@ -833,16 +904,19 @@ def main():
             overflow: hidden;
             text-overflow: ellipsis;
             font-size: {base_font} !important;
+            font-weight: 700 !important;
+            line-height: 1.35 !important;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 8px;
+            padding: 12px;
         }}
         /* ボタン内部のテキストにも適用（Streamlitが入れるラッパー用） */
         .stButton button p, .stButton button div, .stButton button span {{
             font-size: {base_font} !important;
-            line-height: 1.3;
+            font-weight: 700 !important;
+            line-height: 1.35 !important;
         }}
         /* スマホ用: より小さい高さ */
         @media (max-width: 768px) {{
@@ -851,11 +925,14 @@ def main():
                 min-height: 80px;
                 max-height: 80px;
                 font-size: {mobile_font} !important;
-                padding: 4px;
+                font-weight: 700 !important;
+                line-height: 1.35 !important;
+                padding: 8px;
             }}
             .stButton button p, .stButton button div, .stButton button span {{
                 font-size: {mobile_font} !important;
-                line-height: 1.2;
+                font-weight: 700 !important;
+                line-height: 1.35 !important;
             }}
         }}
         </style>
@@ -912,7 +989,7 @@ def main():
     # 回答待ちモード: 4択ボタンを出題直下に配置（出題方向でラベル切り替え）
     clicked_index = None
     # 4択の各選択肢の音声は常に表示（方向に関わらず）
-    show_audio = True
+    show_audio = st.session_state.get("show_option_audio", True)
 
     for row_start in range(0, len(option_labels), 2):
         cols = st.columns([1, 1], gap="medium")

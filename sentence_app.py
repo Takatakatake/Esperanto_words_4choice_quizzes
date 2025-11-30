@@ -47,6 +47,7 @@ def _phrase_audio_key(phrase_id: int, phrase: str) -> str:
     return f"{prefix}_{suffix}"
 
 
+@st.cache_data(show_spinner=False, max_entries=1024)
 def find_phrase_audio(phrase_id: int, phrase: str):
     key = _phrase_audio_key(phrase_id, phrase)
     for ext, mime in [(".wav", "audio/wav"), (".mp3", "audio/mpeg"), (".ogg", "audio/ogg")]:
@@ -144,13 +145,13 @@ def build_questions(entries, levels, rng: random.Random):
     return questions
 
 
-def load_scores():
+def load_scores(force_refresh: bool = False):
     conn = get_connection()
     if conn is None:
         st.session_state.score_load_error = "Google Sheets 接続を初期化できませんでした。"
         return []
     try:
-        df = conn.read(worksheet=SCORES_SHEET, ttl=60)
+        df = conn.read(worksheet=SCORES_SHEET, ttl=0 if force_refresh else 60)
         st.session_state.score_load_error = None
         if df is None or df.empty:
             return []
@@ -158,6 +159,20 @@ def load_scores():
         return [r for r in records if r.get("mode") == "sentence"] or []
     except Exception as e:
         st.session_state.score_load_error = f"ランキングの取得に失敗しました: {e}"
+        return []
+
+
+def load_scores_all(force_refresh: bool = False):
+    """モードに関係なくScoresを取得（全体累積のフォールバック用）"""
+    conn = get_connection()
+    if conn is None:
+        return []
+    try:
+        df = conn.read(worksheet=SCORES_SHEET, ttl=0 if force_refresh else 60)
+        if df is None or df.empty:
+            return []
+        return df.to_dict(orient="records")
+    except Exception:
         return []
 
 
@@ -316,6 +331,12 @@ def rank_dict(d, top_n=None):
 
 
 def show_rankings(stats_data):
+    with st.expander("Debug: Raw UserStats Data"):
+        st.write("Raw Data:", stats_data)
+        if st.button("Clear Cache & Rerun", key="clear_cache_sentence"):
+            st.cache_data.clear()
+            st.rerun()
+
     totals, totals_today, totals_month, hof = summarize_rankings_from_stats(stats_data)
     tabs = st.tabs(["累積", "本日", "今月", f"殿堂（{HOF_THRESHOLD}点以上）"])
 
@@ -345,8 +366,6 @@ def main():
         layout="centered",
     )
 
-    st.title("エスペラント例文 4択クイズ")
-    # スタイル（単語版に寄せた緑ボタン）
     st.markdown(
         """
         <style>
@@ -354,6 +373,9 @@ def main():
             background-color: #009900 !important;
             border-color: #009900 !important;
             color: white !important;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            line-height: 1.35 !important;
         }
         div.stButton > button[kind="primary"]:hover {
             background-color: #007700 !important;
@@ -363,6 +385,10 @@ def main():
             background-color: #005500 !important;
             border-color: #005500 !important;
         }
+        /* 通常ボタンのボーダーなども緑系に */
+        div.stButton > button[kind="secondary"] {
+            border-color: #009900 !important;
+        }
         .stButton button {
             height: 120px;
             min-height: 120px;
@@ -371,32 +397,102 @@ def main():
             white-space: normal;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: 18px;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            line-height: 1.35 !important;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 8px;
+            padding: 12px;
+        }
+        /* ボタン内部のdiv/spanにも同じフォントサイズを強制 */
+        .stButton button * {
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            line-height: 1.35 !important;
         }
         @media (max-width: 768px) {
             .stButton button {
                 height: 80px;
                 min-height: 80px;
                 max-height: 80px;
-                font-size: 16px;
-                padding: 4px;
+                font-size: 20px !important;
+                font-weight: 700 !important;
+                padding: 8px;
+            }
+            .stButton button * {
+                font-size: 20px !important;
+                font-weight: 700 !important;
+                line-height: 1.35 !important;
             }
         }
+        .main-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #009900;
+            margin-bottom: 10px;
+            white-space: nowrap;
+        }
         </style>
+        <div class="main-title">エスペラント例文４択クイズ</div>
         """,
         unsafe_allow_html=True,
     )
+
+    # モバイル用: 音声自動再生のアンロックスクリプト
+    st.markdown(
+        """
+        <script>
+        (function() {
+            if (window._esperantoAudioUnlocked) return;
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (!isMobile) {
+                window._esperantoAudioUnlocked = true;
+                return;
+            }
+            if (sessionStorage.getItem('esperanto_audio_unlocked') === 'true') {
+                window._esperantoAudioUnlocked = true;
+                return;
+            }
+            function unlockAudio() {
+                const silentAudio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=');
+                silentAudio.volume = 0.01;
+                silentAudio.play().then(() => {
+                    window._esperantoAudioUnlocked = true;
+                    sessionStorage.setItem('esperanto_audio_unlocked', 'true');
+                }).catch(() => {});
+            }
+            document.addEventListener('touchstart', unlockAudio, { once: true });
+            document.addEventListener('click', unlockAudio, { once: true });
+        })();
+        </script>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.write("トピック別の例文から4択で出題します。単語版よりも得点係数を約1.5倍に調整しています。")
+    with st.expander("スコア計算ルール"):
+        st.markdown(
+            "\n".join(
+                [
+                    f"- 基礎点: レベル + 11.5（例: Lv5→16.5点）",
+                    f"- 連続正解ボーナス: 2問目以降の連続正解1回につき +{STREAK_BONUS * STREAK_BONUS_SCALE}",
+                    f"- 精度ボーナス: 最終正答率 × 問題数 × {ACCURACY_BONUS_PER_Q}",
+                    "- スパルタモード: 復習分は0.7倍で加算",
+                    "- 同じ問題数なら単語版よりおおむね1.5倍スコアが伸びる想定です。",
+                ]
+            )
+        )
 
     # 状態初期化
     st.session_state.setdefault("questions", [])
     st.session_state.setdefault("q_index", 0)
     st.session_state.setdefault("correct", 0)
     st.session_state.setdefault("points_raw", 0.0)
+    st.session_state.setdefault("points_main", 0.0)
+    st.session_state.setdefault("points_spartan_raw", 0.0)
+    st.session_state.setdefault("points_spartan_scaled", 0.0)
     st.session_state.setdefault("streak", 0)
     st.session_state.setdefault("answers", [])
     st.session_state.setdefault("showing_result", False)
@@ -404,10 +500,15 @@ def main():
     st.session_state.setdefault("score_saved", False)
     st.session_state.setdefault("score_load_error", None)
     st.session_state.setdefault("cached_scores", [])
+    st.session_state.setdefault("cached_scores_all", [])
+    st.session_state.setdefault("cached_main_rank", [])
     st.session_state.setdefault("spartan_mode", False)
     st.session_state.setdefault("spartan_pending", [])
     st.session_state.setdefault("in_spartan_round", False)
     st.session_state.setdefault("spartan_current_q_idx", None)
+    st.session_state.setdefault("spartan_attempts", 0)
+    st.session_state.setdefault("spartan_correct_count", 0)
+    st.session_state.setdefault("show_option_audio", True)
 
     df = load_phrase_df()
     groups = build_groups(df)
@@ -439,6 +540,13 @@ def main():
             key="spartan_mode",
             disabled=bool(st.session_state.questions),
         )
+        st.checkbox(
+            "選択肢の音声を表示",
+            value=st.session_state.show_option_audio,
+            key="show_option_audio",
+            help="オフにすると選択肢ごとの音声プレイヤーを非表示にして軽量化します。",
+        )
+        st.caption("出題方向にかかわらず、音声はトグルONで選択肢に表示されます。")
 
         if st.button("クイズ開始", use_container_width=True):
             rng = random.Random()
@@ -451,6 +559,9 @@ def main():
                 st.session_state.q_index = 0
                 st.session_state.correct = 0
                 st.session_state.points_raw = 0.0
+                st.session_state.points_main = 0.0
+                st.session_state.points_spartan_raw = 0.0
+                st.session_state.points_spartan_scaled = 0.0
                 st.session_state.streak = 0
                 st.session_state.answers = []
                 st.session_state.showing_result = False
@@ -460,7 +571,30 @@ def main():
                 st.session_state.spartan_pending = []
                 st.session_state.in_spartan_round = False
                 st.session_state.spartan_current_q_idx = None
+                st.session_state.spartan_attempts = 0
+                st.session_state.spartan_correct_count = 0
                 st.rerun()
+
+        st.markdown("---")
+        if st.button("🏠 ホームに戻る", use_container_width=True, type="primary"):
+            st.session_state.questions = []
+            st.session_state.q_index = 0
+            st.session_state.correct = 0
+            st.session_state.points_raw = 0.0
+            st.session_state.points_main = 0.0
+            st.session_state.points_spartan_raw = 0.0
+            st.session_state.points_spartan_scaled = 0.0
+            st.session_state.streak = 0
+            st.session_state.answers = []
+            st.session_state.showing_result = False
+            st.session_state.score_saved = False
+            st.session_state.spartan_pending = []
+            st.session_state.in_spartan_round = False
+            st.session_state.spartan_current_q_idx = None
+            st.session_state.spartan_attempts = 0
+            st.session_state.spartan_correct_count = 0
+            st.session_state.cached_scores = load_scores()
+            st.rerun()
 
     # スコア読み込み
     should_load = (
@@ -469,11 +603,64 @@ def main():
         or st.session_state.score_saved
         or not st.session_state.cached_scores
     )
-    if should_load:
-        scores = load_scores()
+    finished_quiz = (
+        bool(st.session_state.questions)
+        and st.session_state.q_index >= len(st.session_state.questions)
+        and not st.session_state.in_spartan_round
+    )
+    if (
+        not st.session_state.questions
+        or finished_quiz
+        or st.session_state.score_saved
+        or not st.session_state.cached_scores
+    ):
+        scores = load_scores(force_refresh=True)
         st.session_state.cached_scores = scores
     else:
         scores = st.session_state.cached_scores
+    if st.session_state.get("score_load_error"):
+        st.warning(st.session_state.score_load_error)
+
+    # サイドバーでユーザー名が入力されていれば累積を案内（scores読み込み後）
+    if st.session_state.sentence_user_name and scores:
+        with st.sidebar:
+            st.markdown("---")
+            user_total_sentence = sum(
+                r.get("points", 0) for r in scores if r.get("user") == st.session_state.sentence_user_name
+            )
+            st.info(f"現在の累積（文章）: {user_total_sentence:.1f}")
+            # 全体累積（UserStats優先、なければ全モードのログから集計）
+            overall_points = None
+            # クイズ中はネットアクセスを避け、キャッシュまたは空にする
+            in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
+            if not in_quiz:
+                main_rank = load_main_rankings()
+                st.session_state.cached_main_rank = main_rank
+            else:
+                main_rank = st.session_state.get("cached_main_rank", [])
+            if main_rank:
+                for row in main_rank:
+                    if row.get("user") == st.session_state.sentence_user_name:
+                        try:
+                            overall_points = float(row.get("total_points", 0))
+                        except (ValueError, TypeError):
+                            overall_points = 0.0
+                        break
+            if not in_quiz:
+                all_scores = load_scores_all(force_refresh=True)
+                st.session_state.cached_scores_all = all_scores
+            else:
+                all_scores = st.session_state.get("cached_scores_all", [])
+            log_total_all = sum(r.get("points", 0) for r in all_scores if r.get("user") == st.session_state.sentence_user_name)
+            log_total_sentence = sum(r.get("points", 0) for r in scores if r.get("user") == st.session_state.sentence_user_name)
+            log_total_vocab = log_total_all - log_total_sentence
+            if overall_points is None:
+                overall_points = log_total_all
+            else:
+                overall_points = max(overall_points, log_total_all)
+            st.info(f"現在の累積（全体）: {overall_points:.1f}")
+            if abs((log_total_sentence + log_total_vocab) - overall_points) > 0.5:
+                st.warning("累積（単語＋文章）と全体の合計に差分があります。少し時間をおいて再読み込みしてください。")
 
     questions = st.session_state.questions
     if questions:
@@ -483,12 +670,17 @@ def main():
             st.session_state.q_index = 0
             st.session_state.correct = 0
             st.session_state.points_raw = 0.0
+            st.session_state.points_main = 0.0
+            st.session_state.points_spartan_raw = 0.0
+            st.session_state.points_spartan_scaled = 0.0
             st.session_state.streak = 0
             st.session_state.answers = []
             st.session_state.showing_result = False
             st.session_state.spartan_pending = []
             st.session_state.in_spartan_round = False
             st.session_state.spartan_current_q_idx = None
+            st.session_state.spartan_attempts = 0
+            st.session_state.spartan_correct_count = 0
             st.warning("問題データを再生成します。サイドバーで再度『クイズ開始』を押してください。")
             return
 
@@ -522,17 +714,45 @@ def main():
         total = len(questions)
         accuracy = st.session_state.correct / total if total else 0
         acc_bonus = accuracy * total * ACCURACY_BONUS_PER_Q
+        raw_main = st.session_state.points_main
+        raw_spartan_scaled = st.session_state.points_spartan_scaled
+        sp_attempts = st.session_state.spartan_attempts
+        sp_correct = st.session_state.spartan_correct_count
+        sp_accuracy = sp_correct / sp_attempts if sp_attempts else 0
         points = st.session_state.points_raw + acc_bonus
         st.subheader("結果")
         st.metric("正答率", f"{accuracy*100:.1f}%")
         st.metric("得点", f"{points:.1f}")
-        st.write(f"正解 {st.session_state.correct}/{total}")
-        st.write(f"内訳: 基礎+ストリーク {st.session_state.points_raw:.1f} / 精度 {acc_bonus:.1f}")
         if st.session_state.sentence_user_name:
-            user_total = sum(
-                r.get("points", 0) for r in scores if r.get("user") == st.session_state.sentence_user_name
+            # 全体累積はUserStats優先、ログ合計を優先度2で使用
+            overall_points = None
+            main_rank = load_main_rankings()
+            if main_rank:
+                for row in main_rank:
+                    if row.get("user") == st.session_state.sentence_user_name:
+                        try:
+                            overall_points = float(row.get("total_points", 0))
+                        except (ValueError, TypeError):
+                            overall_points = 0.0
+                        break
+            log_total_all = sum(
+                r.get("points", 0) for r in load_scores_all(force_refresh=True) if r.get("user") == st.session_state.sentence_user_name
             )
-            st.info(f"現在の累積（文章）: {user_total:.1f}")
+            if overall_points is None:
+                overall_points = log_total_all
+            else:
+                overall_points = max(overall_points, log_total_all)
+            st.metric("累積（今回加算後）", f"{overall_points + points:.1f}")
+        st.caption("音声で再確認できます。")
+        st.write(f"正解 {st.session_state.correct}/{total}")
+        st.write(
+            f"内訳: 本編 基礎+ストリーク {raw_main:.1f} / スパルタ {raw_spartan_scaled:.1f}（0.7倍込） / 精度ボーナス {acc_bonus:.1f}"
+        )
+        if st.session_state.spartan_mode and sp_attempts:
+            st.caption(f"スパルタモード: 復習分を通常の{SPARTAN_SCORE_MULTIPLIER*100:.0f}%で加算")
+            st.caption(f"スパルタ精度: {sp_accuracy*100:.1f}% ({sp_correct}/{sp_attempts})")
+        if st.session_state.sentence_user_name:
+            st.caption("同じユーザー名のスコアがある場合は累積に加算します。")
         if st.session_state.sentence_user_name:
             if st.session_state.score_saved:
                 st.success("スコアを保存しました！")
@@ -563,7 +783,13 @@ def main():
         recent = load_scores()
         if recent:
             st.write("最近のスコア（文章）")
-            st.dataframe(recent, hide_index=True)
+            # 列順を軽く整える（存在する列のみ）
+            preferred_cols = ["ts", "user", "points", "accuracy", "correct", "total", "topic", "subtopic", "levels", "mode"]
+            cols = [c for c in preferred_cols if c in recent[0].keys()]
+            df_recent = pd.DataFrame(recent)
+            if cols:
+                df_recent = df_recent[cols + [c for c in df_recent.columns if c not in cols]]
+            st.dataframe(df_recent, hide_index=True, use_container_width=True)
         ranking = load_rankings()
         if ranking:
             st.subheader("ランキング")
@@ -600,20 +826,25 @@ def main():
 
         if wrong:
             st.markdown("### 間違えた問題")
+            st.caption("音声で再確認できます。")
             for w in wrong:
                 st.write(f"- {w['prompt_ja']} / {w['prompt_eo']}")
                 st.write(f"　正解「{w['answer_ja']} / {w['answer']}」、あなたの回答「{w['selected_ja']} / {w['selected']}」")
-                play_phrase_audio(w["phrase_id"], w["answer"], autoplay=False, caption="🔊 正解の発音")
+                play_phrase_audio(w["phrase_id"], w["answer"], autoplay=False, caption="🔊 発音を確認")
         if correct_list:
             st.markdown("### 正解した問題（確認用）")
+            st.caption("音声で確認だけできます。")
             for c in correct_list:
                 st.write(f"- {c['prompt_ja']} / {c['prompt_eo']}: {c['answer_ja']} / {c['answer']}")
-                play_phrase_audio(c["phrase_id"], c["answer"], autoplay=False, caption="🔊 発音")
+                play_phrase_audio(c["phrase_id"], c["answer"], autoplay=False, caption="🔊 発音を確認")
 
         if st.button("同じ設定で再挑戦"):
             st.session_state.q_index = 0
             st.session_state.correct = 0
             st.session_state.points_raw = 0.0
+            st.session_state.points_main = 0.0
+            st.session_state.points_spartan_raw = 0.0
+            st.session_state.points_spartan_scaled = 0.0
             st.session_state.streak = 0
             st.session_state.answers = []
             st.session_state.showing_result = False
@@ -621,6 +852,8 @@ def main():
             st.session_state.spartan_pending = []
             st.session_state.in_spartan_round = False
             st.session_state.spartan_current_q_idx = None
+            st.session_state.spartan_attempts = 0
+            st.session_state.spartan_correct_count = 0
             st.rerun()
         return
 
@@ -646,6 +879,9 @@ def main():
     else:
         prompt_text = question["prompt_ja"]
     title_prefix = "復習" if in_spartan else f"Q{q_idx+1}/{len(questions)}"
+    if in_spartan:
+        st.caption(f"スパルタ復習 残り{len(st.session_state.spartan_pending)}問 / 全{len(questions)}問")
+        st.caption("間違えた問題のみをランダムに出題しています。正解でリストから消えます。")
     st.subheader(f"{title_prefix}: {prompt_text}")
     if direction == "eo_to_ja" and not st.session_state.showing_result:
         play_phrase_audio(
@@ -691,7 +927,7 @@ def main():
                 if st.button(option_labels[idx], key=f"opt-{current_q_idx}-{idx}", use_container_width=True, type="primary"):
                     clicked = idx
                 opt = question["options"][idx]
-                if direction == "ja_to_eo":
+                if st.session_state.get("show_option_audio", True):
                     play_phrase_audio(
                         opt["phrase_id"],
                         opt["phrase"],
@@ -702,6 +938,8 @@ def main():
 
     if clicked is not None:
         is_correct = clicked == question["answer_index"]
+        if in_spartan:
+            st.session_state.spartan_attempts += 1
         st.session_state.answers.append(
             {
                 "q_idx": current_q_idx,
@@ -712,19 +950,26 @@ def main():
         if is_correct:
             if not in_spartan:
                 st.session_state.correct += 1
+            else:
+                st.session_state.spartan_correct_count += 1
             st.session_state.streak += 1
             opt = question["options"][clicked]
             streak_bonus = max(0, st.session_state.streak - 1) * STREAK_BONUS * STREAK_BONUS_SCALE
             earned = base_points_for_level(opt["level"]) + streak_bonus
             if in_spartan:
-                earned *= SPARTAN_SCORE_MULTIPLIER
+                st.session_state.points_spartan_raw += earned
+                scaled = earned * SPARTAN_SCORE_MULTIPLIER
+                st.session_state.points_spartan_scaled += scaled
+                st.session_state.points_raw += scaled
                 st.session_state.spartan_pending = [
                     idx for idx in st.session_state.spartan_pending if idx != current_q_idx
                 ]
                 st.session_state.spartan_current_q_idx = None
                 if not st.session_state.spartan_pending:
                     st.session_state.in_spartan_round = False
-            st.session_state.points_raw += earned
+            else:
+                st.session_state.points_main += earned
+                st.session_state.points_raw += earned
             if not in_spartan:
                 st.session_state.q_index += 1
             st.session_state.showing_result = False
