@@ -4557,7 +4557,7 @@
 4711,3,Intermediate 1,Health,At the Optician,Ĉu vi portas kontaktlensojn?,Do you wear contact lenses?,コンタクトレンズを使っていますか？,你戴隐形眼镜吗？,콘택트렌즈를 착용하시나요?,Вы носите контактные линзы?
 4712,5,Intermediate 3,Health,At the Optician,Mi bezonas novan okulvitrujon,I need a new glasses' case.,新しいメガネケースが必要です。,我需要一个新的眼镜盒。,새 안경 케이스가 필요해요.,Мне нужен новый футляр для очков.
 4713,5,Intermediate 3,Health,At the Optician,Mi rompis miajn okulvitrojn,I have broken my glasses.,眼鏡が壊れてしまいました。,我的眼镜坏了。,안경이 부러졌어요.,Я разбил свои очки.
-4714,5,Intermediate 3,Health,At the Optician,Bonvolu montri al mi kelkajn monturojn,Please show me some frames.,眼鏡フレームをいくつか見せてください。,请给我看几副镜框。,안경테를 몇 가지 보여주세요.,"Пожалуйста, покажите мне оправы."
+4714,5,Intermediate 3,Health,At the Optician,Bonvolu montri al mi kelkajn kadrojn,Please show me some frames.,眼鏡フレームをいくつか見せてください。,请给我看几副镜框。,안경테를 몇 가지 보여주세요.,"Пожалуйста, покажите мне оправы."
 4715,6,Advanced 1,Health,At the Optician,Provu ĉi tiun paron da okulvitroj,Try on this pair of glasses.,このメガネをかけてみてください。,试戴一下这副眼镜。,이 안경을 한번 써 보세요.,Примерьте эту пару очков.
 4716,7,Advanced 2,Health,At the Optician,Mi perdis unu el miaj kontaktlensoj,I've lost one of my contact lenses.,コンタクトレンズを片方なくしてしまいました。,我丢了一只隐形眼镜。,콘택트렌즈 한 쪽을 잃어버렸어요.,Я потеряла контактную линзу.
 4717,6,Advanced 1,Health,At the Optician,Ĉu vi ofertas senpagajn okulekzamenojn?,Do you offer free eye tests?,無料の視力検査は行っていますか？,你们提供免费的视力检查吗？,무료 시력 검사를 제공하나요?,Вы делаете бесплатную проверку зрения?
@@ -4568,7 +4568,7 @@
 4722,10,Expert 2,Health,At the Optician,Ŝi havas astigmatismon,She has got astigmatism.,彼女は乱視です。,她有散光。,그녀는 난시가 있어요.,У неё астигматизм.
 4723,7,Advanced 2,Health,At the Optician,Ĉu vi iam perdis viajn okulvitrojn?,Have you ever lost your glasses?,メガネをなくしたことはありますか？,你有没有丢过眼镜？,안경을 잃어버린 적이 있으신가요?,Ты когда-нибудь теряла очки?
 4724,8,Advanced 3,Health,At the Optician,La kadro de ĉi tiuj okulvitroj estas rompita,The frame on these glasses is broken.,このメガネのフレームが壊れています。,这副眼镜的镜架坏了。,이 안경의 테가 부러졌어요.,Оправа этих очков сломана.
-4725,9,Expert 1,Health,At the Optician,Kiom kostas ĉi tiuj dizajnistaj monturoj?,How much are these designer frames?,こちらのデザイナーフレームはおいくらですか？,这些设计师款镜框多少钱？,이 디자이너 안경테는 얼마인가요?,Сколько стоят эти дизайнерские оправы?
+4725,9,Expert 1,Health,At the Optician,Kiom kostas ĉi tiuj dizajnistaj kadroj?,How much are these designer frames?,こちらのデザイナーフレームはおいくらですか？,这些设计师款镜框多少钱？,이 디자이너 안경테는 얼마인가요?,Сколько стоят эти дизайнерские оправы?
 4726,8,Advanced 3,Health,At the Optician,Mi bezonas novajn okulvitrojn por legado,I need a new pair of reading glasses.,新しい老眼鏡が必要です。,我需要一副新的老花镜。,저는 새 독서용 안경이 필요해요.,Мне нужны новые очки для чтения.
 4727,8,Advanced 3,Health,At the Optician,Ĉi tiuj okulvitroj estas tro malfortaj por mi,These glasses are too weak for me.,このメガネでは度が弱すぎます。,这副眼镜对我来说度数太低了。,이 안경은 저한테 너무 약해요.,Эти очки для меня слишком слабые.
 4728,8,Advanced 3,Health,At the Optician,Mi ŝatus provi pli fortajn okulvitrojn,I would like to try some stronger glasses.,もう少し度の強い眼鏡を試してみたいです。,我想试试度数更高的眼镜。,좀 더 도수가 센 안경을 써보고 싶어요.,Я бы хотел примерить очки посильнее.
