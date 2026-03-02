@@ -9,6 +9,8 @@ import streamlit as st
 import pandas as pd
 
 from data_sources import VOCAB_CSV
+from score_append_utils import append_score_row_fast
+from score_row_utils import normalize_score_row, normalize_score_rows
 import vocab_grouping as vg
 
 # パス設定
@@ -41,6 +43,11 @@ MOBILE_UA_TOKENS = (
 )
 SCORE_READ_RETRIES = 3
 SCORE_READ_RETRY_BASE_SEC = 0.35
+SCORE_WRITE_RETRIES = 3
+SCORE_WRITE_RETRY_BASE_SEC = 0.4
+SCORES_SHEET = "Scores"
+USER_STATS_SHEET = "UserStats"
+DEBUG_QUERY_VALUES = {"1", "true", "yes", "on"}
 
 POS_JP = {
     "noun": "名詞",
@@ -113,6 +120,11 @@ def is_mobile_client() -> bool:
     return any(token in ua for token in MOBILE_UA_TOKENS)
 
 
+def is_debug_mode() -> bool:
+    raw = str(st.query_params.get("debug", "")).strip().lower()
+    return raw in DEBUG_QUERY_VALUES
+
+
 from streamlit_gsheets import GSheetsConnection
 
 
@@ -151,96 +163,161 @@ def load_scores(force_refresh: bool = False):
         if cached_scores:
             st.session_state.score_load_error = None
             st.session_state.score_refresh_needed = False
-            return cached_scores
+            return normalize_score_rows(cached_scores, fallback_mode="vocab")
         st.session_state.score_load_error = "Google Sheets 接続を初期化できませんでした。"
         return []
     try:
         # 一時的な通信失敗に備えて短いリトライを行う
-        df = _read_sheet_with_retry(conn, worksheet="Scores", force_refresh=force_refresh)
+        df = _read_sheet_with_retry(conn, worksheet=SCORES_SHEET, force_refresh=force_refresh)
         st.session_state.score_load_error = None
         st.session_state.score_refresh_needed = False
         if df is None or df.empty:
             return []
-        # DataFrameを辞書のリストに変換
-        return df.to_dict(orient="records")
+        # mode 欠損データを吸収しつつ返す
+        return normalize_score_rows(df.to_dict(orient="records"), fallback_mode="vocab")
     except Exception as e:
         print(f"Ranking load error: {e}")
         if cached_scores:
             st.session_state.score_load_error = None
             st.session_state.score_refresh_needed = False
-            return cached_scores
+            return normalize_score_rows(cached_scores, fallback_mode="vocab")
         st.session_state.score_load_error = f"ランキングの取得に失敗しました: {e}"
         return []
 
+def _score_record_exists(df: pd.DataFrame, record: dict) -> bool:
+    if df is None or df.empty:
+        return False
+    save_id = str(record.get("save_id", "")).strip()
+    if save_id and "save_id" in df.columns:
+        return df["save_id"].fillna("").astype(str).str.strip().eq(save_id).any()
+
+    user = str(record.get("user", "")).strip()
+    ts = str(record.get("ts", "")).strip()
+    if not user or not ts:
+        return False
+    if "user" not in df.columns or "ts" not in df.columns:
+        return False
+    mask = df["user"].fillna("").astype(str).str.strip().eq(user)
+    mask &= df["ts"].fillna("").astype(str).str.strip().eq(ts)
+    if "points" in df.columns:
+        mask &= pd.to_numeric(df["points"], errors="coerce").fillna(0.0).eq(
+            safe_float(record.get("points", 0.0), 0.0)
+        )
+    return bool(mask.any())
+
+
+def _append_score_record(df: pd.DataFrame, record: dict) -> pd.DataFrame:
+    new_row = pd.DataFrame([record])
+    if df is None or df.empty:
+        return new_row
+    return pd.concat([df, new_row], ignore_index=True, sort=False)
+
+
+def _build_user_stats_from_scores(scores_df: pd.DataFrame, ts: str) -> pd.DataFrame:
+    columns = ["user", "total_points", "last_updated"]
+    if scores_df is None or scores_df.empty or "user" not in scores_df.columns:
+        return pd.DataFrame(columns=columns)
+
+    normalized = scores_df.copy()
+    normalized["user"] = normalized["user"].fillna("").astype(str).str.strip()
+    normalized = normalized[normalized["user"] != ""]
+    if normalized.empty:
+        return pd.DataFrame(columns=columns)
+
+    if "points" not in normalized.columns:
+        normalized["points"] = 0.0
+    normalized["points"] = pd.to_numeric(normalized["points"], errors="coerce").fillna(0.0)
+
+    agg = normalized.groupby("user", as_index=False)["points"].sum()
+    agg = agg.rename(columns={"points": "total_points"})
+    agg["last_updated"] = ts
+    return agg[columns]
+
+
 def save_score(record: dict):
     """Google Sheetsにスコアを追記する"""
+    record_to_save = normalize_score_row(record, fallback_mode="vocab")
+    save_id = str(record_to_save.get("save_id", "")).strip()
+    record_to_save["save_id"] = save_id or str(uuid.uuid4())
+    fast_saved = append_score_row_fast(record_to_save, worksheet_name=SCORES_SHEET)
+    if fast_saved is True:
+        return True
+
     conn = get_connection()
     if conn is None:
         return False
-    try:
-        # 現在のデータを読み込む（書き込み時は最新状態が必要なので ttl=0）
-        # ただし、頻繁な書き込みは想定していないため、ここでのAPI消費は許容する
-        df = conn.read(worksheet="Scores", ttl=0)
-        if df is None or df.empty:
-            df = pd.DataFrame()
 
-        # 新しいレコードをDataFrame化して結合
-        new_row = pd.DataFrame([record])
-        updated_df = pd.concat([df, new_row], ignore_index=True)
+    last_error = None
 
-        # 更新（追記）
-        conn.update(worksheet="Scores", data=updated_df)
+    for attempt in range(SCORE_WRITE_RETRIES):
+        try:
+            df = _read_sheet_with_retry(conn, worksheet=SCORES_SHEET, force_refresh=True)
+            if df is None or df.empty:
+                df = pd.DataFrame()
+            if _score_record_exists(df, record_to_save):
+                return True
 
-        return True
-    except Exception as e:
-        st.error(f"スコアの保存に失敗しました: {e}")
-        return False
+            updated_df = _append_score_record(df, record_to_save)
+            conn.update(worksheet=SCORES_SHEET, data=updated_df)
+
+            verify_df = _read_sheet_with_retry(conn, worksheet=SCORES_SHEET, force_refresh=True)
+            if _score_record_exists(verify_df, record_to_save):
+                return True
+            last_error = RuntimeError("保存後の検証で反映を確認できませんでした。")
+        except Exception as e:
+            last_error = e
+
+        if attempt + 1 < SCORE_WRITE_RETRIES:
+            time.sleep(SCORE_WRITE_RETRY_BASE_SEC * (attempt + 1))
+
+    st.error(f"スコアの保存に失敗しました: {last_error}")
+    return False
 
 
 def update_user_stats(user: str, points: float, ts: str):
     """UserStatsシート（累積スコア）を更新する"""
+    del points
     conn = get_connection()
     if conn is None:
-        return
-
-    try:
-        # UserStatsシート読み込み
-        try:
-            stats_df = conn.read(worksheet="UserStats", ttl=0)
-        except Exception:
-            # シートがない場合などは空DF扱い
-            stats_df = pd.DataFrame(columns=["user", "total_points", "last_updated"])
-
-        if stats_df is None or stats_df.empty:
-             # もしUserStatsが空なら、既存のScoresから再構築（マイグレーション）
-             scores_df = conn.read(worksheet="Scores", ttl=0)
-             if scores_df is not None and not scores_df.empty:
-                 # 集計
-                 agg = scores_df.groupby("user")["points"].sum().reset_index()
-                 agg.columns = ["user", "total_points"]
-                 agg["last_updated"] = datetime.datetime.utcnow().isoformat()
-                 stats_df = agg
-             else:
-                 stats_df = pd.DataFrame(columns=["user", "total_points", "last_updated"])
-
-        # ユーザーの行を探す
-        if user in stats_df["user"].values:
-            # 更新
-            idx = stats_df.index[stats_df["user"] == user][0]
-            current_total = float(stats_df.at[idx, "total_points"])
-            stats_df.at[idx, "total_points"] = current_total + points
-            stats_df.at[idx, "last_updated"] = ts
-        else:
-            # 新規追加
-            new_row = pd.DataFrame([{"user": user, "total_points": points, "last_updated": ts}])
-            stats_df = pd.concat([stats_df, new_row], ignore_index=True)
-
-        # 保存
-        conn.update(worksheet="UserStats", data=stats_df)
-        return True
-    except Exception as e:
-        print(f"UserStats update error: {e}")
         return False
+
+    normalized_user = str(user).strip()
+    last_error = None
+
+    for attempt in range(SCORE_WRITE_RETRIES):
+        try:
+            scores_df = _read_sheet_with_retry(conn, worksheet=SCORES_SHEET, force_refresh=True)
+            stats_df = _build_user_stats_from_scores(scores_df, ts)
+
+            expected_total = None
+            if normalized_user and not stats_df.empty:
+                target_row = stats_df[stats_df["user"] == normalized_user]
+                if not target_row.empty:
+                    expected_total = safe_float(target_row.iloc[0]["total_points"], 0.0)
+            if normalized_user and expected_total is None:
+                raise RuntimeError("Scores 再集計で対象ユーザーの累積を特定できませんでした。")
+
+            conn.update(worksheet=USER_STATS_SHEET, data=stats_df)
+
+            # 主要ユーザーの値だけ検証して、書き込みロストを検出しやすくする
+            if not normalized_user:
+                return True
+            verify_df = _read_sheet_with_retry(conn, worksheet=USER_STATS_SHEET, force_refresh=True)
+            if verify_df is not None and not verify_df.empty and "user" in verify_df.columns:
+                mask = verify_df["user"].fillna("").astype(str).str.strip().eq(normalized_user)
+                if mask.any():
+                    actual_total = safe_float(verify_df.loc[mask].iloc[0].get("total_points"), 0.0)
+                    if abs(actual_total - expected_total) <= 0.001 or actual_total > expected_total:
+                        return True
+            last_error = RuntimeError("UserStats の検証で期待値を確認できませんでした。")
+        except Exception as e:
+            last_error = e
+
+        if attempt + 1 < SCORE_WRITE_RETRIES:
+            time.sleep(SCORE_WRITE_RETRY_BASE_SEC * (attempt + 1))
+
+    print(f"UserStats update error: {last_error}")
+    return False
 
 
 def load_rankings():
@@ -249,14 +326,8 @@ def load_rankings():
     if conn is None:
         return []
     try:
-        df = conn.read(worksheet="UserStats", ttl=60)
+        df = _read_sheet_with_retry(conn, worksheet=USER_STATS_SHEET, force_refresh=False)
         if df is None or df.empty:
-            # UserStatsが空の場合、Scoresから復旧を試みる（初回移行用）
-            scores = load_scores()
-            if scores:
-                # ここでは簡易的にScoresを返す（次回保存時にUserStatsが作られる）
-                # 本来はここでmigrateしてもよいが、読み込み速度優先
-                return []
             return []
         return df.to_dict(orient="records")
     except Exception:
@@ -274,6 +345,20 @@ def get_stage_factor(stages):
     return 1.0
 
 
+def safe_float(value, default: float = 0.0) -> float:
+    try:
+        if value is None:
+            return default
+        if isinstance(value, str) and not value.strip():
+            return default
+        parsed = float(value)
+        if parsed != parsed or parsed in (float("inf"), float("-inf")):
+            return default
+        return parsed
+    except (TypeError, ValueError):
+        return default
+
+
 def summarize_scores(scores):
     # JSTタイムゾーン設定 (UTC+9)
     jst = datetime.timezone(datetime.timedelta(hours=9))
@@ -286,26 +371,17 @@ def summarize_scores(scores):
     totals_month = {}
     hof = {}
     for r in scores:
-        user = r.get("user")
-        pts = float(r.get("points", 0))
-        ts = r.get("ts")
+        user = str(r.get("user", "")).strip()
+        if not user:
+            continue
+        pts = safe_float(r.get("points", 0), 0.0)
+        ts = str(r.get("ts", "")).strip()
         date_obj = None
         if ts:
-            try:
-                # ISOフォーマットの文字列をパース
-                # tsが "2023-10-27T10:00:00" のような形式の場合、fromisoformatで読み込める
-                # タイムゾーン情報がない場合はUTCとみなしてJSTに変換するか、
-                # 単純に日付部分だけで比較する。
-                # ここでは保存時に isoformat() しているので、そのまま読み込む
-                dt = datetime.datetime.fromisoformat(ts)
-                # もしナイーブなdatetimeならUTCとみなしてJSTへ変換
-                if dt.tzinfo is None:
-                    dt = dt.replace(tzinfo=datetime.timezone.utc).astimezone(jst)
-                else:
-                    dt = dt.astimezone(jst)
-                date_obj = dt.date()
-            except Exception:
-                date_obj = None
+            # 旧データのゆるい日時表記も許容し、UTC基準でJST日付へ正規化する
+            parsed_ts = pd.to_datetime(ts, errors="coerce", utc=True)
+            if pd.notna(parsed_ts):
+                date_obj = parsed_ts.tz_convert(jst).date()
 
         totals[user] = totals.get(user, 0) + pts
         if date_obj:
@@ -319,7 +395,7 @@ def summarize_scores(scores):
     return totals, totals_today, totals_month, hof
 
 
-def summarize_rankings_from_stats(stats_data):
+def summarize_rankings_from_stats(stats_data, score_rows=None):
     """UserStatsデータからランキングを作成"""
     # UserStatsは累積のみ持っているため、本日・今月はScores（ログ）から計算する必要がある
     # しかし、スケーラビリティのため、ランキング表示は「累積（殿堂）」をメインにする
@@ -327,51 +403,40 @@ def summarize_rankings_from_stats(stats_data):
     # UserStatsに today_points, month_points を持たせる設計変更が必要。
     # 今回は「累積」はUserStatsから、「本日・今月」はScoresから計算するハイブリッド方式とする。
 
-    # 累積（高速）
     totals = {}
-
-    # データ形式の自動判別（Raw Log vs Aggregated Stats）
     is_raw_log = False
-    if stats_data and isinstance(stats_data, list) and len(stats_data) > 0:
-        first_row = stats_data[0]
-        # total_pointsがなく、pointsがある場合はRaw Logとみなす
-        if "total_points" not in first_row and "points" in first_row:
-            is_raw_log = True
-            # st.warning("UserStatsシートにRawデータが含まれています。自動集計します。")
+    if stats_data and isinstance(stats_data, list):
+        first_row = stats_data[0] if stats_data else {}
+        is_raw_log = "total_points" not in first_row and "points" in first_row
 
     if is_raw_log:
-        # Raw Log形式の場合、ここで集計する（フォールバック）
         for r in stats_data:
-            user = r.get("user")
-            pts = float(r.get("points", 0))
-            totals[user] = totals.get(user, 0) + pts
-    else:
-        # Aggregated Stats形式の場合（本来の想定）
-        for r in stats_data:
-            user = r.get("user")
+            user = str(r.get("user", "")).strip()
             if not user:
                 continue
-
+            totals[user] = totals.get(user, 0.0) + safe_float(r.get("points", 0), 0.0)
+    else:
+        for r in stats_data or []:
+            user = str(r.get("user", "")).strip()
+            if not user:
+                continue
             val = r.get("total_points")
             if val is None:
-                # カラム名の揺らぎ対応
                 for k in r.keys():
                     if "total_points" in k:
                         val = r[k]
                         break
+            totals[user] = safe_float(val, 0.0)
 
-            try:
-                totals[user] = float(val) if val is not None else 0.0
-            except (ValueError, TypeError):
-                totals[user] = 0.0
-
+    # 本日・今月はログから計算、累積は UserStats とログ集計の大きい方を採用して遅延同期を吸収する
+    scores = score_rows if score_rows is not None else load_scores()
+    score_totals, totals_today, totals_month, _ = summarize_scores(scores)
+    if totals:
+        for user, log_total in score_totals.items():
+            totals[user] = max(safe_float(totals.get(user, 0.0), 0.0), safe_float(log_total, 0.0))
+    else:
+        totals = score_totals
     hof = {u: p for u, p in totals.items() if p >= HOF_THRESHOLD}
-
-    # 本日・今月（Scoresから計算 - ただし全件取得は重いので直近のみ...といきたいが
-    # 現状は load_scores() が全件取得しているので、それをそのまま使う。
-    # 将来的には load_scores(limit=1000) のように制限する）
-    scores = load_scores() # キャッシュされているはず
-    _, totals_today, totals_month, _ = summarize_scores(scores)
 
     return totals, totals_today, totals_month, hof
 
@@ -381,16 +446,15 @@ def rank_dict(d, top_n=None):
     return items[:top_n] if top_n else items
 
 
-def show_rankings(stats_data):
-    # --- DEBUG START ---
-    with st.expander("Debug: Raw UserStats Data"):
-        st.write("Raw Data:", stats_data)
-        if st.button("Clear Cache & Rerun"):
-            st.cache_data.clear()
-            st.rerun()
-    # --- DEBUG END ---
+def show_rankings(stats_data, score_rows=None):
+    if is_debug_mode():
+        with st.expander("Debug: Raw UserStats Data"):
+            st.write("Raw Data:", stats_data)
+            if st.button("Clear Cache & Rerun", key="clear_cache_vocab_debug"):
+                st.cache_data.clear()
+                st.rerun()
 
-    totals, totals_today, totals_month, hof = summarize_rankings_from_stats(stats_data)
+    totals, totals_today, totals_month, hof = summarize_rankings_from_stats(stats_data, score_rows=score_rows)
     tabs = st.tabs(["累積", "本日", "今月", f"殿堂（{HOF_THRESHOLD}点以上）"])
     import pandas as pd
 
@@ -486,9 +550,11 @@ def init_state():
     st.session_state.setdefault("streak", 0)
     st.session_state.setdefault("answers", [])
     st.session_state.setdefault("score_saved", False)
+    st.session_state.setdefault("pending_save_id", None)
     st.session_state.setdefault("score_refresh_needed", False)
     st.session_state.setdefault("last_saved_key", None)
     st.session_state.setdefault("score_load_error", None)
+    st.session_state.setdefault("score_sync_warning", None)
     st.session_state.setdefault("spartan_mode", False)
     st.session_state.setdefault("spartan_pending", [])
     st.session_state.setdefault("in_spartan_round", False)
@@ -515,8 +581,10 @@ def start_quiz(group, rng):
     st.session_state.streak = 0
     st.session_state.answers = []
     st.session_state.score_saved = False
+    st.session_state.pending_save_id = None
     st.session_state.score_refresh_needed = False
     st.session_state.last_saved_key = None
+    st.session_state.score_sync_warning = None
     st.session_state.showing_result = False
     st.session_state.spartan_pending = []
     st.session_state.in_spartan_round = False
@@ -984,8 +1052,10 @@ def main():
             st.session_state.answers = []
             st.session_state.showing_result = False
             st.session_state.score_saved = False
+            st.session_state.pending_save_id = None
             st.session_state.score_refresh_needed = False
             st.session_state.last_saved_key = None
+            st.session_state.score_sync_warning = None
             st.session_state.spartan_pending = []
             st.session_state.in_spartan_round = False
             st.session_state.spartan_current_q_idx = None
@@ -1040,13 +1110,13 @@ def main():
         with st.sidebar:
             st.markdown("---")
             user_total_vocab = sum(
-                r.get("points", 0)
+                safe_float(r.get("points", 0), 0.0)
                 for r in scores
                 if r.get("user") == st.session_state.user_name and r.get("mode") != "sentence"
             )
             st.info(f"現在の累積（単語）: {user_total_vocab:.1f}")
             user_total_sentence = sum(
-                r.get("points", 0)
+                safe_float(r.get("points", 0), 0.0)
                 for r in scores
                 if r.get("user") == st.session_state.user_name and r.get("mode") == "sentence"
             )
@@ -1064,7 +1134,11 @@ def main():
                             user_total_overall = 0.0
                         break
             # ログからの最新合計（語彙+文章）
-            log_total = sum(r.get("points", 0) for r in scores if r.get("user") == st.session_state.user_name)
+            log_total = sum(
+                safe_float(r.get("points", 0), 0.0)
+                for r in scores
+                if r.get("user") == st.session_state.user_name
+            )
             if user_total_overall is None:
                 user_total_overall = log_total
             else:
@@ -1097,8 +1171,10 @@ def main():
             _, vocab_today, vocab_month, vocab_hof = summarize_scores(vocab_scores)
             totals_vocab = {}
             for r in vocab_scores:
-                u = r.get("user")
-                totals_vocab[u] = totals_vocab.get(u, 0) + float(r.get("points", 0))
+                u = str(r.get("user", "")).strip()
+                if not u:
+                    continue
+                totals_vocab[u] = totals_vocab.get(u, 0) + safe_float(r.get("points", 0), 0.0)
 
             import pandas as pd
             def to_df_log(d):
@@ -1115,7 +1191,7 @@ def main():
             tabs_log[3].dataframe(to_df_log(vocab_hof), use_container_width=True, hide_index=True)
 
             st.subheader("ランキング（全体: 単語+文章）")
-            show_rankings(scores)
+            show_rankings(load_rankings(), score_rows=scores)
         return
 
     q_index = st.session_state.q_index
@@ -1168,10 +1244,16 @@ def main():
                 st.info("このユーザー名は既にスコアがあります。累積に加算します。")
             if st.session_state.score_saved:
                 st.success("スコアを保存しました！")
+                if st.session_state.get("score_sync_warning"):
+                    st.warning(st.session_state.score_sync_warning)
             else:
                 st.caption("保存するとランキングにも反映されます。失敗したらもう一度お試しください。")
                 if st.button("スコアを保存", key="save_score_btn", use_container_width=True):
                     now = datetime.datetime.utcnow().isoformat()
+                    save_id = st.session_state.get("pending_save_id")
+                    if not save_id:
+                        save_id = str(uuid.uuid4())
+                        st.session_state.pending_save_id = save_id
                     record = {
                         "user": st.session_state.user_name,
                         "group_id": st.session_state.group_id,
@@ -1193,14 +1275,16 @@ def main():
                         "spartan_mode": st.session_state.spartan_mode,
                         "direction": st.session_state.quiz_direction,
                         "ts": now,
+                        "save_id": save_id,
                     }
-                    # UserStats更新（累積）
-                    update_user_stats(st.session_state.user_name, points, now)
-
-                    # Scores更新（ログ）
+                    # Scores更新（ログ）を正本として先に保存する
                     if save_score(record):
+                        # UserStats更新（累積）はベストエフォート
+                        stats_ok = update_user_stats(st.session_state.user_name, points, now)
                         st.session_state.score_saved = True
+                        st.session_state.pending_save_id = None
                         st.session_state.score_refresh_needed = True
+                        st.session_state.score_sync_warning = None if stats_ok else "スコアログは保存しましたが、累積スコア反映に一時失敗しました。少し時間をおいて再試行してください。"
                         st.rerun()
                     else:
                         st.error("保存に失敗しました。秘密情報（secrets）の設定を確認してください。")
@@ -1237,8 +1321,10 @@ def main():
             vocab_scores = [r for r in scores if r.get("mode") != "sentence"]
             totals_vocab = {}
             for r in vocab_scores:
-                u = r.get("user")
-                totals_vocab[u] = totals_vocab.get(u, 0) + float(r.get("points", 0))
+                u = str(r.get("user", "")).strip()
+                if not u:
+                    continue
+                totals_vocab[u] = totals_vocab.get(u, 0) + safe_float(r.get("points", 0), 0.0)
             import pandas as pd
             def to_df_log(d):
                 if not d:
@@ -1248,7 +1334,7 @@ def main():
                 return pd.DataFrame(data)
             st.dataframe(to_df_log(totals_vocab), use_container_width=True, hide_index=True)
             st.subheader("ランキング（全体: 単語+文章）")
-            show_rankings(load_rankings())
+            show_rankings(load_rankings(), score_rows=scores)
 
         # 復習セクション
         st.subheader("復習")
