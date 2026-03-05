@@ -231,7 +231,7 @@
 385,4,Intermediate 2,Basic Sentences,Congratulations,Multajn feliĉajn jarojn!,Many happy returns!,お誕生日おめでとうございます！,祝你幸福长久！,행복한 날 되세요!,Желаю долгих лет жизни!
 386,5,Intermediate 3,Basic Sentences,Congratulations,Feliĉan Tagon de Sankta Valenteno!,Happy Valentine's Day!,ハッピーバレンタインデー！,情人节快乐！,해피 발렌타인 데이!,С Днём святого Валентина!
 387,5,Intermediate 3,Basic Sentences,Congratulations,Feliĉan Patrintagon!,Happy Mother's Day!,母の日おめでとう！,母亲节快乐！,어머니의 날 축하드려요!,С Днём матери!
-388,5,Intermediate 3,Basic Sentences,Congratulations,Feliĉan Diwalion!,Happy Diwali to you!,ディワリおめでとうございます！,祝你排灯节快乐！,행복한 디왈리 보내세요!,Поздравляю тебя с Дивали!
+388,5,Intermediate 3,Basic Sentences,Congratulations,Feliĉan Divalion!,Happy Diwali to you!,ディワリおめでとうございます！,祝你排灯节快乐！,행복한 디왈리 보내세요!,Поздравляю тебя с Дивали!
 389,4,Intermediate 2,Basic Sentences,Congratulations,Permesu al mi gratuli vin,Let me congratulate you.,おめでとうございます。,让我祝贺你。,축하드립니다.,Позвольте вас поздравить.
 390,6,Advanced 1,Basic Sentences,Congratulations,Gratulon pro via diplomiĝo!,Congratulations on your graduation!,ご卒業おめでとうございます！,祝贺你毕业了！,졸업을 진심으로 축하합니다!,Поздравляю с окончанием университета!
 391,6,Advanced 1,Basic Sentences,Congratulations,Gratulon pro la nova laborposteno!,Congratulations on getting the job!,就職おめでとうございます！,恭喜你找到新工作！,취업을 축하해요!,Поздравляю с приёмом на работу!
@@ -394,7 +394,7 @@
 548,9,Expert 1,General Conversation,Asking for & Giving Information,Kie vi kutime pasigas viajn feriojn?,Where do you usually spend your holidays?,普段はどこで休暇を過ごしますか？,你通常在哪里度假？,보통 휴일에는 어디에서 시간을 보내세요?,Где вы обычно проводите отпуск?
 549,9,Expert 1,General Conversation,Asking for & Giving Information,Mi kutime pasigas miajn feriojn en la kamparo,I usually spend my holidays in the country.,私は普段、休暇を田舎で過ごします。,我通常在乡下度假。,저는 보통 시골에서 휴가를 보냅니다.,Я обычно провожу отпуск в деревне.
 550,9,Expert 1,General Conversation,Asking for & Giving Information,Kie mi povas aĉeti mapon de la urbo?,Where can I buy a map of the city?,この街の地図はどこで買えますか？,我在哪里可以买到这座城市的地图？,이 도시의 지도를 어디에서 살 수 있나요?,Где я могу купить карту города?
-551,10,Expert 2,General Conversation,Asking for & Giving Information,Ĉu vi trovas teatron aŭ operon pli interesan?,Do you find theatre or opera more interesting?,演劇とオペラでは、どちらの方が面白いと思いますか？,你觉得戏剧还是歌剧更有趣？,연극과 오페라 중에서 어느 쪽이 더 흥미롭다고 생각하세요?,Вам кажется более интересным театр или опера?
+551,10,Expert 2,General Conversation,Asking for & Giving Information,Ĉu vi trovas teatron aŭ operon pli interesa?,Do you find theatre or opera more interesting?,演劇とオペラでは、どちらの方が面白いと思いますか？,你觉得戏剧还是歌剧更有趣？,연극과 오페라 중에서 어느 쪽이 더 흥미롭다고 생각하세요?,Вам кажется более интересным театр или опера?
 552,10,Expert 2,General Conversation,Asking for & Giving Information,Kiuj sportoj estas popularaj en via lando?,What sports are popular in your country?,あなたの国で人気のあるスポーツは何ですか。,你们国家有哪些受欢迎的体育运动？,당신 나라에서 어떤 스포츠가 인기가 있나요?,Какие виды спорта популярны в вашей стране?
 553,10,Expert 2,General Conversation,Asking for & Giving Information,Ĉu estas iuj picejoj proksime de via hejmo?,Are there any pizzerias near your home?,ご自宅の近くにピザ屋はありますか？,你家附近有披萨店吗？,집 근처에 피자 가게가 있나요?,Рядом с вашим домом есть какие-нибудь пиццерии?
 554,10,Expert 2,General Conversation,Asking for & Giving Information,"Ĉu vi vere pensas, ke tio estas vera?",Do you really think that's true?,本当にそれが本当だと思うの？,你真的觉得那是真的吗？,정말 그게 사실이라고 생각하세요?,"Ты действительно думаешь, что это правда?"
@@ -437,7 +437,7 @@
 591,6,Advanced 1,General Conversation,Expressing Feelings,Mi estas motivita,I'm motivated.,やる気があります。,我很有动力。,저는 의욕이 넘쳐요.,Я вдохновлена.
 592,6,Advanced 1,General Conversation,Expressing Feelings,Mi estas elĉerpita,I'm exhausted.,もうくたくたです。,我累坏了。,정말 지쳤어요.,Я измождена.
 593,6,Advanced 1,General Conversation,Expressing Feelings,Mi estas konfuzita,I'm confused.,混乱しています。,我有点困惑。,혼란스러워요.,Я в замешательстве.
-594,6,Advanced 1,General Conversation,Expressing Feelings,Mi sentas min ĝenata,I'm embarrassed.,気恥ずかしいです。,我很尴尬。,창피해요.,Я стесняюсь.
+594,6,Advanced 1,General Conversation,Expressing Feelings,Mi sentas min embarasita,I'm embarrassed.,気恥ずかしいです。,我很尴尬。,창피해요.,Я стесняюсь.
 595,7,Advanced 2,General Conversation,Expressing Feelings,Mi estas nervoza,I am nervous.,緊張しています。,我有点紧张。,긴장돼요.,Я нервничаю.
 596,7,Advanced 2,General Conversation,Expressing Feelings,Mi estas en malbona humoro,I'm in a bad mood.,機嫌が悪いです。,我心情不好。,기분이 안 좋아요.,Я в плохом настроении.
 597,7,Advanced 2,General Conversation,Expressing Feelings,Mi sentas min terure,I feel terrible.,とてもつらいです。,我感觉很糟糕。,기분이 정말 안 좋아요.,Я ужасно себя чувствую.
@@ -558,7 +558,7 @@
 712,5,Intermediate 3,Emergencies,Emergency Situations,Ĉu ĉiuj estas en ordo?,Is everyone OK?,みなさん大丈夫ですか？,大家都还好吗？,모두 괜찮으신가요?,Все в порядке?
 713,7,Advanced 2,Emergencies,Emergency Situations,Kiu vokis la policon?,Who called the police?,誰が警察を呼んだんですか？,是谁报警的？,누가 경찰을 불렀어요?,Кто вызывал полицию?
 714,7,Advanced 2,Emergencies,Emergency Situations,Haltigu la ŝteliston!,Stop the thief!,泥棒を捕まえて！,抓小偷！,도둑을 잡아주세요!,Держите вора!
-715,7,Advanced 2,Emergencies,Emergency Situations,Kie estas la perditaĵejo?,Where is the lost property?,遺失物取扱所はどこですか？,失物招领处在哪里？,분실물 보관소가 어디에 있나요?,Где бюро находок?
+715,7,Advanced 2,Emergencies,Emergency Situations,Kie estas la oficejo pri perditaj aĵoj?,Where is the lost property?,遺失物取扱所はどこですか？,失物招领处在哪里？,분실물 보관소가 어디에 있나요?,Где бюро находок?
 716,4,Intermediate 2,Emergencies,Emergency Situations,Mi ne povas trovi miajn ŝlosilojn,I can't find my keys.,鍵が見つからない。,我找不到我的钥匙。,열쇠를 못 찾겠어요.,Я не могу найти свои ключи.
 717,9,Expert 1,Emergencies,Emergency Situations,Ĉu vi flaras ion brulantan?,Do you smell something burning?,何か焦げているような匂いがしませんか？,你有没有闻到什么烧焦的味道？,타는 냄새가 나지 않아요?,Вы чувствуете запах гари?
 718,9,Expert 1,Emergencies,Emergency Situations,La konstruaĵo brulas!,The building's on fire!,建物が火事だ！,楼着火了！,건물에 불이 났어요!,Здание горит!
@@ -568,7 +568,7 @@
 722,9,Expert 1,Emergencies,Emergency Situations,Estas urĝa situacio!,It's an emergency!,緊急事態です！,紧急情况！,긴급 상황입니다!,Это чрезвычайная ситуация!
 723,9,Expert 1,Emergencies,Emergency Situations,Bonvolu tuj voki la policon,Please call the police immediately.,すぐに警察を呼んでください。,请立即报警。,즉시 경찰에 신고해 주세요.,"Пожалуйста, немедленно вызовите полицию."
 724,4,Intermediate 2,Emergencies,Emergency Situations,Oni atakis min,I've been attacked.,襲われました。,我被袭击了。,저는 공격을 당했어요.,На меня напали.
-725,3,Intermediate 1,Emergencies,Accidents,Mi estas traŭmigita,I am traumatised.,私は心に深い傷を負っています。,我受到了创伤。,저는 트라우마를 겪고 있어요.,Я травмирована.
+725,3,Intermediate 1,Emergencies,Accidents,Mi estas traŭmatizita,I am traumatised.,私は心に深い傷を負っています。,我受到了创伤。,저는 트라우마를 겪고 있어요.,Я травмирована.
 726,2,Beginner 2,Emergencies,Accidents,Ĉu iu estas vundita?,Is anyone hurt?,けがをした人はいませんか？,有人受伤吗？,다친 사람 있나요?,Кто-нибудь ранен?
 727,2,Beginner 2,Emergencies,Accidents,"Ne, neniu estas vundita","No, no one is hurt.",いいえ、けがをした人はいません。,没有，没人受伤。,"아니요, 다친 사람은 없습니다.","Нет, никто не ранен."
 728,3,Intermediate 1,Emergencies,Accidents,Kio kaŭzis la akcidenton?,What caused the accident?,事故の原因は何ですか。,事故是由什么原因引起的？,사고의 원인은 무엇인가요?,Что стало причиной аварии?
@@ -664,13 +664,13 @@
 818,8,Advanced 3,Emergencies,At the Police Station,"Ne zorgu, ni kaptos lin","Don't worry, we'll catch him.",心配しないで、必ず彼を捕まえます。,别担心，我们一定会抓到他。,"걱정하지 마세요, 우리가 그를 잡을 거예요.","Не волнуйтесь, мы его поймаем."
 819,7,Advanced 2,Emergencies,At the Police Station,Mi ne povas trovi mian pasporton ie ajn,I can't find my passport anywhere.,どこを探してもパスポートが見つかりません。,我怎么都找不到我的护照。,여권을 아무리 찾아봐도 보이지 않아요.,Я нигде не могу найти свой паспорт.
 820,7,Advanced 2,Emergencies,At the Police Station,Ĉu mi povas ĝin anstataŭigi?,Can I have it reissued?,再発行してもらえますか？,可以重新补发吗？,재발급받을 수 있을까요?,Я могу его заменить?
-821,7,Advanced 2,Emergencies,At the Police Station,Vi devus turni vin al la perditaĵejo,You should check the lost property.,遺失物取扱所を確認したほうがいいですよ。,你应该去查一下失物招领处。,분실물 보관소를 확인해 보세요.,Вам следовало бы обратиться в бюро находок.
+821,7,Advanced 2,Emergencies,At the Police Station,Vi devus turni vin al la oficejo pri perditaj aĵoj,You should check the lost property.,遺失物取扱所を確認したほうがいいですよ。,你应该去查一下失物招领处。,분실물 보관소를 확인해 보세요.,Вам следовало бы обратиться в бюро находок.
 822,7,Advanced 2,Emergencies,At the Police Station,Oni ŝtelis mian pasporton en la metroo,I was robbed of my passport on the underground.,地下鉄でパスポートを盗まれました。,我的护照在地铁上被偷了。,지하철에서 여권을 도난당했어요.,У меня украли паспорт в метро.
 823,8,Advanced 3,Emergencies,At the Police Station,Ĉu vi havas atestantojn?,Have you got any witnesses?,目撃者はいますか？,你有证人吗？,목격자가 있나요?,У вас есть свидетели?
 824,9,Expert 1,Emergencies,At the Police Station,Ĉu vi ne rimarkis ion suspektindan?,Didn't you notice anything suspicious?,何か怪しいことに気づきませんでしたか？,你没发现有什么可疑的地方吗？,수상한 점을 못 느꼈나요?,Вы не заметили ничего подозрительного?
 825,8,Advanced 3,Emergencies,At the Police Station,Ĉu vi vidis ilin antaŭe?,Have you seen them before?,以前に彼らを見たことがありますか？,你以前见过他们吗？,예전에 본 적 있으세요?,Вы видели их раньше?
 826,9,Expert 1,Emergencies,At the Police Station,Ni penos fari lian fantombildon,We'll try to make his photofit.,彼の似顔絵を作成してみます。,我们会尝试绘制他的模拟画像。,그의 몽타주를 만들어 보겠습니다.,Мы попытаемся составить его фоторобот.
-827,10,Expert 2,Emergencies,At the Police Station,Ĉu vi turniĝis al la perditaĵejo?,Have you checked the lost property?,遺失物取扱所は確認しましたか？,你查过失物招领处了吗？,분실물 보관소를 확인해 보셨나요?,Вы обращались в бюро находок?
+827,10,Expert 2,Emergencies,At the Police Station,Ĉu vi turniĝis al la oficejo pri perditaj aĵoj?,Have you checked the lost property?,遺失物取扱所は確認しましたか？,你查过失物招领处了吗？,분실물 보관소를 확인해 보셨나요?,Вы обращались в бюро находок?
 828,9,Expert 1,Emergencies,At the Police Station,Vi devas skribi oficialan raporton,You have to make an official report.,公式な報告書を作成してください。,你需要提交一份正式报告。,공식 보고서를 작성해야 합니다.,Вы должны написать официальное заявление.
 829,9,Expert 1,Emergencies,At the Police Station,Oni vokis min kiel atestanton,I was called as a witness.,証人として呼ばれました。,我被叫去作证。,저는 증인으로 불려왔어요.,Меня вызвали в качестве свидетеля.
 830,10,Expert 2,Emergencies,At the Police Station,"Mi estas konvinkita, ke ŝi estas senkulpa",I'm convinced that she's innocent.,彼女が無実だと確信しています。,我相信她是无辜的。,저는 그녀가 무죄라고 확신해요.,"Я уверен, что она невиновна."
@@ -772,7 +772,7 @@
 926,10,Expert 2,Making Friends,Place of Residence,Kiom longe vi intencas resti ĉi tie?,How long are you planning to stay here?,こちらにはどのくらい滞在されるご予定ですか？,你打算在这里待多久？,여기에서 얼마나 머무를 예정이신가요?,Как долго ты собираешься здесь быть?
 927,10,Expert 2,Making Friends,Place of Residence,Mi restos ĉi tie dum 1 tago,I'll stay here for 1 day.,ここに1日滞在します。,我会在这里待一天。,저는 여기에서 하루 머물 거예요.,Я пробуду здесь 1 день.
 928,10,Expert 2,Making Friends,Place of Residence,Ili restas dum tri semajnoj,They are staying for three weeks.,彼らは3週間滞在します。,他们会待三个星期。,그들은 3주 동안 머무를 예정이에요.,Они пробудут три недели.
-929,10,Expert 2,Making Friends,Place of Residence,Li loĝas en Nov-Zelando de ses monatoj,He has lived in New Zealand for six months.,彼はニュージーランドに半年間住んでいます。,他已经在新西兰生活了六个月。,그는 뉴질랜드에서 6개월 동안 살고 있어요.,Он жил в Новой Зеландии шесть месяцев.
+929,10,Expert 2,Making Friends,Place of Residence,Li loĝas en Nov-Zelando jam de ses monatoj,He has lived in New Zealand for six months.,彼はニュージーランドに半年間住んでいます。,他已经在新西兰生活了六个月。,그는 뉴질랜드에서 6개월 동안 살고 있어요.,Он жил в Новой Зеландии шесть месяцев.
 930,10,Expert 2,Making Friends,Place of Residence,Ĉu via frato estis en Rumanio?,Has your brother been to Romania?,あなたの弟（お兄さん）はルーマニアに行ったことがありますか？,你的兄弟去过罗马尼亚吗？,당신의 형제는 루마니아에 가본 적이 있나요?,Твой брат был в Румынии?
 931,1,Beginner 1,Making Friends,"Age, Nationality & Religion",De kie vi estas?,Where are you from?,ご出身はどちらですか？,你来自哪里？,어디에서 오셨어요?,Откуда ты?
 932,1,Beginner 1,Making Friends,"Age, Nationality & Religion",Mi estas el Moldavio,I'm from Moldova.,モルドバ出身です。,我来自摩尔多瓦。,저는 몰도바에서 왔어요.,Я из Молдовы.
@@ -800,7 +800,7 @@
 954,5,Intermediate 3,Making Friends,"Age, Nationality & Religion",Mi estas musulmanino,I'm a Muslim.,私はムスリムです。,我是穆斯林。,저는 무슬림이에요.,Я мусульманка.
 955,5,Intermediate 3,Making Friends,"Age, Nationality & Religion",Mi estas hinduistino,I'm a Hindu.,私はヒンドゥー教徒です。,我是印度教徒。,저는 힌두교 신자입니다.,Я индуистка.
 956,5,Intermediate 3,Making Friends,"Age, Nationality & Religion",Mi estas budhano,I'm a Buddhist.,私は仏教徒です。,我是佛教徒。,저는 불교 신자예요.,Я буддист.
-957,5,Intermediate 3,Making Friends,"Age, Nationality & Religion",Mi estas sikho,I'm a Sikh.,私はシク教徒です。,我是锡克教徒。,저는 시크교도입니다.,Я сикх.
+957,5,Intermediate 3,Making Friends,"Age, Nationality & Religion",Mi estas siĥo,I'm a Sikh.,私はシク教徒です。,我是锡克教徒。,저는 시크교도입니다.,Я сикх.
 958,5,Intermediate 3,Making Friends,"Age, Nationality & Religion",Mi estas protestantino,I'm a Protestant.,私はプロテスタントです。,我是新教徒。,저는 개신교 신자입니다.,Я протестантка.
 959,9,Expert 1,Making Friends,"Age, Nationality & Religion",Ĉu vi kredas je Dio?,Do you believe in God?,神様を信じていますか？,你相信上帝吗？,신을 믿으시나요?,Ты веришь в Бога?
 960,9,Expert 1,Making Friends,"Age, Nationality & Religion",Mi ne estas religia,I'm not religious.,私は無宗教です。,我没有宗教信仰。,저는 종교가 없어요.,Я неверующая.
@@ -999,7 +999,7 @@
 1153,8,Advanced 3,Making Friends,Arranging to Meet,Ni renkontiĝu antaŭ la hotelo,Let's meet in front of the hotel.,ホテルの前で会いましょう。,我们在酒店门口见。,호텔 앞에서 만나요.,Давай встретимся перед отелем.
 1154,9,Expert 1,Making Friends,Arranging to Meet,"Ĉu ni povas aranĝi tion iom pli malfrue, ekzemple je la 16-a horo?","Can we make it a bit later, say 4 p.m?",もう少し遅い時間にして、例えば午後4時にするのはどうでしょうか？,我们能不能稍微晚一点，比如下午四点？,"조금 더 늦게, 예를 들어 오후 4시로 할 수 있을까요?","Мы можем сделать это чуть позже, скажем, в 4 часа дня?"
 1155,10,Expert 2,Making Friends,Arranging to Meet,"Sciigu min, se vi povos veni",Let me know if you can make it.,来られるかどうか教えてください。,能来的话请告诉我。,참석 가능하신지 알려주세요.,"Дай мне знать, если ты придёшь."
-1156,10,Expert 2,Making Friends,Arranging to Meet,"Sinjoroj, ni povas ludi partion da golfo","Gents, you may like a game of golf.",皆さん、ゴルフを楽しんでみてはいかがでしょうか。,先生们，您们或许会喜欢打一场高尔夫。,"신사 여러분, 골프 한 판 즐기시는 건 어떠세요?","Господа, мы можем сыграть партию в гольф."
+1156,10,Expert 2,Making Friends,Arranging to Meet,"Sinjoroj, ni povas ludi partion de golfo","Gents, you may like a game of golf.",皆さん、ゴルフを楽しんでみてはいかがでしょうか。,先生们，您们或许会喜欢打一场高尔夫。,"신사 여러분, 골프 한 판 즐기시는 건 어떠세요?","Господа, мы можем сыграть партию в гольф."
 1157,1,Beginner 1,Making Friends,Accepting  & Declining,Certe,Sure.,かしこまりました。,好的。,"네, 알겠습니다.",Конечно.
 1158,1,Beginner 1,Making Friends,Accepting  & Declining,"Pardonu, mi ne povas","Sorry, I can't.",申し訳ありませんが、できません。,抱歉，我做不到。,죄송하지만 할 수 없습니다.,"Прости, не могу."
 1159,1,Beginner 1,Making Friends,Accepting  & Declining,Bone!,All right!,了解しました！,好的！,알겠습니다!,Ладно!
@@ -1120,7 +1120,7 @@
 1274,5,Intermediate 3,Dating,Compliments,Vi estas ravega,You're gorgeous.,とても綺麗だね。,你真漂亮。,정말 아름다우시네요.,Ты потрясающая.
 1275,5,Intermediate 3,Dating,Compliments,Vi estas tre kuraĝa,You're very brave.,あなたはとても勇敢ですね。,你真的很勇敢。,당신은 정말 용감해요.,Вы очень храбрый.
 1276,5,Intermediate 3,Dating,Compliments,Vi estas bonega dancisto,You're a great dancer.,あなたはとてもダンスが上手ですね。,你跳舞跳得真棒。,당신은 정말 춤을 잘 추시네요.,Вы отличный танцор.
-1277,7,Advanced 2,Dating,Compliments,Via nova frizaĵo estas bonega,Your new haircut is great.,新しい髪型、とても素敵ですね。,你的新发型很好看。,새로 자른 머리가 정말 잘 어울려요.,Ваша новая причёска великолепна.
+1277,7,Advanced 2,Dating,Compliments,Via nova hararanĝo estas bonega,Your new haircut is great.,新しい髪型、とても素敵ですね。,你的新发型很好看。,새로 자른 머리가 정말 잘 어울려요.,Ваша новая причёска великолепна.
 1278,8,Advanced 3,Dating,Compliments,Vi estas tre speciala,You're very special.,あなたはとても特別な存在です。,你非常特别。,당신은 정말 특별한 사람이에요.,Вы очень особенная.
 1279,10,Expert 2,Dating,Compliments,Vi estas vere talenta kantistino,You're a really talented singer.,あなたは本当に歌が上手ですね。,你真是一位很有才华的歌手。,당신은 정말 재능 있는 가수예요.,Вы действительно талантливая певица.
 1280,7,Advanced 2,Dating,Compliments,Vi vere bone aspektas,You're really good-looking.,あなたは本当に素敵ですね。,你真的很好看。,정말 멋져 보이세요.,Ты действительно хорошо выглядишь.
@@ -1186,7 +1186,7 @@
 1340,6,Advanced 1,Education,At School,Mi iris al lernejo en Bristolo,I went to school in Bristol.,私はブリストルで学校に通っていました。,我曾在布里斯托尔上学。,저는 브리스톨에서 학교를 다녔어요.,Я ходила в школу в Бристоле.
 1341,6,Advanced 1,Education,At School,Mi finis lernejon deksesjaraĝe,I left school at sixteen.,16歳で学校を卒業しました。,我十六岁时就毕业了。,저는 열여섯 살에 학교를 졸업했어요.,Я закончила школу в шестнадцать лет.
 1342,10,Expert 2,Education,At School,Ĉu vi proponas somerajn lernejojn?,Do you offer summer schools?,サマースクールは実施していますか？,你们有暑期课程吗？,여름 학교를 운영하나요?,Вы предлагаете летние школы?
-1343,7,Advanced 2,Education,At School,"Ĉu vi havas plumon, kiun mi povus prunti?",Have you got a pen I could borrow?,ペンをお借りしてもいいですか？,你有笔可以借我用一下吗？,혹시 제가 잠깐 빌릴 수 있는 펜 있으신가요?,"У тебя есть ручка, которую я могла бы позаимствовать?"
+1343,7,Advanced 2,Education,At School,"Ĉu vi havas plumon, kiun mi povus pruntepreni?",Have you got a pen I could borrow?,ペンをお借りしてもいいですか？,你有笔可以借我用一下吗？,혹시 제가 잠깐 빌릴 수 있는 펜 있으신가요?,"У тебя есть ручка, которую я могла бы позаимствовать?"
 1344,9,Expert 1,Education,At School,Pri kio vi du parolas?,What are you two talking about?,お二人で何を話しているんですか？,你们俩在聊什么？,두 분은 무슨 이야기를 나누고 계신가요?,О чём вы вдвоём разговариваете?
 1345,7,Advanced 2,Education,At School,Mi ne tute komprenis,I didn't understand quite well.,よく理解できませんでした。,我不是很明白。,잘 이해하지 못했어요.,Я не совсем поняла.
 1346,10,Expert 2,Education,At School,Ĉu iu havas ion por aldoni?,Does anyone have anything to add?,他に何か付け加えることはありますか？,还有人要补充吗？,추가로 말씀하실 내용 있으신가요?,"У кого-нибудь есть, что добавить?"
@@ -1240,7 +1240,7 @@
 1394,10,Expert 2,Education,At University,Kiom da homoj loĝas en ĉi tiu ĉambro?,How many people live in this room?,この部屋には何人住んでいますか？,这个房间住了多少人？,이 방에는 몇 명이 살고 있나요?,Сколько человек живёт в этой комнате?
 1395,9,Expert 1,Education,At University,Kiom longe vi lernas la bulgaran?,How long have you been studying Bulgarian?,ブルガリア語を勉強し始めてどのくらいになりますか？,你学保加利亚语多久了？,불가리아어를 공부한 지 얼마나 되셨나요?,Как долго ты учила болгарский?
 1396,10,Expert 2,Education,At University,Ŝi estas studentino specialiĝanta pri geografio,She is a student specializing in geography.,彼女は地理を専攻している学生です。,她是一名主修地理的学生。,그녀는 지리학을 전공하는 학생이에요.,Она студентка географического факультета.
-1397,10,Expert 2,Education,At University,Ŝi havas diplomon pri mastrumado,She has got a Diploma in Management.,彼女はマネジメントのディプロマを取得しています。,她获得了管理学文凭。,그녀는 경영학 디플로마를 취득했습니다.,У неё диплом по менеджменту.
+1397,10,Expert 2,Education,At University,Ŝi havas diplomon pri administrado,She has got a Diploma in Management.,彼女はマネジメントのディプロマを取得しています。,她获得了管理学文凭。,그녀는 경영학 디플로마를 취득했습니다.,У неё диплом по менеджменту.
 1398,10,Expert 2,Education,At University,Kiuj estas la akceptkondiĉoj?,What are the admission requirements?,入学条件は何ですか。,入学要求有哪些？,입학 요건이 어떻게 되나요?,Какие вступительные требования?
 1399,7,Advanced 2,Education,At University,Ĉu vi havas enirajn ekzamenojn?,Have you got an entrance examination?,入学試験はありますか？,你们有入学考试吗？,입학 시험이 있나요?,У вас есть вступительные экзамены?
 1400,7,Advanced 2,Education,At University,Kiu estas la rektoro de la universitato?,Who is the chancellor of the university?,大学の学長はどなたですか。,谁是这所大学的校长？,그 대학의 총장은 누구인가요?,Кто ректор университета?
@@ -1416,7 +1416,7 @@
 1570,8,Advanced 3,Jobs,Occupation,Mia nevo estas arkitekto,My nephew is an architect.,私の甥は建築家です。,我外甥是建筑师。,제 조카는 건축가예요.,Мой племянник - архитектор.
 1571,8,Advanced 3,Jobs,Occupation,Mia pli aĝa fratino estas ekonomikisto,My elder sister is an economist.,私の姉は経済学者です。,我姐姐是一名经济学家。,제 언니는 경제학자예요.,Моя старшая сестра - экономист.
 1572,8,Advanced 3,Jobs,Occupation,Mia onklino estas lerneja psikologo,My aunt is a school psychologist.,私の叔母は学校の心理士です。,我姑姑是一名学校心理学家。,제 이모는 학교 심리학자예요.,Моя тётя - школьный психолог.
-1573,9,Expert 1,Jobs,Occupation,Lili estas bonega vendoestro,Lili is a great sales manager.,リリは優秀な営業マネージャーです。,莉莉是一位出色的销售经理。,릴리는 훌륭한 영업 관리자입니다.,Лили - отличный менеджер по продажам.
+1573,9,Expert 1,Jobs,Occupation,Lili estas bonega administranto pri vendoj,Lili is a great sales manager.,リリは優秀な営業マネージャーです。,莉莉是一位出色的销售经理。,릴리는 훌륭한 영업 관리자입니다.,Лили - отличный менеджер по продажам.
 1574,10,Expert 2,Jobs,Occupation,Ŝi estas eksperto pri ekologio,She's an expert in ecology.,彼女は生態学の専門家です。,她是生态学方面的专家。,그녀는 생태학 전문가예요.,Она эксперт в экологии.
 1575,10,Expert 2,Jobs,Occupation,"Kiel nomiĝas la kompanio, por kiu vi laboras?",What's the name of the company you work for?,あなたが働いている会社の名前は何ですか？,你工作的公司叫什么名字？,당신이 일하는 회사 이름이 무엇인가요?,"Как называется компания, на которую вы работаете?"
 1576,2,Beginner 2,Jobs,Employment Status,Mi estas studentino,I'm a student.,私は学生です。,我是学生。,저는 학생이에요.,Я студентка.
@@ -1426,18 +1426,18 @@
 1580,4,Intermediate 2,Jobs,Employment Status,Mi laboras hejme,I work at home.,自宅で仕事をしています。,我在家工作。,저는 집에서 일해요.,Я работаю дома.
 1581,4,Intermediate 2,Jobs,Employment Status,Mi estas senlabora,I'm unemployed.,無職です。,我目前没有工作。,저는 현재 무직입니다.,Я безработный.
 1582,4,Intermediate 2,Jobs,Employment Status,Mi estas emerita,I'm retired.,退職しています。,我已经退休了。,저는 은퇴했습니다.,Я на пенсии.
-1583,4,Intermediate 2,Jobs,Employment Status,Mi estas hejmmastrino,I am a housewife.,専業主婦です。,我是家庭主妇。,저는 주부예요.,Я домохозяйка.
+1583,4,Intermediate 2,Jobs,Employment Status,Mi estas dommastrino,I am a housewife.,専業主婦です。,我是家庭主妇。,저는 주부예요.,Я домохозяйка.
 1584,5,Intermediate 3,Jobs,Employment Status,Mi serĉas laboron,I'm looking for a job.,仕事を探しています。,我正在找工作。,저는 일자리를 찾고 있어요.,Я ищу работу.
 1585,5,Intermediate 3,Jobs,Employment Status,Mi laboras neleĝe,I work illegally.,私は違法に働いています。,我从事非法工作。,저는 불법으로 일하고 있어요.,Я работаю нелегально.
 1586,5,Intermediate 3,Jobs,Employment Status,Li laboras partatempe,He works part-time.,彼はパートタイムで働いています。,他做兼职工作。,그는 파트타임으로 일해요.,Он работает неполный рабочий день.
 1587,5,Intermediate 3,Jobs,Employment Status,Mi laboras memstare,I'm self-employed.,自営業です。,我是自雇人士。,저는 자영업을 하고 있어요.,Я работаю на себя.
 1588,7,Advanced 2,Jobs,Employment Status,Mi faras praktikon,I'm doing work experience.,職業体験をしています。,我正在实习。,저는 현장 실습을 하고 있어요.,Я прохожу практику.
-1589,7,Advanced 2,Jobs,Employment Status,Li estis altrangigita,He's been promoted.,彼は昇進しました。,他被提拔了。,그는 승진했어요.,Его повысили.
+1589,7,Advanced 2,Jobs,Employment Status,Li estis promociita,He's been promoted.,彼は昇進しました。,他被提拔了。,그는 승진했어요.,Его повысили.
 1590,7,Advanced 2,Jobs,Employment Status,Ŝi estas en patrina forpermeso,She's on maternity leave.,彼女は産休中です。,她正在休产假。,그녀는 출산 휴가 중이에요.,Она в декретном отпуске.
 1591,7,Advanced 2,Jobs,Employment Status,Li estas en patra forpermeso,He's on paternity leave.,彼は育児休暇を取っています。,他正在休陪产假。,그는 육아휴직 중이에요.,Он в отпуске по уходу за ребёнком.
 1592,8,Advanced 3,Jobs,Employment Status,Mi nuntempe partoprenas kurson,I'm on a course at the moment.,今、講座を受講しています。,我现在正在上课。,저는 지금 강의를 듣고 있어요.,Я сейчас на курсах.
 1593,8,Advanced 3,Jobs,Employment Status,Mi momente ne laboras,I'm not working at the moment.,今は仕事をしていません。,我目前没有工作。,현재는 일하고 있지 않습니다.,Я сейчас не работаю.
-1594,8,Advanced 3,Jobs,Employment Status,Mi estas partnero en advokatura firmao,I'm a partner in a law firm.,私は法律事務所のパートナーです。,我是律师事务所的合伙人。,저는 로펌의 파트너입니다.,Я партнёр юридической фирмы.
+1594,8,Advanced 3,Jobs,Employment Status,Mi estas partnero en advokata firmao,I'm a partner in a law firm.,私は法律事務所のパートナーです。,我是律师事务所的合伙人。,저는 로펌의 파트너입니다.,Я партнёр юридической фирмы.
 1595,8,Advanced 3,Jobs,Employment Status,Mi havas propran komercon,I've got my own business.,自分の会社を経営しています。,我有自己的生意。,저는 제 사업을 하고 있어요.,У меня свой бизнес.
 1596,10,Expert 2,Jobs,Employment Status,Mi faras iom da volontula laboro,I do some voluntary work.,ボランティア活動をしています。,我做一些志愿工作。,저는 자원봉사를 하고 있어요.,Я выполняю волонтёрскую работу.
 1597,10,Expert 2,Jobs,Employment Status,Mi restas hejme kaj zorgas pri la infanoj,I stay at home and look after the children.,家で子どもたちの面倒を見ています。,我在家照顾孩子。,저는 집에 있으면서 아이들을 돌보고 있어요.,Я сижу дома и ухаживаю за детьми.
@@ -1455,7 +1455,7 @@
 1609,2,Beginner 2,Jobs,At the Workplace,Mi serĉas sinjoron Lee,I'm looking for Mr Lee.,リーさんを探しています。,我在找李先生。,이 씨를 찾고 있습니다.,Я ищу господина Ли.
 1610,2,Beginner 2,Jobs,At the Workplace,Li hodiaŭ forestas,He's not in today.,本日は不在です。,他今天没来。,오늘 그는 출근하지 않았어요.,Его сегодня нет на месте.
 1611,2,Beginner 2,Jobs,At the Workplace,Li estas en kunveno,He's in a meeting.,彼は会議中です。,他正在开会。,그는 회의 중이에요.,Он на встрече.
-1612,2,Beginner 2,Jobs,At the Workplace,Li hodiaŭ forrestas pro malsano,He's off ill today.,今日は病気で休んでいます。,他今天请病假了。,그는 오늘 아파서 결근했어요.,Он сегодня на больничном.
+1612,2,Beginner 2,Jobs,At the Workplace,Li hodiaŭ forestas pro malsano,He's off ill today.,今日は病気で休んでいます。,他今天请病假了。,그는 오늘 아파서 결근했어요.,Он сегодня на больничном.
 1613,3,Intermediate 1,Jobs,At the Workplace,Mi eliras por tagmanĝi,I'm going out for lunch.,お昼を食べに出かけてきます。,我出去吃午饭。,점심 먹으러 나가요.,Я иду обедать.
 1614,3,Intermediate 1,Jobs,At the Workplace,Kie estas la fotokopiilo?,Where's the photocopier?,コピー機はどこですか。,复印机在哪里？,복사기는 어디에 있나요?,Где ксерокс?
 1615,3,Intermediate 1,Jobs,At the Workplace,Ŝi demisiis,She's resigned.,彼女は辞職しました。,她已经辞职了。,그녀는 사직했어요.,Она уволилась.
@@ -1493,7 +1493,7 @@
 1647,9,Expert 1,Jobs,At the Workplace,Bonvolu faksi ĉi tion al nia oficejo,Please fax this to our office.,こちらを弊社宛にファックスしてください。,请把这个传真到我们办公室。,이 문서를 저희 사무실로 팩스 보내주세요.,"Пожалуйста, отправьте это по факсу в наш офис."
 1648,9,Expert 1,Jobs,At the Workplace,Li nun estas kun kliento,He's with a customer at the moment.,ただいまお客様の対応中です。,他现在正在接待客户。,지금은 고객과 함께 있습니다.,Он сейчас с клиентом.
 1649,10,Expert 2,Jobs,At the Workplace,Mi revenos al vi post momento,I'll be with you in a moment.,少々お待ちください。,我马上就来。,잠시만 기다려 주세요.,Вернусь к вам через секунду.
-1650,10,Expert 2,Jobs,At the Workplace,La liverlimo de la varoj eksvalidiĝas,The delivery time of the merchandise expires.,商品の納期が切れます。,货物的交付期限已到。,상품의 납기일이 만료됩니다.,Время доставки товаров истекает.
+1650,10,Expert 2,Jobs,At the Workplace,La limtempo por liveri la varojn eksvalidiĝas,The delivery time of the merchandise expires.,商品の納期が切れます。,货物的交付期限已到。,상품의 납기일이 만료됩니다.,Время доставки товаров истекает.
 1651,10,Expert 2,Jobs,At the Workplace,"Mi ĝojas informi vin, ke mi havas solvon por vi",I'm happy to tell you that I've got a solution for you.,あなたのために解決策が見つかったことをお伝えできて嬉しいです。,很高兴告诉你，我已经为你找到了解决办法。,해결책을 찾아서 기쁘게 말씀드릴 수 있게 되었어요.,"Рада сообщить вам, что у меня есть для вас решение."
 1652,10,Expert 2,Jobs,At the Workplace,"Persone, mi kredas je ŝia strategio","Personally, I believe in her strategy.",個人的には、彼女の戦略を信頼しています。,我个人相信她的策略。,개인적으로 저는 그녀의 전략을 믿어요.,Лично я верю в её стратегию.
 1653,2,Beginner 2,Jobs,Business,Ĉu ni povas aranĝi kunvenon?,Can we arrange a meeting?,お打ち合わせのご都合をつけることは可能でしょうか。,我们可以安排一次会议吗？,회의를 잡을 수 있을까요?,Мы можем организовать встречу?
@@ -1526,7 +1526,7 @@
 1680,9,Expert 1,Jobs,Business,Via mendo estos traktita kiel eble plej rapide,Your order will be processed as quickly as possible.,ご注文はできるだけ早く処理いたします。,您的订单会尽快处理。,고객님의 주문은 최대한 신속하게 처리해 드리겠습니다.,Ваш заказ будет обработан в ближайшее время.
 1681,10,Expert 2,Jobs,Business,Ĉu vi povus konfirmi la daton de ekspedo?,Could you please confirm the dispatch date?,発送日をご確認いただけますでしょうか。,请您确认一下发货日期。,발송 날짜를 확인해 주시겠어요?,"Не могли бы вы, пожалуйста, подтвердить дату отправки?"
 1682,10,Expert 2,Jobs,Business,Via varo estos sendita ene de du semajnoj,Your goods will be dispatched within two weeks.,ご注文の商品は2週間以内に発送いたします。,您的货物将在两周内发出。,고객님의 상품은 2주 이내에 발송될 예정입니다.,Ваш товар будет отправлен в течение двух недель.
-1683,10,Expert 2,Jobs,Business,Kiam ni negocios pri la prezo?,When are we going to negotiate the price?,価格の交渉はいつ行いますか？,我们什么时候开始谈价格？,가격 협상은 언제 진행할 예정인가요?,Когда вы собираетесь обговорить цену?
+1683,10,Expert 2,Jobs,Business,Kiam ni negocos pri la prezo?,When are we going to negotiate the price?,価格の交渉はいつ行いますか？,我们什么时候开始谈价格？,가격 협상은 언제 진행할 예정인가요?,Когда вы собираетесь обговорить цену?
 1684,10,Expert 2,Jobs,Business,"Laŭ la politiko de nia kompanio, ni fakturas nur en eŭroj",It is our company policy to invoice only in euros.,弊社ではユーロ建てでのみご請求させていただいております。,我们公司规定只以欧元开具发票。,저희 회사는 유로화로만 청구서를 발행하는 정책을 시행하고 있습니다.,"Согласно политике нашей компании, мы выставляем счета только в евро."
 1685,8,Advanced 3,Jobs,Business,Ni ankoraŭ ne ricevis pagon por ĉi tiu monato,We have not yet received payment for this month.,今月分のお支払いがまだ確認できておりません。,我们尚未收到本月的付款。,이번 달 결제가 아직 입금되지 않았습니다.,Мы ещё не получили плату за этот месяц.
 1686,3,Intermediate 1,Jobs,At the Interview,Ĉu vi havas modelon de vivresumo?,Have you got a CV form?,履歴書の用紙はお持ちですか？,你有简历表格吗？,이력서 양식이 있으신가요?,У вас есть образец резюме?
@@ -1570,7 +1570,7 @@
 1724,8,Advanced 3,Jobs,At the Interview,Mi vidis vian anoncon en la gazeto,I saw your advertisement in the newspaper.,新聞で御社の広告を拝見しました。,我在报纸上看到了你的广告。,신문에서 귀하의 광고를 보았습니다.,Я увидел ваше объявление в газете.
 1725,9,Expert 1,Jobs,At the Interview,Mi ŝatus esti dungita de via kompanio,I would like to get hired by your company.,御社で採用していただきたいと考えております。,我希望能加入贵公司。,귀사에 입사하고 싶습니다.,Я бы хотела быть принятой в вашу компанию.
 1726,8,Advanced 3,Jobs,At the Interview,Ĉu mi povus ricevi aliĝilon?,Could I have an application form?,申込書をいただけますか？,请问可以给我一份申请表吗？,신청서를 받을 수 있을까요?,Я могу получить анкету?
-1727,9,Expert 1,Jobs,At the Interview,Mi deziras kandidatiĝi por la posteno de oficejestro,I wish to apply for the post of office manager.,オフィスマネージャーの職に応募したく存じます。,我希望申请办公室经理的职位。,사무실 관리자 직책에 지원하고자 합니다.,Я желаю претендовать на позицию руководителя отдела.
+1727,9,Expert 1,Jobs,At the Interview,Mi deziras kandidatiĝi por la posteno de oficeja administranto,I wish to apply for the post of office manager.,オフィスマネージャーの職に応募したく存じます。,我希望申请办公室经理的职位。,사무실 관리자 직책에 지원하고자 합니다.,Я желаю претендовать на позицию руководителя отдела.
 1728,9,Expert 1,Jobs,At the Interview,Mi tre interesiĝas pri ĉi tiu posteno,I'm very interested in this position.,このポジションに大変興味があります。,我对这个职位非常感兴趣。,이 직무에 매우 관심이 있습니다.,Я очень заинтересован в этой вакансии.
 1729,9,Expert 1,Jobs,At the Interview,Ĉu tio estas provizora aŭ konstanta posteno?,Is this a temporary or permanent position?,これは一時的なポジションですか、それとも正規のポジションですか？,这是临时职位还是长期职位？,"이것은 임시직인가요, 아니면 정규직인가요?",Это временная или постоянная должность?
 1730,7,Advanced 2,Jobs,At the Interview,Ĉu ekzistas senpaga medicina asekuro?,Is there free medical insurance?,無料の医療保険はありますか？,有免费的医疗保险吗？,무료 의료 보험이 있나요?,Есть ли бесплатная медицинская страховка?
@@ -1593,10 +1593,10 @@
 1747,10,Expert 2,Jobs,At the Interview,Kiom oni pagis al vi en via antaŭa laboro?,How much were you paid in your last job?,前職ではどのくらいの給与をもらっていましたか？,你上一份工作的薪资是多少？,이전 직장에서 얼마를 받으셨나요?,Сколько вам платили на предыдущей работе?
 1748,10,Expert 2,Jobs,At the Interview,Mi ne havas laborsperton en ĉi tiu kampo,I've got no work experience in this field.,この分野での職務経験はありません。,我在这个领域没有任何工作经验。,이 분야에서는 근무 경험이 없습니다.,У меня нет опыта работы в этой области.
 1749,4,Intermediate 2,Jobs,Recommendation Letter,Li estas laborema homo,He's a hard-working person.,彼はとても勤勉な人です。,他是个勤奋的人。,그는 성실하게 일하는 사람이에요.,Он трудолюбивый человек.
-1750,4,Intermediate 2,Jobs,Recommendation Letter,Ŝi bone traktas respondecon,She handles responsibility well.,彼女は責任感が強いです。,她能够很好地承担责任。,그녀는 책임을 잘 감당해요.,Она хорошо справляется с обязанностями.
+1750,4,Intermediate 2,Jobs,Recommendation Letter,Ŝi bone plenumas siajn devojn,She handles responsibility well.,彼女は責任感が強いです。,她能够很好地承担责任。,그녀는 책임을 잘 감당해요.,Она хорошо справляется с обязанностями.
 1751,4,Intermediate 2,Jobs,Recommendation Letter,Li havas vastan gamon de kapabloj,He's got a wide range of skills.,彼は幅広いスキルを持っています。,他拥有广泛的技能。,그는 다양한 능력을 갖추고 있어요.,Круг его умений очень широк.
 1752,6,Advanced 1,Jobs,Recommendation Letter,Li akceptas konstruktivan kritikon,He accepts constructive criticism.,彼は建設的な批判を受け入れます。,他能够接受建设性的批评。,그는 건설적인 비판을 받아들입니다.,Он принимает конструктивную критику.
-1753,6,Advanced 1,Jobs,Recommendation Letter,Li estas kreema problemsolvanto,He is a creative problem solver.,彼は創造的に問題を解決できる人です。,他善于创造性地解决问题。,그는 창의적으로 문제를 해결하는 사람입니다.,Он умеет творчески подходить к решению проблем.
+1753,6,Advanced 1,Jobs,Recommendation Letter,Li estas kreema solvanto de problemoj,He is a creative problem solver.,彼は創造的に問題を解決できる人です。,他善于创造性地解决问题。,그는 창의적으로 문제를 해결하는 사람입니다.,Он умеет творчески подходить к решению проблем.
 1754,6,Advanced 1,Jobs,Recommendation Letter,Ŝi ĉiam finas sian laboron ĝustatempe,She always finishes her work on time.,彼女はいつも仕事を期限通りに終わらせます。,她总是按时完成工作。,그녀는 항상 일을 제시간에 끝냅니다.,Она всегда заканчивает работу вовремя.
 1755,6,Advanced 1,Jobs,Recommendation Letter,Estas granda plezuro labori kun ŝi,It's a great pleasure to work with her.,彼女と一緒に仕事ができてとても嬉しいです。,与她共事非常愉快。,그녀와 함께 일하게 되어 매우 기쁩니다.,Работать с ней - огромное удовольствие.
 1756,10,Expert 2,Jobs,Recommendation Letter,Mi ne povas rekomendi lin al via kompanio,I cannot recommend him for your company.,御社に彼を推薦することはできません。,我无法推荐他加入贵公司。,저는 그를 귀사에 추천할 수 없습니다.,Я не могу рекомендовать его вашей компании.
@@ -1720,7 +1720,7 @@
 1874,7,Advanced 2,Travel,At the Tourist Office,Ĉu estas aŭtobuso al la urbo?,Is there a bus into town?,町へ行くバスはありますか？,有去市区的公交车吗？,시내로 가는 버스가 있나요?,"Есть автобус, который идёт в город?"
 1875,6,Advanced 1,Travel,At the Tourist Office,Ĉu estas drinkejo en la urbo?,Is there a pub in the town?,この町にパブはありますか？,镇上有酒吧吗？,이 마을에 술집이 있나요?,В этом городе есть бар?
 1876,6,Advanced 1,Travel,At the Tourist Office,Ĉu estas teatro en ĉi tiu urbo?,Is there a theatre in this town?,この町に劇場はありますか？,这个镇上有剧院吗？,이 마을에 극장이 있나요?,В этом городе есть театр?
-1877,7,Advanced 2,Travel,At the Tourist Office,Kie estas la turista informejo?,Where is the tourist information office?,観光案内所はどこですか。,请问旅游信息中心在哪里？,관광 안내소가 어디에 있나요?,Где находится туристическое бюро?
+1877,7,Advanced 2,Travel,At the Tourist Office,Kie estas la turisma oficejo?,Where is the tourist information office?,観光案内所はどこですか。,请问旅游信息中心在哪里？,관광 안내소가 어디에 있나요?,Где находится туристическое бюро?
 1878,7,Advanced 2,Travel,At the Tourist Office,Ĉu vi scias la numeron por voki taksion?,Do you know the number to call a taxi?,タクシーを呼ぶ電話番号をご存じですか？,你知道打车要拨打什么电话吗？,택시를 부르려면 전화할 수 있는 번호를 알고 계신가요?,"Вы знаете номер, по которому можно заказать такси?"
 1879,7,Advanced 2,Travel,At the Tourist Office,Ĉu vi havas broŝurojn?,Have you got any brochures?,パンフレットはございますか？,您有宣传册吗？,혹시 안내 책자 있으신가요?,У вас есть какие-нибудь брошюры?
 1880,5,Intermediate 3,Travel,At the Tourist Office,Ni bezonas ie resti,We need somewhere to stay.,どこか泊まる場所が必要です。,我们需要找个地方住。,우리가 머물 곳이 필요해요.,Нам надо где-то остановиться.
@@ -1800,7 +1800,7 @@
 1954,2,Beginner 2,Plane,Booking a Flight,Kiom kostas la flugoj?,How much are the flights?,航空券はいくらですか？,机票多少钱？,항공권 가격이 얼마인가요?,Сколько стоят перелёты?
 1955,2,Beginner 2,Plane,Booking a Flight,Ekonomiklasa bileto,An economy class ticket.,エコノミークラスのチケット,一张经济舱机票。,이코노미 클래스 항공권입니다.,Билет эконом-класса.
 1956,2,Beginner 2,Plane,Booking a Flight,Ĉu ĉi tio estas rekta flugo?,Is this a direct flight?,これは直行便ですか？,这是直飞航班吗？,이 비행기는 직항인가요?,Это прямой рейс?
-1957,2,Beginner 2,Plane,Booking a Flight,Ĉu estas interhalto?,Is there a stopover?,経由地はありますか？,有中途停留吗？,경유지가 있나요?,Есть остановка по пути?
+1957,2,Beginner 2,Plane,Booking a Flight,Ĉu estas halto dumvoje?,Is there a stopover?,経由地はありますか？,有中途停留吗？,경유지가 있나요?,Есть остановка по пути?
 1958,3,Intermediate 1,Plane,Booking a Flight,Kiam estas la flugo al Romo?,When is the flight to Rome?,ローマ行きのフライトはいつですか？,飞往罗马的航班什么时候起飞？,로마행 비행기는 언제 출발하나요?,Когда рейс в Рим?
 1959,4,Intermediate 2,Plane,Booking a Flight,Bonvolu kontroli aliajn flugkompaniojn,Please check other airlines.,他の航空会社もご確認ください。,请查询其他航空公司。,다른 항공사들도 확인해 주세요.,"Пожалуйста, проверьте другие авиакомпании."
 1960,4,Intermediate 2,Plane,Booking a Flight,Bileto de komerca klaso,A business class ticket.,ビジネスクラスの航空券,一张商务舱机票。,비즈니스 클래스 항공권입니다.,Билет бизнес-класса.
@@ -1875,7 +1875,7 @@
 2029,9,Expert 1,Plane,Checking in,"Ĉu vi povus demeti vian zonon, mi petas?","Could you take off your belt, please?",ベルトを外していただけますか。,请把皮带取下来好吗？,벨트를 벗어 주시겠어요?,"Не могли бы вы снять ремень, пожалуйста?"
 2030,9,Expert 1,Plane,Checking in,"Ĉu vi povus demeti vian mantelon, mi petas?","Could you take off your coat, please?",コートをお脱ぎいただけますか。,请把外套脱下来好吗？,코트를 벗어 주시겠어요?,"Не могли бы вы снять пальто, пожалуйста?"
 2031,10,Expert 2,Plane,Checking in,Bonvolu elpreni vian tekkomputilon el ĝia ujo,Please take your laptop out of its case.,ノートパソコンをケースから取り出してください。,请把您的笔记本电脑从包里拿出来。,노트북을 케이스에서 꺼내 주세요.,"Пожалуйста, достаньте ноутбук из чехла."
-2032,10,Expert 2,Plane,Checking in,"Mi timas, ke vi ne povas traporti tion",I'm afraid you can't take that through.,申し訳ありませんが、そちらはお持ち込みいただけません。,恐怕这个不能带进去。,죄송하지만 그건 가지고 들어가실 수 없습니다.,"Боюсь, вы не можете пронести это с собой."
+2032,10,Expert 2,Plane,Checking in,"Mi timas, ke vi ne povas kunporti tion",I'm afraid you can't take that through.,申し訳ありませんが、そちらはお持ち込みいただけません。,恐怕这个不能带进去。,죄송하지만 그건 가지고 들어가실 수 없습니다.,"Боюсь, вы не можете пронести это с собой."
 2033,2,Beginner 2,Plane,Luggage,Tio estas mia bagaĝo,This is my luggage.,こちらが私の荷物です。,这是我的行李。,이것이 제 짐이에요.,Это мой багаж.
 2034,2,Beginner 2,Plane,Luggage,Mi ne havas bagaĝon,I don't have any luggage.,荷物は持っていません。,我没有行李。,저는 짐이 없어요.,У меня нет багажа.
 2035,2,Beginner 2,Plane,Luggage,Kie mi povas pesi la bagaĝon?,Where is the luggage check?,荷物はどこで計量できますか？,行李在哪里可以称重？,수하물은 어디에서 무게를 잴 수 있나요?,Где можно взвесить багаж?
@@ -1937,7 +1937,7 @@
 2091,4,Intermediate 2,Plane,Passport Control & Customs,Rifuzo de vizpeto,Refusal of visa application,ビザ申請の却下,签证申请被拒,비자 신청 거절,Отказ в выдаче визы
 2092,5,Intermediate 3,Plane,Passport Control & Customs,Mi havas studentan vizon,I have got a student visa.,学生ビザを持っています。,我有学生签证。,저는 학생 비자를 가지고 있어요.,У меня студенческая виза.
 2093,5,Intermediate 3,Plane,Passport Control & Customs,Mi havas komercan vizon,I have got a business visa.,ビジネスビザを持っています。,我有商务签证。,저는 비즈니스 비자를 가지고 있습니다.,У меня деловая виза.
-2094,5,Intermediate 3,Plane,Passport Control & Customs,Jen mia tranzitvizo,Here is my transit visa.,こちらが私のトランジットビザです。,这是我的过境签证。,여기 제 환승 비자가 있습니다.,Вот моя транзитная виза.
+2094,5,Intermediate 3,Plane,Passport Control & Customs,Jen mia transitvizo,Here is my transit visa.,こちらが私のトランジットビザです。,这是我的过境签证。,여기 제 환승 비자가 있습니다.,Вот моя транзитная виза.
 2095,4,Intermediate 2,Plane,Passport Control & Customs,Mi flugas transite al Singapuro,I'm in transit for Singapore.,シンガポールへ向かう途中です。,我正在中转去新加坡。,저는 싱가포르로 환승 중이에요.,Я лечу транзитом до Сингапура.
 2096,5,Intermediate 3,Plane,Passport Control & Customs,Jen mia importa licenco,Here is my import licence.,こちらが私の輸入許可証です。,这是我的进口许可证。,여기 제 수입 면허증입니다.,Вот моя лицензия на ввоз.
 2097,4,Intermediate 2,Plane,Passport Control & Customs,De kie vi venis?,Where have you travelled from?,どちらからいらっしゃいましたか？,您是从哪里来的？,어디에서 오셨나요?,Откуда вы приехали?
@@ -1977,7 +1977,7 @@
 2131,7,Advanced 2,Plane,On the Plane,Miaj aŭskultiloj ne funkcias,My earphones don't work.,イヤホンが使えません。,我的耳机坏了。,제 이어폰이 작동하지 않아요.,Мои наушники не работают.
 2132,4,Intermediate 2,Plane,On the Plane,Kiom longe daŭras la flugo?,How long is the flight?,飛行時間はどのくらいですか。,飞行时间有多长？,비행 시간은 얼마나 걸리나요?,Сколько длится полёт?
 2133,4,Intermediate 2,Plane,On the Plane,Kio estas la rapideco de la aviadilo?,What is the speed of the plane?,飛行機の速度はどれくらいですか。,飞机的速度是多少？,비행기의 속도는 얼마인가요?,Какова скорость самолёта?
-2134,5,Intermediate 3,Plane,On the Plane,"Vomsakon, mi petas","A sick bag, please.",エチケット袋をお願いします。,请给我一个呕吐袋。,구토 봉지 하나 주세요.,"Гигиенический пакет, пожалуйста."
+2134,5,Intermediate 3,Plane,On the Plane,"Sakon por vomado, mi petas","A sick bag, please.",エチケット袋をお願いします。,请给我一个呕吐袋。,구토 봉지 하나 주세요.,"Гигиенический пакет, пожалуйста."
 2135,4,Intermediate 2,Plane,On the Plane,Ĉu mi povas sidiĝi tie?,Can I sit over there?,あちらに座ってもいいですか？,我可以坐在那里吗？,저기 앉아도 될까요?,Я могу сесть вон там?
 2136,4,Intermediate 2,Plane,On the Plane,Kiu estas via sidloknumero?,What's your seat number?,あなたの席番号は何番ですか？,你的座位号是多少？,좌석 번호가 어떻게 되세요?,Какой у вас номер места?
 2137,4,Intermediate 2,Plane,On the Plane,Ĉu mi povas ricevi ankoraŭ unu trinkaĵon?,Can I have another drink?,もう一杯いただけますか？,我可以再来一杯吗？,음료를 하나 더 주실 수 있나요?,Можно мне ещё один напиток?
@@ -1994,7 +1994,7 @@
 2148,8,Advanced 3,Plane,On the Plane,Bonvolu atenti ĉi tiun mallongan sekurecan demonstracion,Please pay attention to this short safety demonstration.,こちらの短い安全説明にご注意ください。,请注意观看这段简短的安全演示。,이 짧은 안전 시범에 주의해 주시기 바랍니다.,"Пожалуйста, обратите внимание на эту краткую демонстрацию спасательных средств."
 2149,8,Advanced 3,Plane,On the Plane,Bonvolu remeti vian seĝodorson en la vertikalan pozicion,Please return your seat to the upright position.,座席を元の直立位置にお戻しください。,请将座椅恢复到直立位置。,좌석을 원위치로 바로 세워 주시기 바랍니다.,"Пожалуйста, поднимите спинку кресла."
 2150,9,Expert 1,Plane,On the Plane,Ĉu vi bonvolus meti ĝin en la supran bagaĝujon?,Could you please put that in the overhead locker?,その荷物を頭上の収納棚に入れていただけますか。,请把那个放到头顶的行李舱里好吗？,그것을 머리 위 선반에 넣어 주시겠어요?,"Не могли бы вы, пожалуйста, убрать её на верхнюю полку?"
-2151,9,Expert 1,Plane,On the Plane,Ĉu vi dezirus iom da manĝaĵo aŭ trinkaĵojn?,Would you like any food or refreshments?,お食事やお飲み物はいかがですか？,您需要点些吃的或饮品吗？,음식이나 다과를 드릴까요?,Вы бы хотели какую-нибудь еду или напитки?
+2151,9,Expert 1,Plane,On the Plane,Ĉu vi dezirus iom da manĝaĵo aŭ trinkaĵo?,Would you like any food or refreshments?,お食事やお飲み物はいかがですか？,您需要点些吃的或饮品吗？,음식이나 다과를 드릴까요?,Вы бы хотели какую-нибудь еду или напитки?
 2152,9,Expert 1,Plane,On the Plane,Je kiu alteco ni flugas?,What altitude are we flying at?,私たちは今、どの高度を飛んでいますか？,我们现在飞行的高度是多少？,우리는 지금 어떤 고도로 비행하고 있나요?,На какой высоте мы летим?
 2153,7,Advanced 2,Plane,On the Plane,Ĉu vi havas grekan gazeton?,Have you got a Greek newspaper?,ギリシャ語の新聞はありますか？,你有希腊文报纸吗？,그리스 신문이 있나요?,У вас есть греческая газета?
 2154,7,Advanced 2,Plane,On the Plane,Ĉu vi bonvolus doni al mi kovrilon?,Would you please get me a blanket?,毛布を持ってきていただけますか？,能帮我拿一条毯子吗？,담요 좀 가져다 주시겠어요?,Не могли бы вы дать мне одеяло?
@@ -2203,11 +2203,11 @@
 2357,4,Intermediate 2,Car,Road Signs,Malrapidiĝu,Slow down,速度を落としてください,慢一点,천천히 하세요.,Снизьте скорость
 2358,4,Intermediate 2,Car,Road Signs,Vojlaboroj,Roadworks,道路工事,道路施工,도로 공사,Дорожные работы
 2359,5,Intermediate 3,Car,Road Signs,Haltu! Trapaso malpermesita!,Stop! No entry!,止まれ！立入禁止！,停下！禁止通行！,멈추세요! 통행 금지입니다!,Стоп! Проход запрещён!
-2360,5,Intermediate 3,Car,Road Signs,Parkumado malpermesata,No parking,駐車禁止,禁止停车,주차 금지,Парковка запрещена
+2360,5,Intermediate 3,Car,Road Signs,Parkumado malpermesita,No parking,駐車禁止,禁止停车,주차 금지,Парковка запрещена
 2361,5,Intermediate 3,Car,Road Signs,Bushaltejo,Bus stop,バス停,公交车站,버스 정류장,Автобусная остановка
 2362,5,Intermediate 3,Car,Road Signs,Unudirekta trafiko,One-way,一方通行,单行道,일방통행,Одностороннее движение
 2363,8,Advanced 3,Car,Road Signs,Rapidlimo,Speed limit,制限速度,限速,제한 속도,Ограничение максимальной скорости
-2364,8,Advanced 3,Car,Road Signs,Eniro malpermesata,No entry,立入禁止,禁止入内,출입 금지,Въезд запрещён
+2364,8,Advanced 3,Car,Road Signs,Eniro malpermesita,No entry,立入禁止,禁止入内,출입 금지,Въезд запрещён
 2365,8,Advanced 3,Car,Road Signs,Vojo fermita,Road closed,通行止め,道路封闭,도로 통제,Проезд запрещён
 2366,8,Advanced 3,Car,Road Signs,Halto malpermesita,No stopping,駐停車禁止,禁止停车,정차 금지,Остановка запрещена
 2367,6,Advanced 1,Car,Road Signs,Busstrio,Bus lane,バス専用レーン,公交专用道,버스 전용차로,Полоса общественного транспорта
@@ -2302,7 +2302,7 @@
 2456,9,Expert 1,Other Transport,At the Train Station,Mi ŝatus pensiulan unudirektan bileton al Milano,I'd like a senior citizens' single to Milan.,ミラノまでのシニア用片道切符をお願いします。,我想要一张去米兰的老年人单程票。,밀라노행 노인 편도 승차권 한 장 주세요.,Я бы хотел пенсионный билет в один конец до Милана.
 2457,9,Expert 1,Other Transport,At the Train Station,Mi ŝatus unuaklasan revenbileton al Talino,I'd like a first class return to Tallinn.,タリンまでの往復ファーストクラスをお願いします。,我想要一张去塔林的头等舱往返票。,탈린까지 일등석 왕복표로 부탁합니다.,Я бы хотела билет первого класса туда и обратно до Таллина.
 2458,10,Expert 2,Other Transport,At the Train Station,Kiom longe validas revenbileto?,How long is a return ticket good for?,往復切符の有効期間はどれくらいですか。,往返票的有效期是多久？,왕복 티켓의 유효 기간은 얼마나 되나요?,Сколько времени действует билет туда и обратно?
-2459,10,Expert 2,Other Transport,At the Train Station,Ĉu ĉi tio estas eksprestrajno aŭ loktrajno?,Is this an express or a local train?,これは急行ですか、それとも各駅停車ですか？,这是快车还是普通车？,"이 열차는 급행인가요, 아니면 일반 열차인가요?",Это экспресс или электричка?
+2459,10,Expert 2,Other Transport,At the Train Station,Ĉu ĉi tio estas eksprestrajno aŭ loka trajno?,Is this an express or a local train?,これは急行ですか、それとも各駅停車ですか？,这是快车还是普通车？,"이 열차는 급행인가요, 아니면 일반 열차인가요?",Это экспресс или электричка?
 2460,10,Expert 2,Other Transport,At the Train Station,Ĉu la trajno faras iujn haltojn survoje?,Does the train make any stops on the way?,途中で停車しますか？,这趟火车中途会停站吗？,기차가 가는 도중에 정차하는 역이 있나요?,Поезд делает какие-нибудь остановки по пути?
 2461,10,Expert 2,Other Transport,At the Train Station,Ĉu ĉi tiu estas la ĝusta kajo por Tajpeo?,Is this the right platform for Taipei?,台北にはこのプラットフォームで合っていますか？,这是去台北的正确站台吗？,여기가 타이베이행 맞는 플랫폼인가요?,Это правильная платформа до Тайбэя?
 2462,10,Expert 2,Other Transport,At the Train Station,Kajo 11 por la 10:22 al Varsovio,Platform 11 for 10.22 to Warsaw.,10時22分発ワルシャワ行きは11番ホームです。,开往华沙的10点22分列车，请在11号站台候车。,10시 22분 바르샤바행은 11번 플랫폼에서 출발합니다.,"Платформа 11, поезд в 10:22 до Варшавы."
@@ -2332,9 +2332,9 @@
 2486,4,Intermediate 2,Other Transport,On the Bus or Train,Mi havas elektronikan bileton,I've got an e-ticket.,電子チケットを持っています。,我有一张电子票。,저는 전자 티켓을 가지고 있어요.,У меня электронный билет.
 2487,4,Intermediate 2,Other Transport,On the Bus or Train,Mi perdis mian bileton,I've lost my ticket.,チケットをなくしてしまいました。,我的票丢了。,표를 잃어버렸어요.,Я потеряла свой билет.
 2488,4,Intermediate 2,Other Transport,On the Bus or Train,En kiu vagono estas mia loko?,Which carriage is my seat in?,私の席はどの車両ですか？,我的座位在哪节车厢？,제 좌석은 몇 호 칸에 있나요?,В каком вагоне моё место?
-2489,5,Intermediate 3,Other Transport,On the Bus or Train,Ĉu estas vagonrestoracio?,Is there a restaurant car?,食堂車はありますか？,有餐车吗？,식당칸이 있나요?,Здесь есть вагон-ресторан?
+2489,5,Intermediate 3,Other Transport,On the Bus or Train,Ĉu estas restoracia vagono?,Is there a restaurant car?,食堂車はありますか？,有餐车吗？,식당칸이 있나요?,Здесь есть вагон-ресторан?
 2490,5,Intermediate 3,Other Transport,On the Bus or Train,Kiom da tempo por atingi Osakon?,How long to get to Osaka?,大阪までどれくらいかかりますか？,到大阪需要多长时间？,오사카까지 얼마나 걸리나요?,Сколько добираться до Осаки?
-2491,5,Intermediate 3,Other Transport,On the Bus or Train,Kiom da haltejoj de ĉi tie?,How many stops from here?,ここから何停留所ありますか？,离这里还有几站？,여기서 몇 정거장 남았어요?,Сколько остановок отсюда?
+2491,5,Intermediate 3,Other Transport,On the Bus or Train,Kiom da haltejoj estas de ĉi tie?,How many stops from here?,ここから何停留所ありますか？,离这里还有几站？,여기서 몇 정거장 남았어요?,Сколько остановок отсюда?
 2492,6,Advanced 1,Other Transport,On the Bus or Train,Kiom da haltejoj estas ĝis Kabulo?,How many stops is it to Kabul?,カブールまであと何停留所ありますか？,到喀布尔要经过几站？,카불까지 몇 정거장인가요?,Сколько остановок до Кабула?
 2493,5,Intermediate 3,Other Transport,On the Bus or Train,Kie ni nun traveturas?,Where are we passing now?,今、私たちはどこを通っていますか？,我们现在经过哪里？,지금 우리는 어디를 지나고 있나요?,Где мы сейчас проезжаем?
 2494,6,Advanced 1,Other Transport,On the Bus or Train,Ĉu mi povas malfermi la fenestron?,May I open the window?,窓を開けてもよろしいですか。,我可以开窗吗？,창문을 열어도 될까요?,Я могу открыть окно?
@@ -2384,7 +2384,7 @@
 2538,5,Intermediate 3,Other Transport,Taxi,Mi estas ĉe la trajnstacio,I'm at the train station.,今、駅にいます。,我在火车站。,저는 기차역에 있어요.,Я на железнодорожном вокзале.
 2539,5,Intermediate 3,Other Transport,Taxi,Venu preni min je la 7-a matene,Pick me up at 7 a.m.,朝7時に迎えに来て。,早上七点来接我。,아침 7시에 데리러 와 주세요.,Заберите меня в 7 часов утра.
 2540,6,Advanced 1,Other Transport,Taxi,Ĉu la taksimetro estas ŝaltita?,Is the meter switched on?,メーターの電源は入っていますか？,仪表开了吗？,계량기가 켜져 있나요?,Таксометр включён?
-2541,5,Intermediate 3,Other Transport,Taxi,Bonvolu elekti la plej rektan vojon,Please take the most direct route.,できるだけ最短ルートでお願いします。,请走最直接的路线。,가장 직접적인 경로로 가주세요.,"Пожалуйста, выберите самый короткий маршрут."
+2541,5,Intermediate 3,Other Transport,Taxi,Bonvolu elekti la plej mallongan vojon,Please take the most direct route.,できるだけ最短ルートでお願いします。,请走最直接的路线。,가장 직접적인 경로로 가주세요.,"Пожалуйста, выберите самый короткий маршрут."
 2542,6,Advanced 1,Other Transport,Taxi,Ĉu vi povus veturi pli rapide?,Could you drive faster?,もう少しスピードを出してもらえますか？,你能开快一点吗？,좀 더 빨리 운전해 주실 수 있나요?,Вы можете ехать быстрее?
 2543,6,Advanced 1,Other Transport,Taxi,Bonvolu fermi la fenestron,Please close the window.,窓を閉めてください。,请把窗户关上。,창문을 닫아 주세요.,"Пожалуйста, закройте окно."
 2544,6,Advanced 1,Other Transport,Taxi,"Ellasu min ĉi tie, mi petas","Let me off here, please.",ここで降ろしてください。,请在这里让我下车。,여기서 내려 주세요.,"Высадите меня здесь, пожалуйста."
@@ -2437,7 +2437,7 @@
 2591,10,Expert 2,Other Transport,Ship,Sur kiu ferdeko estas la monŝanĝejo?,Which deck's the bureau de change on?,両替所はどのデッキにありますか？,货币兑换处在几层甲板？,환전소는 몇 층(데크)에 있나요?,На какой палубе находится пункт обмена валюты?
 2592,7,Advanced 2,Other Transport,Ship,Mi ŝatus bileton por aŭto kaj du pasaĝeroj,I'd like a ticket for a car and two passengers.,車1台と乗客2名分のチケットをお願いします。,我要一张包括一辆车和两名乘客的票。,자동차 한 대와 승객 두 명의 티켓을 주세요.,Я бы хотел билет на машину и двух пассажиров.
 2593,8,Advanced 3,Other Transport,Ship,Je kioma horo estas la sekva boato al Bankoko?,What time's the next boat to Bangkok?,次のバンコク行きの船は何時ですか？,下一班去曼谷的船几点发？,다음 방콕행 배는 몇 시에 출발하나요?,Во сколько следующий катер в Бангкок?
-2594,8,Advanced 3,Other Transport,Ship,Kiam la ŝipo fornavigos al Vaŝingtono?,When does the ship sail for Washington?,ワシントン行きの船はいつ出航しますか。,这艘船什么时候开往华盛顿？,워싱턴행 배는 언제 출항하나요?,Когда корабль отчаливает в Вашингтон?
+2594,8,Advanced 3,Other Transport,Ship,Kiam la ŝipo foriros al Vaŝingtono?,When does the ship sail for Washington?,ワシントン行きの船はいつ出航しますか。,这艘船什么时候开往华盛顿？,워싱턴행 배는 언제 출항하나요?,Когда корабль отчаливает в Вашингтон?
 2595,8,Advanced 3,Other Transport,Ship,Je kioma horo la pramo alvenas en Vienon?,What time does the ferry arrive in Vienna?,フェリーは何時にウィーンに到着しますか？,渡轮几点到维也纳？,페리는 몇 시에 비엔나에 도착하나요?,Во сколько паром прибывает в Вену?
 2596,9,Expert 1,Other Transport,Ship,Je kioma horo mi devas registriĝi?,What time do I have to check in?,何時までにチェックインすればよいですか？,我需要几点办理登船手续？,체크인은 몇 시까지 해야 하나요?,Во сколько мне нужно зарегистрироваться?
 2597,9,Expert 1,Other Transport,Ship,Kiom longe la ŝipo restas en la haveno?,How long does the ship stay in port?,船は港にどのくらい停泊しますか。,这艘船在港口停留多长时间？,선박이 항구에 머무는 시간은 얼마나 되나요?,Как долго корабль стоит в порту?
@@ -2497,7 +2497,7 @@
 2651,4,Intermediate 2,Hotel,Booking a Room,Ĉu mi povas ŝanĝi la daton de la rezervo?,Can I change the date of the booking?,予約の日付を変更できますか。,我可以更改预订日期吗？,예약 날짜를 변경할 수 있나요?,Я могу изменить дату бронирования?
 2652,5,Intermediate 3,Hotel,Booking a Room,Mi restos ĝis la 15-a de junio,I will stay till the 15th of June.,6月15日まで滞在します。,我会待到六月十五日。,저는 6월 15일까지 머물 거예요.,Я пробуду до 15-го июня.
 2653,4,Intermediate 2,Hotel,Booking a Room,Mi restos 2 noktojn,I will stay 2 nights.,2泊します。,我会住两晚。,2박 머물 예정이에요.,Я пробуду 2 ночи.
-2654,4,Intermediate 2,Hotel,Booking a Room,Ĉu mi povas havi unulokan ĉambron?,Can I have a single room?,シングルルームをお願いできますか？,请问可以给我安排一个单人间吗？,싱글룸으로 예약할 수 있을까요?,Можно мне одноместный номер?
+2654,4,Intermediate 2,Hotel,Booking a Room,Ĉu mi povas havi unulitan ĉambron?,Can I have a single room?,シングルルームをお願いできますか？,请问可以给我安排一个单人间吗？,싱글룸으로 예약할 수 있을까요?,Можно мне одноместный номер?
 2655,4,Intermediate 2,Hotel,Booking a Room,Ne restas unulitaj ĉambroj,There are no single rooms left.,シングルルームは満室です。,已经没有单人房了。,싱글룸은 모두 예약이 완료되었습니다.,Одноместных номеров не осталось.
 2656,5,Intermediate 3,Hotel,Booking a Room,Ĉu vi havas liberajn ĉambrojn?,Have you got any rooms available?,空いているお部屋はありますか？,请问还有空房吗？,빈 객실이 있나요?,У вас есть свободные номера?
 2657,5,Intermediate 3,Hotel,Booking a Room,"Pardonu, nuntempe ni ne havas liberajn ĉambrojn","Sorry, currently we've got no rooms.",申し訳ありませんが、ただいま空室がございません。,很抱歉，目前我们没有空房。,죄송하지만 현재 이용 가능한 객실이 없습니다.,"Извините, в настоящий момент номеров нет."
@@ -2516,7 +2516,7 @@
 2670,10,Expert 2,Hotel,Booking a Room,Mi konfirmis la rezervon en Riado,I confirmed the reservation in Riyadh.,リヤドでの予約を確認しました。,我已经确认了利雅得的预订。,리야드에서 예약을 확인했습니다.,Я подтвердил бронирование в Эр-Рияде.
 2671,9,Expert 1,Hotel,Booking a Room,Mi ŝatus nuligi mian rezervon,I'd like to cancel my reservation.,予約をキャンセルしたいのですが。,我想取消我的预订。,예약을 취소하고 싶어요.,Я бы хотела отменить своё бронирование.
 2672,9,Expert 1,Hotel,Booking a Room,Ĉu vi povas rekomendi alian hotelon?,Can you recommend another hotel?,ほかにおすすめのホテルはありますか？,你能推荐其他酒店吗？,다른 호텔을 추천해 주실 수 있나요?,Вы можете порекомендовать другой отель?
-2673,9,Expert 1,Hotel,Booking a Room,Bonvolu doni al mi vizitkarton kun la hoteladreso,Please give me a business card with the hotel address.,ホテルの住所が記載された名刺をいただけますか。,请给我一张印有酒店地址的名片。,호텔 주소가 적힌 명함을 주세요.,"Пожалуйста, дайте мне визитку с адресом отеля."
+2673,9,Expert 1,Hotel,Booking a Room,Bonvolu doni al mi vizitkarton kun la adreso de la hotelo,Please give me a business card with the hotel address.,ホテルの住所が記載された名刺をいただけますか。,请给我一张印有酒店地址的名片。,호텔 주소가 적힌 명함을 주세요.,"Пожалуйста, дайте мне визитку с адресом отеля."
 2674,10,Expert 2,Hotel,Booking a Room,Kiom kostas ĉambro inkluzive de matenmanĝo?,How much for a room including breakfast?,朝食付きでお部屋はいくらですか？,含早餐的房价是多少？,조식이 포함된 객실 요금이 얼마인가요?,"Сколько стоит номер, включая завтрак?"
 2675,8,Advanced 3,Hotel,Booking a Room,Tio estas iom pli ol mi volis pagi,That's a bit more than I wanted to pay.,思っていたより少し高いですね。,这个价格比我预期的要高一些。,제가 생각했던 것보다 조금 비싸네요.,"Это немного больше, чем я хотел заплатить."
 2676,8,Advanced 3,Hotel,Booking a Room,Ĉu vi povus fari al mi rabaton?,Could you offer me any discount?,何か割引していただけますか？,可以给我一些优惠吗？,할인해 주실 수 있나요?,Вы могли бы сделать мне скидку?
@@ -2545,7 +2545,7 @@
 2699,6,Advanced 1,Hotel,Checking in,Ĉu vi dezirus helpon kun via bagaĝo?,Would you like any help with your luggage?,お荷物をお手伝いしましょうか？,需要帮您拿行李吗？,짐을 옮기는 데 도움이 필요하신가요?,"Вы бы хотели, чтобы вам помогли с багажом?"
 2700,5,Intermediate 3,Hotel,Checking in,Kie ni matenmanĝas?,Where do we have breakfast?,朝食はどこで食べますか？,我们在哪里吃早餐？,아침 식사는 어디에서 하나요?,Где мы завтракаем?
 2701,5,Intermediate 3,Hotel,Checking in,Je kioma horo vi fermas?,When do you lock up?,何時に施錠しますか？,你们什么时候关门？,언제 문을 잠그시나요?,Во сколько закрывается вход?
-2702,7,Advanced 2,Hotel,Checking in,La elĉambriĝhoro estas je la 12-a tagmeze,Checkout time is 12 noon.,チェックアウトは正午12時です。,退房时间为中午12点。,체크아웃 시간은 정오 12시입니다.,Время выезда из отеля - 12 часов дня.
+2702,7,Advanced 2,Hotel,Checking in,Oni devas forlasi la ĉambron je la 12-a tagmeze,Checkout time is 12 noon.,チェックアウトは正午12時です。,退房时间为中午12点。,체크아웃 시간은 정오 12시입니다.,Время выезда из отеля - 12 часов дня.
 2703,7,Advanced 2,Hotel,Checking in,Ĉu vi provizas mapojn?,Do you provide any maps?,地図のご用意はありますか？,您提供地图吗？,지도를 제공하시나요?,Вы предоставляете карты?
 2704,7,Advanced 2,Hotel,Checking in,Rezervoj estis faritaj por mi kaj mia familio,Reservations have been made for me and my family.,私と家族の分の予約が取れています。,我和家人的预订已经安排好了。,저와 제 가족을 위한 예약이 완료되었습니다.,Для меня и моей семьи были сделаны бронирования.
 2705,9,Expert 1,Hotel,Checking in,Mi ŝatus meti kelkajn valoraĵojn en la sejfon,I would like to put some valuables in the safety deposit box.,貴重品を貸金庫に預けたいのですが。,我想把一些贵重物品存放在保险箱里。,귀중품을 안전 금고에 보관하고 싶어요.,Я бы хотел поместить ценные вещи в сейф.
@@ -2559,7 +2559,7 @@
 2713,9,Expert 1,Hotel,Checking in,Ĉu vi ŝlosas la enirpordon nokte?,Do you lock the front door at night?,夜は玄関の鍵をかけますか？,你晚上会锁前门吗？,밤에 현관문을 잠그시나요?,Вы запираете входную дверь на ночь?
 2714,1,Beginner 1,Hotel,During Your Stay,Ne ĝenu,Do not disturb,起こさないでください,请勿打扰,방해하지 마세요.,Не беспокоить
 2715,1,Beginner 1,Hotel,During Your Stay,Bonvolu purigi la ĉambron,Please clean the room,部屋を掃除してください。,请打扫房间,방을 정리해 주세요.,"Пожалуйста, уберите в номере"
-2716,1,Beginner 1,Hotel,During Your Stay,Fumado malpermesata,No smoking,禁煙,禁止吸烟,금연,Курение запрещено
+2716,1,Beginner 1,Hotel,During Your Stay,Fumado malpermesita,No smoking,禁煙,禁止吸烟,금연,Курение запрещено
 2717,1,Beginner 1,Hotel,During Your Stay,Ĉu mi povas ricevi sapon?,Can I have some soap?,石鹸をいただけますか？,可以给我一些肥皂吗？,비누 좀 주시겠어요?,Я могу получить мыло?
 2718,1,Beginner 1,Hotel,During Your Stay,Ĉu mi povas havi tukon?,Can I have a towel?,タオルをいただけますか？,可以给我一条毛巾吗？,수건 하나 주시겠어요?,Могу я получить полотенце?
 2719,2,Beginner 2,Hotel,During Your Stay,Mi bezonas infanliton,I need a cot.,ベビーベッドが必要です。,我需要一张婴儿床。,유아용 침대가 필요해요.,Мне нужна детская кроватка.
@@ -2575,7 +2575,7 @@
 2729,3,Intermediate 1,Hotel,During Your Stay,Ĉu vi povus veki min je la 6-a matene?,Could you wake me up at 6 a.m?,朝6時に起こしてもらえますか？,你能早上六点叫我起床吗？,아침 6시에 깨워줄 수 있나요?,Вы можете разбудить меня в 6 часов утра?
 2730,4,Intermediate 2,Hotel,During Your Stay,Ĉu estas poŝto por mi?,Is there any post for me?,私宛の郵便はありますか？,有我的邮件吗？,저에게 온 우편물이 있나요?,Для меня есть почта?
 2731,4,Intermediate 2,Hotel,During Your Stay,"Ĉu mi povus vidi vian ŝlosilon, mi petas?","Could I see your key, please?",鍵を見せていただけますか？,请把您的钥匙给我看一下。,열쇠를 보여주실 수 있나요?,"Могу я посмотреть ваш ключ, пожалуйста?"
-2732,4,Intermediate 2,Hotel,During Your Stay,Ĉu vi ŝatus vekvokon?,Would you like a wake-up call?,モーニングコールをご希望ですか？,需要叫醒服务吗？,모닝콜을 원하시나요?,Вы бы хотели заказать звонок-будильник?
+2732,4,Intermediate 2,Hotel,During Your Stay,"Ĉu vi ŝatus, ke oni veku vin?",Would you like a wake-up call?,モーニングコールをご希望ですか？,需要叫醒服务吗？,모닝콜을 원하시나요?,Вы бы хотели заказать звонок-будильник?
 2733,4,Intermediate 2,Hotel,During Your Stay,"Ĉu vi povus voki taksion por mi, mi petas?","Would you call a taxi for me, please?",タクシーを呼んでいただけますか。,请帮我叫一辆出租车好吗？,택시를 불러 주시겠어요?,"Не могли бы вы вызвать мне такси, пожалуйста?"
 2734,5,Intermediate 3,Hotel,During Your Stay,Ĉu mi povas matenmanĝi en mia ĉambro?,Can I have breakfast in my room?,朝食をお部屋でいただくことはできますか。,可以在房间里用早餐吗？,객실에서 아침 식사를 할 수 있을까요?,Я могу позавтракать в номере?
 2735,6,Advanced 1,Hotel,During Your Stay,Kiel oni ŝaltas la lumon?,How do you turn on the lights?,どうやって電気をつけますか？,怎么开灯？,불을 어떻게 켜나요?,Как включить свет?
@@ -2592,7 +2592,7 @@
 2746,7,Advanced 2,Hotel,During Your Stay,Ĉu vi bonvolus purigi mian ĉambron?,Would you please clean my room?,私の部屋を掃除していただけますか？,请帮我打扫一下房间好吗？,제 방을 청소해 주시겠어요?,"Не могли бы вы, пожалуйста, убрать мой номер?"
 2747,7,Advanced 2,Hotel,During Your Stay,Mi estas alergia al polvo,I am allergic to dust.,私はほこりアレルギーです。,我对灰尘过敏。,저는 먼지 알레르기가 있어요.,У меня аллергия на пыль.
 2748,8,Advanced 3,Hotel,During Your Stay,Ĉu estas ia telefona mesaĝo por mi?,Is there a telephone message for me?,私宛てに電話の伝言はありますか？,有我的电话留言吗？,저에게 온 전화 메시지가 있나요?,Для меня есть какое-нибудь телефонное сообщение?
-2749,8,Advanced 3,Hotel,During Your Stay,"Ĉu vi scias, kiu estas via internacia kodo?",Do you know what your international code is?,自分の国際電話番号の国番号を知っていますか？,你知道你的国际区号是多少吗？,당신의 국제 전화 코드가 무엇인지 알고 계신가요?,"Вы знаете, какой у вас международный код?"
+2749,8,Advanced 3,Hotel,During Your Stay,"Ĉu vi scias, kio estas via internacia kodo?",Do you know what your international code is?,自分の国際電話番号の国番号を知っていますか？,你知道你的国际区号是多少吗？,당신의 국제 전화 코드가 무엇인지 알고 계신가요?,"Вы знаете, какой у вас международный код?"
 2750,8,Advanced 3,Hotel,During Your Stay,"La ŝlosilon de ĉambro numero 621, bonvolu!","The key for room number 621, please!",621号室の鍵をお願いします。,请给我621号房的钥匙！,621호실 열쇠 주세요.,"Ключ от комнаты номер 621, пожалуйста!"
 2751,8,Advanced 3,Hotel,During Your Stay,Bonvolu veki min morgaŭ je la naŭa horo,Please wake me up tomorrow at nine o'clock.,明日9時に起こしてください。,请明天早上九点叫我起床。,내일 아침 9시에 깨워 주세요.,"Пожалуйста, разбудите меня завтра в девять часов."
 2752,8,Advanced 3,Hotel,During Your Stay,Mi ŝatus plilongigi mian restadon por kelkaj tagoj,I'd like to extend my stay for a few days.,もう数日滞在を延長したいのですが。,我想把住宿时间延长几天。,며칠 더 머물고 싶어요.,Я бы хотела продлить своё пребывание на несколько дней.
@@ -2690,7 +2690,7 @@
 2844,9,Expert 1,Hotel,Complaints,Mia ĉambro ne estis purigita,My room hasn't been cleaned.,私の部屋はまだ掃除されていません。,我的房间还没有打扫。,제 방이 아직 청소되지 않았어요.,Мой номер не убрали.
 2845,9,Expert 1,Hotel,Complaints,Ĉu vi povus ŝanĝi la littukojn?,Could you please change the sheets?,シーツを替えていただけますか。,请帮我换一下床单。,시트를 교체해 주시겠어요?,"Не могли бы вы, пожалуйста, поменять простыни?"
 2846,9,Expert 1,Hotel,Complaints,Ĉi tio estas tute neakceptebla,This is totally unacceptable.,これは到底受け入れられません。,这完全不能接受。,이건 도저히 받아들일 수 없습니다.,Это совершенно неприемлемо.
-2847,10,Expert 2,Hotel,Complaints,Mi ne ricevis mian vekigan vokon,I did not receive my wake-up call.,モーニングコールを受けていませんでした。,我没有接到叫醒电话。,모닝콜을 받지 못했습니다.,Я не получил звонок-будильник.
+2847,10,Expert 2,Hotel,Complaints,Oni ne telefonis al mi por veki min,I did not receive my wake-up call.,モーニングコールを受けていませんでした。,我没有接到叫醒电话。,모닝콜을 받지 못했습니다.,Я не получил звонок-будильник.
 2848,10,Expert 2,Hotel,Complaints,"Mi rezervis duoblan liton, sed ricevis du unulitajn","I booked a double bed, but I got a twin.",ダブルベッドを予約したのに、ツインになっていました。,我预订的是大床房，但给我安排的是双床房。,더블 침대를 예약했는데 트윈 침대를 받았어요.,"Я бронировал двуспальную кровать, а получил две односпальных."
 2849,10,Expert 2,Hotel,Complaints,"Mi ankoraŭ atendas la matenmanĝon, kiun mi mendis",I'm still waiting for the breakfast I have ordered.,注文した朝食がまだ届いていません。,我还在等我点的早餐。,아직 주문한 아침 식사가 나오지 않았어요.,Я всё ещё жду заказанный завтрак.
 2850,9,Expert 1,Hotel,Complaints,La makuloj ne estis forigitaj,The stains have not been removed.,シミはまだ取れていません。,污渍还没有清除。,얼룩이 지워지지 않았어요.,Пятна не были удалены.
@@ -2707,7 +2707,7 @@
 2861,2,Beginner 2,Hotel,Renting a Flat,Ĉu estas tukoj?,Are there any towels?,タオルはありますか？,有毛巾吗？,수건이 있나요?,Есть полотенца?
 2862,2,Beginner 2,Hotel,Renting a Flat,Ĉu estas kusenoj?,Are there any pillows?,枕はありますか？,有枕头吗？,베개가 있나요?,Есть подушки?
 2863,3,Intermediate 1,Hotel,Renting a Flat,Mi bezonas skatolon da alumetoj,I need a box of matches.,マッチを一箱ください。,我需要一盒火柴。,성냥 한 상자가 필요해요.,Мне нужен коробок спичек.
-2864,3,Intermediate 1,Hotel,Renting a Flat,Mi bezonas balajilon,I need a broom.,ほうきが必要です。,我需要一把扫帚。,빗자루가 필요해요.,Мне нужен веник.
+2864,3,Intermediate 1,Hotel,Renting a Flat,Mi bezonas balailon,I need a broom.,ほうきが必要です。,我需要一把扫帚。,빗자루가 필요해요.,Мне нужен веник.
 2865,3,Intermediate 1,Hotel,Renting a Flat,Mi bezonas tondilon,I need a pair of scissors.,はさみが必要です。,我需要一把剪刀。,가위가 필요해요.,Мне нужны ножницы.
 2866,4,Intermediate 2,Hotel,Renting a Flat,Nia loĝejo estas granda,Our flat is large.,私たちのアパートは広いです。,我们的公寓很大。,우리 아파트는 넓어요.,Наша квартира большая.
 2867,4,Intermediate 2,Hotel,Renting a Flat,Ĉu vi bezonas garaĝon?,Do you want a garage?,ガレージが欲しいですか？,你想要一个车库吗？,차고가 필요하세요?,Вам нужен гараж?
@@ -2765,7 +2765,7 @@
 2919,6,Advanced 1,Restaurant & Pub,Booking a Table,Ni estas kvarope,We are a party of four.,4名です。,我们一行四人。,저희는 네 명입니다.,Нас четверо.
 2920,6,Advanced 1,Restaurant & Pub,Booking a Table,Ni venos je la 6-a horo,We'll come at 6 o'clock.,6時に伺います。,我们六点到。,저희는 6시에 올게요.,Мы придём в 6 часов.
 2921,6,Advanced 1,Restaurant & Pub,Booking a Table,Jen via tablo,This is your table.,こちらがお客様のテーブルです。,这是您的桌子。,이것이 당신의 테이블입니다.,Вот ваш столик.
-2922,9,Expert 1,Restaurant & Pub,Booking a Table,Fumado estas malpermesata,Smoking is not allowed,喫煙は禁止されています。,禁止吸烟,흡연은 허용되지 않습니다.,Курение запрещено
+2922,9,Expert 1,Restaurant & Pub,Booking a Table,Fumado estas malpermesita,Smoking is not allowed,喫煙は禁止されています。,禁止吸烟,흡연은 허용되지 않습니다.,Курение запрещено
 2923,7,Advanced 2,Restaurant & Pub,Booking a Table,Ĉu vi povas rekomendi picerion?,Can you recommend a pizzeria?,おすすめのピザ屋さんはありますか？,你能推荐一家披萨店吗？,피자 가게를 추천해 주실 수 있나요?,Ты можешь порекомендовать пиццерию?
 2924,10,Expert 2,Restaurant & Pub,Booking a Table,Ĉu estas ĉina restoracio proksime?,Is there a Chinese restaurant nearby?,近くに中華料理店はありますか？,附近有中餐馆吗？,근처에 중국 음식점이 있나요?,Здесь поблизости есть китайский ресторан?
 2925,10,Expert 2,Restaurant & Pub,Booking a Table,"Kien vi kutime iras, kiam vi manĝas ekstere?",Where do you usually go when you eat out?,普段、外食するときはどこに行きますか？,你平时外出吃饭一般会去哪里？,외식할 때 주로 어디에 가세요?,Куда ты обычно ходишь поесть?
@@ -2847,7 +2847,7 @@
 3001,8,Advanced 3,Restaurant & Pub,Ordering Food,Ĉu vi havas koŝeran manĝaĵon?,Do you offer kosher food?,コーシャ料理は提供していますか？,请问你们提供犹太洁食吗？,코셔 음식을 제공하나요?,У вас есть кошерная пища?
 3002,3,Intermediate 1,Restaurant & Pub,Ordering Food,Ĉu vi pretas mendi?,Are you ready to order?,ご注文はお決まりでしょうか。,您准备好点餐了吗？,주문하시겠어요?,Вы готовы сделать заказ?
 3003,3,Intermediate 1,Restaurant & Pub,Ordering Food,"Jes, mi prenos ĉi tion","Yes, I'll take this.",はい、これをいただきます。,好的，我就要这个。,"네, 이걸로 하겠습니다.","Да, я возьму это."
-3004,3,Intermediate 1,Restaurant & Pub,Ordering Food,Mi prenos la pastaĵon,I'll have the pasta.,パスタをお願いします。,我要一份意大利面。,파스타로 할게요.,Я буду пасту.
+3004,3,Intermediate 1,Restaurant & Pub,Ordering Food,Mi prenos la pastaĵojn,I'll have the pasta.,パスタをお願いします。,我要一份意大利面。,파스타로 할게요.,Я буду пасту.
 3005,3,Intermediate 1,Restaurant & Pub,Ordering Food,Mi prenos bifstekon kun fritoj,I'll have a steak with chips.,ステーキとフライドポテトをお願いします。,我要一份牛排配薯条。,스테이크와 감자튀김으로 할게요.,Я буду стейк с картошкой-фри.
 3006,3,Intermediate 1,Restaurant & Pub,Ordering Food,Mi prenos nur ŝinkan sandviĉon,I'll just have a ham sandwich.,ハムサンドイッチをお願いします。,我就要一个火腿三明治。,햄 샌드위치로 할게요.,Я буду только сэндвич с ветчиной.
 3007,3,Intermediate 1,Restaurant & Pub,Ordering Food,Kun keĉupo aŭ majonezo?,With ketchup or mayonnaise?,ケチャップとマヨネーズ、どちらにしますか？,要加番茄酱还是蛋黄酱？,케첩이랑 마요네즈 중에 뭐로 드릴까요?,С кетчупом или майонезом?
@@ -2894,7 +2894,7 @@
 3048,10,Expert 2,Restaurant & Pub,Ordering Food,Kiel vi preferas vian supon? Kun nudeloj aŭ rizo?,How do you like your soup? With noodles or rice?,スープは麺とご飯、どちらで召し上がるのがお好みですか？,你喜欢你的汤里加面条还是米饭？,"국은 어떻게 드시는 걸 더 좋아하세요? 면을 넣어서 드시나요, 아니면 밥을 넣어서 드시나요?",Как вам нравится ваш суп? С лапшой или рисом?
 3049,9,Expert 1,Restaurant & Pub,Ordering Food,Verda salato kun franca saŭco,A green salad with French dressing.,フレンチドレッシングをかけたグリーンサラダ,一份配有法式调味汁的蔬菜沙拉。,프렌치 드레싱을 곁들인 그린 샐러드입니다.,Зелёный салат с французской заправкой.
 3050,7,Advanced 2,Restaurant & Pub,Ordering Food,Kiel ĉefpladon mi prenos la stekon,For my main course I'll have the steak.,メインディッシュにはステーキをお願いします。,主菜我要牛排。,메인 요리로 스테이크로 하겠습니다.,В качестве основного блюда я буду стейк.
-3051,7,Advanced 2,Restaurant & Pub,Ordering Food,"Duonkruda, mi petas","Medium rare, please.",ミディアムレアでお願いします。,请做成五分熟。,미디엄 레어로 해주세요.,"Средней прожарки, пожалуйста."
+3051,7,Advanced 2,Restaurant & Pub,Ordering Food,"Mezrostita, mi petas","Medium rare, please.",ミディアムレアでお願いします。,请做成五分熟。,미디엄 레어로 해주세요.,"Средней прожарки, пожалуйста."
 3052,7,Advanced 2,Restaurant & Pub,Ordering Food,Mi ŝatus bone rostitan viandon,I would like my meat well done.,お肉はよく焼いてください。,我想要全熟的肉。,고기는 완전히 익혀서 주세요.,Я бы хотел хорошо прожаренное мясо.
 3053,9,Expert 1,Restaurant & Pub,Ordering Food,Ĉu la manĝaĵo venas kun legomoj?,Does the meal come with vegetables?,この料理には野菜が付いていますか？,这道菜配有蔬菜吗？,이 식사에 야채가 함께 나오나요?,Это блюдо подаётся с овощами?
 3054,10,Expert 2,Restaurant & Pub,Ordering Food,Ĉu vi povus prepari la pladon sen salo?,Could you please prepare the dish with no salt?,塩を使わずに料理を作っていただけますか。,请您不要放盐，谢谢。,소금을 넣지 않고 요리해 주시겠어요?,"Не могли бы вы, пожалуйста, приготовить это блюдо без соли?"
@@ -2989,7 +2989,7 @@
 3143,7,Advanced 2,Restaurant & Pub,Complaints,Ni ne povas plu atendi,We can't wait any longer.,これ以上待てません。,我们不能再等了。,더 이상 기다릴 수 없어요.,Мы больше не можем ждать.
 3144,5,Intermediate 3,Restaurant & Pub,Complaints,Ĉi tio ne estas mia mendo,This is not my order.,これは私の注文ではありません。,这不是我的订单。,이건 제 주문이 아니에요.,Это не мой заказ.
 3145,5,Intermediate 3,Restaurant & Pub,Complaints,Mi mendis rostitan meleagron,I ordered roast turkey.,ローストターキーを注文しました。,我点了烤火鸡。,저는 로스트 터키를 주문했어요.,Я заказывал жареную индейку.
-3146,6,Advanced 1,Restaurant & Pub,Complaints,Ĉi tio estas trokuirita,This is overcooked.,これは火を通しすぎています。,这已经煮过头了。,이건 너무 익었어요.,Оно пережарено.
+3146,6,Advanced 1,Restaurant & Pub,Complaints,Ĉi tio estas tro kuirita,This is overcooked.,これは火を通しすぎています。,这已经煮过头了。,이건 너무 익었어요.,Оно пережарено.
 3147,8,Advanced 3,Restaurant & Pub,Complaints,Mi ne povas manĝi ĉi tion,I can't eat this.,これは食べられません。,我吃不了这个。,이건 먹을 수 없어요.,Я не могу это есть.
 3148,8,Advanced 3,Restaurant & Pub,Complaints,Ĉi tiu trinkaĵo ne estas malvarma,This drink is not cold.,この飲み物は冷たくありません。,这杯饮料不凉。,이 음료는 차갑지 않아요.,Этот напиток не холодный.
 3149,8,Advanced 3,Restaurant & Pub,Complaints,Ĉi tiu vino odoras je korko,This wine has corked.,このワインはコルク臭があります。,这瓶酒有木塞味。,이 와인은 코르크 냄새가 납니다.,Это вино отдаёт пробкой.
@@ -2997,7 +2997,7 @@
 3151,6,Advanced 1,Restaurant & Pub,Complaints,Permesu al mi ŝanĝi ĝin por vi,Let me change it for you.,私がそれを取り替えますね。,我来帮你换一下。,제가 바꿔드릴게요.,"Позвольте, я вам это поменяю."
 3152,7,Advanced 2,Restaurant & Pub,Complaints,"Ĉu vi povus rapidi, mi petas?",Would you please hurry?,急いでいただけますか？,请您快一点好吗？,서둘러 주시겠어요?,"Не могли бы вы поторопиться, пожалуйста?"
 3153,7,Advanced 2,Restaurant & Pub,Complaints,Ni mendis antaŭ pli ol tridek minutoj,We ordered more than thirty minutes ago.,注文してからもう30分以上経っています。,我们下单已经超过三十分钟了。,저희가 주문한 지 30분이 넘었어요.,Мы сделали заказ больше тридцати минут назад.
-3154,7,Advanced 2,Restaurant & Pub,Complaints,Mia mendaĵo ankoraŭ ne alvenis,My order hasn't come yet.,まだ注文したものが来ていません。,我的订单还没有到。,제 주문이 아직 도착하지 않았어요.,Мой заказ ещё не принесли.
+3154,7,Advanced 2,Restaurant & Pub,Complaints,Mia mendo ankoraŭ ne alvenis,My order hasn't come yet.,まだ注文したものが来ていません。,我的订单还没有到。,제 주문이 아직 도착하지 않았어요.,Мой заказ ещё не принесли.
 3155,9,Expert 1,Restaurant & Pub,Complaints,Ni longe atendis,We've been waiting a long time.,私たちはずいぶん長い間待っていました。,我们已经等了很久了。,오랫동안 기다렸어요.,Мы долго ждали.
 3156,9,Expert 1,Restaurant & Pub,Complaints,Ĉu nia manĝaĵo jam venas?,Is our meal on its way?,私たちの料理はもう運ばれてきますか？,我们的餐点在路上了吗？,저희 음식이 오고 있나요?,Нашу еду уже несут?
 3157,10,Expert 2,Restaurant & Pub,Complaints,Ni atendis pli ol horon,We have been waiting for over an hour.,もう1時間以上待っています。,我们已经等了一个多小时了。,저희는 한 시간 넘게 기다리고 있어요.,Мы прождали больше часа.
@@ -3037,7 +3037,7 @@
 3191,4,Intermediate 2,Restaurant & Pub,At the Pub,Estas via vico,It's your round.,あなたの番だよ。,该你请客了。,이번에는 당신 차례예요.,Твоя очередь.
 3192,4,Intermediate 2,Restaurant & Pub,At the Pub,La sekvan rondon mi pagas,The next round is on me.,次の一杯は私のおごりです。,下一轮我请客。,다음 잔은 제가 쏠게요.,Следующий круг за мой счёт.
 3193,4,Intermediate 2,Restaurant & Pub,At the Pub,Lastaj mendoj!,Last orders!,ラストオーダーです！,最后点单！,마지막 주문 받습니다!,Последние заказы!
-3194,4,Intermediate 2,Restaurant & Pub,At the Pub,Mi havas postebriecon,I've got a hangover.,二日酔いなんだ。,我宿醉了。,숙취가 있어요.,У меня похмелье.
+3194,4,Intermediate 2,Restaurant & Pub,At the Pub,Mi havas postebrion,I've got a hangover.,二日酔いなんだ。,我宿醉了。,숙취가 있어요.,У меня похмелье.
 3195,4,Intermediate 2,Restaurant & Pub,At the Pub,Mi neniam plu trinkos!,I'm never going to drink again!,もう二度とお酒は飲まない！,我再也不喝酒了！,다시는 술을 마시지 않을 거예요!,Я никогда больше не буду пить!
 3196,10,Expert 2,Restaurant & Pub,At the Pub,"Tason da kafo, mi petas. Fortan, sed ne amaran","A cup of coffee, please. Strong, but not bitter.",コーヒーを一杯お願いします。濃いめで、でも苦くならないようにしてください。,请来一杯咖啡，要浓一点，但不要苦。,커피 한 잔 주세요. 진하지만 쓰지 않게 해주세요.,"Чашку кофе, пожалуйста. Крепкий, но не горький."
 3197,10,Expert 2,Restaurant & Pub,At the Pub,"Faru ĝin duobla, mi petas","Make it a double, please.",ダブルでお願いします。,请给我来一份双份的。,더블로 해 주세요.,"Сделайте двойной, пожалуйста."
@@ -3053,7 +3053,7 @@
 3207,10,Expert 2,Restaurant & Pub,At the Pub,Ĉu vi havas ankaŭ ion por manĝi?,Do you also have something to eat?,何か食べるものもありますか？,你这儿有吃的吗？,혹시 먹을 것도 있나요?,У вас есть и что-нибудь поесть?
 3208,9,Expert 1,Restaurant & Pub,At the Pub,Kiajn sandviĉojn vi havas?,What sort of sandwiches have you got?,どんなサンドイッチがありますか？,你们有什么三明治？,어떤 종류의 샌드위치가 있나요?,Какие у вас есть сэндвичи?
 3209,9,Expert 1,Restaurant & Pub,At the Pub,Mi ŝatus mendi fritojn kaj laktoskuaĵon,I'd like to order chips and a milkshake.,ポテトとミルクシェイクをお願いします。,我想点薯条和奶昔。,감자튀김과 밀크셰이크를 주문하고 싶어요.,Я бы хотела заказать картофель-фри и молочный коктейль.
-3210,10,Expert 2,Restaurant & Pub,At the Pub,"Paketon da krispaĵoj, mi petas","A packet of crisps, please.",ポテトチップスを一つください。,请给我一包薯片。,감자칩 한 봉지 주세요.,"Пачку чипсов, пожалуйста."
+3210,10,Expert 2,Restaurant & Pub,At the Pub,"Paketon da ĉipsoj, mi petas","A packet of crisps, please.",ポテトチップスを一つください。,请给我一包薯片。,감자칩 한 봉지 주세요.,"Пачку чипсов, пожалуйста."
 3211,10,Expert 2,Restaurant & Pub,At the Pub,Kiun guston vi ŝatus?,What flavour would you like?,どのフレーバーになさいますか？,你想要什么口味？,어떤 맛으로 드릴까요?,С каким вкусом вы бы хотели?
 3212,10,Expert 2,Restaurant & Pub,At the Pub,Mi ŝatus paketon da cigaredoj,I would like a packet of cigarettes.,タバコを一箱ください。,我想要一包香烟。,담배 한 갑 주세요.,Я бы хотел пачку сигарет.
 3213,9,Expert 1,Restaurant & Pub,At the Pub,Kie estas la vira necesejo?,Where's the Gents?,男性用トイレはどこですか？,男厕所在哪里？,남자 화장실이 어디에 있나요?,Где мужской туалет?
@@ -3121,7 +3121,7 @@
 3275,6,Advanced 1,Food,Fruit,Ni ŝatus kelkajn pirojn,We would like some pears.,洋梨をいくつかいただけますか。,我们想要一些梨。,배를 좀 주세요.,Мы бы хотели груши.
 3276,7,Advanced 2,Food,Fruit,Ĉu la ananaso estas freŝa aŭ konservita?,Is the pineapple fresh or tinned?,パイナップルは新鮮なものですか、それとも缶詰ですか？,这个菠萝是新鲜的还是罐装的？,"이 파인애플은 신선한 건가요, 아니면 통조림인가요?",Ананас свежий или консервированный?
 3277,7,Advanced 2,Food,Fruit,Mi preferas bakitajn pirojn,I prefer baked pears.,焼き梨のほうが好きです。,我更喜欢烤梨。,저는 구운 배를 더 좋아해요.,Я предпочитаю запечённые груши.
-3278,7,Advanced 2,Food,Fruit,Mi preferas nigrariban ĝeleon,I prefer blackcurrant jelly.,私はカシスのゼリーの方が好きです。,我更喜欢黑加仑果冻。,저는 블랙커런트 젤리를 더 좋아해요.,Я предпочитаю желе из чёрной смородины.
+3278,7,Advanced 2,Food,Fruit,Mi preferas ĵeleon el nigra ribo,I prefer blackcurrant jelly.,私はカシスのゼリーの方が好きです。,我更喜欢黑加仑果冻。,저는 블랙커런트 젤리를 더 좋아해요.,Я предпочитаю желе из чёрной смородины.
 3279,9,Expert 1,Food,Fruit,Ili preferas rostitajn kaj salitajn migdalojn,They prefer roasted and salted almonds.,彼らはローストして塩味のついたアーモンドを好みます。,他们更喜欢烤制和加盐的杏仁。,그들은 구운 소금 아몬드를 더 선호해요.,Они предпочитают жареный и солёный миндаль.
 3280,9,Expert 1,Food,Fruit,Mi prenos framban glaciaĵon kiel deserton,I'll have a raspberry ice cream for dessert.,デザートにはラズベリーアイスをお願いします。,我要一份覆盆子冰淇淋做甜点。,디저트로 라즈베리 아이스크림을 먹을게요.,Я буду малиновое мороженое на десерт.
 3281,7,Advanced 2,Food,Fruit,Ŝi prenos mirtelan torton,She'll have a blueberry tart.,彼女はブルーベリータルトをお願いします。,她要一个蓝莓馅饼。,그녀는 블루베리 타르트를 주문할게요.,Она будет черничный пирог.
@@ -3164,7 +3164,7 @@
 3318,7,Advanced 2,Food,Vegetables,Li prenos la brasitajn karotojn kaj kikerojn,He'll have the braised carrots and chickpeas.,彼はにんじんとひよこ豆の煮込みをお願いします。,他要一份红烧胡萝卜和鹰嘴豆。,그분께는 당근과 병아리콩 조림을 드릴게요.,Он будет тушёную морковь и нут.
 3319,2,Beginner 2,Food,Staple Food & Spices,Mi ŝatas menton,I like mint.,ミントが好きです。,我喜欢薄荷。,저는 민트를 좋아해요.,Мне нравится мята.
 3320,2,Beginner 2,Food,Staple Food & Spices,Mi provos tofuon,I'll try tofu.,豆腐を試してみます。,我想试试豆腐。,두부를 먹어볼게요.,Я попробую тофу.
-3321,2,Beginner 2,Food,Staple Food & Spices,"Pastaĵon, mi petas","Pasta, please.",パスタをお願いします。,请给我意大利面。,파스타 주세요.,"Пасту, пожалуйста."
+3321,2,Beginner 2,Food,Staple Food & Spices,"Pastaĵojn, mi petas","Pasta, please.",パスタをお願いします。,请给我意大利面。,파스타 주세요.,"Пасту, пожалуйста."
 3322,3,Intermediate 1,Food,Staple Food & Spices,Li preferas blankan pipron,He prefers white pepper.,彼は白こしょうの方が好きです。,他更喜欢白胡椒。,그는 백후추를 더 선호해요.,Он предпочитает белый перец.
 3323,3,Intermediate 1,Food,Staple Food & Spices,Li ŝatas bazilion,He likes basil.,彼はバジルが好きです。,他喜欢罗勒。,그는 바질을 좋아해요.,Ему нравится базилик.
 3324,3,Intermediate 1,Food,Staple Food & Spices,Ankaŭ ŝi ŝatas zingibron,She likes ginger too.,彼女も生姜が好きです。,她也喜欢姜。,그녀도 생강을 좋아해요.,Ей тоже нравится имбирь.
@@ -3172,7 +3172,7 @@
 3326,3,Intermediate 1,Food,Staple Food & Spices,Mi ne povas manĝi tritikon,I can't eat wheat.,小麦は食べられません。,我不能吃小麦。,저는 밀을 먹을 수 없어요.,Мне нельзя пшеницу.
 3327,4,Intermediate 2,Food,Staple Food & Spices,Mi prenos nudelojn,I'll have some noodles.,麺をいただきます。,我要一份面条。,면 요리로 할게요.,Я буду лапшу.
 3328,4,Intermediate 2,Food,Staple Food & Spices,Ne uzu rozmarenon,Don't use rosemary.,ローズマリーは使わないでください。,不要用迷迭香。,로즈마리는 사용하지 마세요.,Не используйте розмарин.
-3329,4,Intermediate 2,Food,Staple Food & Spices,Mi ankaŭ ŝatas sesampanon,I like sesame bread too.,私もごまパンが好きです。,我也喜欢芝麻面包。,저도 참깨빵을 좋아해요.,Мне тоже нравится хлеб с кунжутом.
+3329,4,Intermediate 2,Food,Staple Food & Spices,Mi ankaŭ ŝatas panon kun sezamo,I like sesame bread too.,私もごまパンが好きです。,我也喜欢芝麻面包。,저도 참깨빵을 좋아해요.,Мне тоже нравится хлеб с кунжутом.
 3330,4,Intermediate 2,Food,Staple Food & Spices,Li ŝatas kaperojn,He likes capers.,彼はケイパーが好きです。,他喜欢吃刺山柑。,그는 케이퍼를 좋아해요.,Ему нравятся каперсы.
 3331,5,Intermediate 3,Food,Staple Food & Spices,Ŝi ne ŝatas erukon,She doesn't like rocket.,彼女はルッコラが好きではありません。,她不喜欢芝麻菜。,그녀는 루콜라를 좋아하지 않아요.,Ей не нравится руккола.
 3332,5,Intermediate 3,Food,Staple Food & Spices,Mi prenos terpomojn,I'll have some potatoes.,ポテトをお願いします。,我要一些土豆。,감자 좀 주세요.,Я буду картофель.
@@ -3190,12 +3190,12 @@
 3344,8,Advanced 3,Food,Staple Food & Spices,Li volus iom da rizo,He would like some rice.,ご飯を少しいただきたいそうです。,他想要一些米饭。,그는 밥을 좀 먹고 싶어 해요.,Он бы хотел рис.
 3345,8,Advanced 3,Food,Staple Food & Spices,Ŝi preferas nigran pipron,She prefers black pepper.,彼女は黒コショウの方が好きです。,她更喜欢黑胡椒。,그녀는 흑후추를 더 좋아해요.,Она предпочитает чёрный перец.
 3346,10,Expert 2,Food,Staple Food & Spices,Ŝi preferas fiŝon kun petrosela saŭco,She prefers fish with parsley sauce.,彼女はパセリソースのかかった魚料理が好きです。,她喜欢配欧芹酱的鱼。,그녀는 파슬리 소스를 곁들인 생선을 더 좋아해요.,Она предпочитает рыбу с соусом из петрушки.
-3347,1,Beginner 1,Food,Breakfast Food,Mi ŝatas cerealiojn,I like cereals.,シリアルが好きです。,我喜欢吃麦片。,저는 시리얼을 좋아해요.,Мне нравятся злаки.
+3347,1,Beginner 1,Food,Breakfast Food,Mi ŝatas cerealojn,I like cereals.,シリアルが好きです。,我喜欢吃麦片。,저는 시리얼을 좋아해요.,Мне нравятся злаки.
 3348,1,Beginner 1,Food,Breakfast Food,"Buteron, mi petas","Butter, please.",バターをお願いします。,请给我黄油。,버터 주세요.,"Сливочное масло, пожалуйста."
 3349,1,Beginner 1,Food,Breakfast Food,Mi prenos omleton,I'll have an omelette.,オムレツをお願いします。,我要一份煎蛋卷。,오믈렛으로 할게요.,Я буду омлет.
 3350,1,Beginner 1,Food,Breakfast Food,Mi volas iom da bekono,I want some bacon.,ベーコンが食べたいです。,我想吃点培根。,베이컨 좀 먹고 싶어요.,Я хочу немного бекона.
 3351,2,Beginner 2,Food,Breakfast Food,Ĉu vi ŝatas mielon?,Do you like honey?,はちみつは好きですか？,你喜欢蜂蜜吗？,꿀을 좋아하세요?,Тебе нравится мёд?
-3352,2,Beginner 2,Food,Breakfast Food,Mi ŝatas ĝeleon,I like jelly.,ゼリーが好きです。,我喜欢果冻。,저는 젤리를 좋아해요.,Мне нравится желе.
+3352,2,Beginner 2,Food,Breakfast Food,Mi ŝatas ĵeleon,I like jelly.,ゼリーが好きです。,我喜欢果冻。,저는 젤리를 좋아해요.,Мне нравится желе.
 3353,2,Beginner 2,Food,Breakfast Food,Mi ŝatas mocarelon,I like mozzarella.,モッツァレラチーズが好きです。,我喜欢马苏里拉奶酪。,저는 모짜렐라 치즈를 좋아해요.,Мне нравится моцарелла.
 3354,2,Beginner 2,Food,Breakfast Food,Li ŝatas vaflojn,He likes waffles.,彼はワッフルが好きです。,他喜欢华夫饼。,그는 와플을 좋아해요.,Ему нравятся вафли.
 3355,3,Intermediate 1,Food,Breakfast Food,Mi trinkos teon,I'll have some tea.,お茶をいただきます。,我想喝点茶。,차 한 잔 마실게요.,Я буду чай.
@@ -3224,7 +3224,7 @@
 3378,9,Expert 1,Food,Breakfast Food,Ŝi preferas teon kun artefarita dolĉigilo,She prefers tea with artificial sweetener.,彼女は人工甘味料を入れた紅茶が好きです。,她喜欢在茶里加代糖。,그녀는 인공 감미료를 넣은 차를 더 좋아해요.,Она предпочитает чай с сахарозаменителем.
 3379,2,Beginner 2,Shopping,At the Department Store,Malfermita la tutan tagon,Open all day,終日営業,全天营业,하루 종일 영업합니다.,Открыто весь день
 3380,2,Beginner 2,Shopping,At the Department Store,"Pardonu, ni estas fermitaj","Sorry, we are closed.",申し訳ありませんが、ただいま閉店しております。,抱歉，我们已打烊。,"죄송합니다, 영업이 종료되었습니다.","Извините, мы закрыты."
-3381,2,Beginner 2,Shopping,At the Department Store,Nun estas rabatvendotempo,It's sales time.,今はセール中です。,促销季到了。,세일 기간입니다.,Сейчас время распродаж.
+3381,2,Beginner 2,Shopping,At the Department Store,Nun estas rabatvendo,It's sales time.,今はセール中です。,促销季到了。,세일 기간입니다.,Сейчас время распродаж.
 3382,2,Beginner 2,Shopping,At the Department Store,Kie estas la elirejo?,Where is the exit?,出口はどこですか。,出口在哪里？,출구가 어디에 있나요?,Где выход?
 3383,4,Intermediate 2,Shopping,At the Department Store,Malfermita 24 horojn ĉiutage,Open 24 hours a day,24時間営業,全天24小时营业,24시간 영업합니다.,Открыто 24 часа в сутки
 3384,4,Intermediate 2,Shopping,At the Department Store,Ĉu vi estas malfermitaj sabate?,Are you open on Saturday?,土曜日は営業していますか？,你们周六营业吗？,토요일에도 영업하시나요?,Вы открыты в субботу?
@@ -3261,7 +3261,7 @@
 3415,2,Beginner 2,Shopping,Clothes,Kie estas la T-ĉemizoj?,Where are the T-shirts?,Tシャツはどこにありますか？,T恤衫在哪里？,티셔츠는 어디에 있나요?,Где футболки?
 3416,2,Beginner 2,Shopping,Clothes,Kia estas via grandeco?,What's your size?,サイズは何ですか？,你穿多大码？,사이즈가 어떻게 되세요?,Какой у вас размер?
 3417,2,Beginner 2,Shopping,Clothes,Mia grandeco estas 8,I'm a size 8.,私は8号サイズです。,我穿8号。,저는 8사이즈예요.,У меня 8 размер.
-3418,2,Beginner 2,Shopping,Clothes,Kie estas la provĉambro?,Where's the fitting room?,試着室はどこですか？,试衣间在哪里？,피팅룸이 어디에 있나요?,Где примерочная?
+3418,2,Beginner 2,Shopping,Clothes,Kie estas la provejo?,Where's the fitting room?,試着室はどこですか？,试衣间在哪里？,피팅룸이 어디에 있나요?,Где примерочная?
 3419,3,Intermediate 1,Shopping,Clothes,Ĉu tio bone taŭgas?,Is that a good fit?,それは合っていますか？,这个合适吗？,그게 잘 맞을까요?,Хорошо подходит?
 3420,2,Beginner 2,Shopping,Clothes,Ĝi ne konvenas al mi,It doesn't fit me.,私には合いません。,这不适合我。,저한테 맞지 않아요.,Это мне не подходит.
 3421,2,Beginner 2,Shopping,Clothes,Ĝi estas tro mallonga,It's too short.,短すぎます。,太短了。,너무 짧아요.,Она слишком короткая.
@@ -3303,7 +3303,7 @@
 3457,9,Expert 1,Shopping,Clothes,Ĉu vi havas ion malpli multekostan?,Have you got anything that is less expensive?,もう少し安いものはありますか？,你们有更便宜一点的吗？,더 저렴한 것이 있나요?,У вас есть что-нибудь менее дорогое?
 3458,8,Advanced 3,Shopping,Clothes,Mi volas jupon en pli malhela nuanco de bluo,I want a skirt in a darker shade of blue.,もっと濃い青色のスカートが欲しいです。,我想要一条颜色更深的蓝色裙子。,좀 더 어두운 파란색 치마를 원해요.,Я хочу юбку более тёмного оттенка синего.
 3459,10,Expert 2,Shopping,Clothes,"Ĉu vi pensas, ke ĉi tiu materialo estas daŭrema?",Do you think this material is durable?,この素材は耐久性があると思いますか？,你觉得这种材料耐用吗？,이 소재가 내구성이 있다고 생각하시나요?,"Вы думаете, этот материал долговечный?"
-3460,9,Expert 1,Shopping,Clothes,Kiam ĉi tiu varo estos en rabatvendado?,When will this item go in the sale?,この商品はいつセールになりますか？,这件商品什么时候会打折？,이 상품은 언제 세일에 들어가나요?,Когда этот товар будет на распродаже?
+3460,9,Expert 1,Shopping,Clothes,Kiam ĉi tiu varo estos en rabatvendo?,When will this item go in the sale?,この商品はいつセールになりますか？,这件商品什么时候会打折？,이 상품은 언제 세일에 들어가나요?,Когда этот товар будет на распродаже?
 3461,9,Expert 1,Shopping,Clothes,Mi volas ion el kotono,I want something made of cotton.,綿素材のものが欲しいです。,我想要一件棉质的。,면으로 만든 제품을 원해요.,Я хочу что-нибудь из хлопка.
 3462,8,Advanced 3,Shopping,Clothes,"Tio ne estas tio, kion mi serĉas",It's not what I'm looking for.,私が求めているものではありません。,这不是我想要的。,제가 찾고 있는 것이 아니에요.,"Это не то, что я ищу."
 3463,7,Advanced 2,Shopping,Clothes,Mi serĉas pantalonon,I am looking for a pair of trousers.,ズボンを探しています。,我在找一条裤子。,바지를 찾고 있어요.,Я ищу брюки.
@@ -3316,7 +3316,7 @@
 3470,10,Expert 2,Shopping,Clothes,Kiam vi ricevos novan stokon?,When will you get new stock in?,新しい在庫はいつ入りますか？,请问新货什么时候到？,새 재고는 언제 들어오나요?,Когда вы получите новую коллекцию?
 3471,10,Expert 2,Shopping,Clothes,Ĉu vi havas ĉi tiun artikolon en stoko?,Have you got this item in stock?,こちらの商品は在庫がありますか？,这款商品有现货吗？,이 상품 재고 있나요?,У вас они есть в наличии?
 3472,10,Expert 2,Shopping,Clothes,Bonvolu flankmeti ĉi tion por mi,Please put this on hold for me.,こちらを保留にしておいてください。,请帮我暂时保留一下。,이것을 따로 보관해 주세요.,"Пожалуйста, отложите его для меня."
-3473,2,Beginner 2,Shopping,Shoes,Mi bezonas paron da mokasinoj,I need a pair of moccasins.,モカシンを一足欲しいです。,我需要一双鹿皮鞋。,모카신 한 켤레가 필요해요.,Мне нужна пара мокасинов.
+3473,2,Beginner 2,Shopping,Shoes,Mi bezonas paron da mokasenoj,I need a pair of moccasins.,モカシンを一足欲しいです。,我需要一双鹿皮鞋。,모카신 한 켤레가 필요해요.,Мне нужна пара мокасинов.
 3474,5,Intermediate 3,Shopping,Shoes,Ĉu vi sentas vin komforte en ili?,Do they feel comfortable?,履いてみて快適ですか？,穿着舒服吗？,신어보니 편하세요?,Вам в них удобно?
 3475,2,Beginner 2,Shopping,Shoes,La ŝuoj estas tro grandaj,The shoes are too big.,靴が大きすぎます。,这双鞋太大了。,신발이 너무 커요.,Туфли слишком большие.
 3476,2,Beginner 2,Shopping,Shoes,Mi ŝatas ilin,I like them.,気に入りました。,我喜欢这双。,마음에 들어요.,Они мне нравятся.
@@ -3383,20 +3383,20 @@
 3537,3,Intermediate 1,Shopping,Personal Care,Ĉu ĝi estas por vi?,Is it for you?,あなたのためですか？,这是给你的吗？,당신을 위한 건가요?,Это для вас?
 3538,3,Intermediate 1,Shopping,Personal Care,"Ne, tio ne estas por mi","No, it's not for me.",いいえ、私のためではありません。,不，这不是给我的。,"아니요, 저를 위한 것이 아니에요.","Нет, это не для меня."
 3539,6,Advanced 1,Shopping,Personal Care,Bonvolu montri al mi alian,Please show me another one.,別のものを見せてください。,请再给我看一个。,다른 것 하나 보여주세요.,"Пожалуйста, покажите мне другой."
-3540,3,Intermediate 1,Shopping,Personal Care,Ĝi estas en la rabatvendado,It's in the sale.,セール中です。,正在打折,세일 중이에요.,Он на распродаже.
+3540,3,Intermediate 1,Shopping,Personal Care,Ĝi estas en la rabatvendo,It's in the sale.,セール中です。,正在打折,세일 중이에요.,Он на распродаже.
 3541,4,Intermediate 2,Shopping,Personal Care,Mi bezonas bonan kombilon,I need a good comb.,いいくしが欲しいです。,我需要一把好用的梳子。,좋은 빗이 필요해요.,Мне нужна хорошая расчёска.
 3542,4,Intermediate 2,Shopping,Personal Care,Mi serĉas ŝampuon,I'm looking for a shampoo.,シャンプーを探しています。,我想买一款洗发水。,샴푸를 찾고 있어요.,Я ищу шампунь.
 3543,5,Intermediate 3,Shopping,Personal Care,Kiajn dentobrosojn vi havas?,What toothbrushes have you got?,どんな歯ブラシがありますか？,你们有哪些牙刷？,어떤 칫솔이 있나요?,Какие у вас есть зубные щётки?
 3544,5,Intermediate 3,Shopping,Personal Care,Kie mi povas trovi la dentpaston?,Where can I find the toothpaste?,歯磨き粉はどこにありますか？,请问牙膏在哪里？,치약은 어디에서 찾을 수 있나요?,Где я могу найти зубную пасту?
 3545,6,Advanced 1,Shopping,Personal Care,Kion vi serĉas?,What are you looking for?,何をお探しですか？,你在找什么？,무엇을 찾고 계신가요?,Что вы ищете?
-3546,6,Advanced 1,Shopping,Personal Care,Mi ŝatus paletron de palpebrŝminko,I'd like an eyeshadow palette.,アイシャドウパレットを探しています。,我想要一盘眼影。,아이섀도 팔레트 하나 주세요.,Я бы хотела набор теней для век.
+3546,6,Advanced 1,Shopping,Personal Care,Mi ŝatus paletron da ŝminko por la palpebroj,I'd like an eyeshadow palette.,アイシャドウパレットを探しています。,我想要一盘眼影。,아이섀도 팔레트 하나 주세요.,Я бы хотела набор теней для век.
 3547,7,Advanced 2,Shopping,Personal Care,Kiom ĝi kostas?,How much is it?,おいくらですか？,多少钱？,얼마인가요?,Сколько это стоит?
 3548,7,Advanced 2,Shopping,Personal Care,Ĉirkaŭ cent eŭroj,About one hundred euro.,およそ100ユーロです。,大约一百欧元。,약 100유로 정도입니다.,Около ста евро.
 3549,4,Intermediate 2,Shopping,Personal Care,"Ne, tio estas donaco","No, that's a present.",いいえ、それはプレゼントです。,不，那是礼物。,"아니요, 그건 선물이에요.","Нет, это подарок."
 3550,7,Advanced 2,Shopping,Personal Care,Jen nia katalogo kaj prezlisto,Here is our catalogue and price list.,こちらが当社のカタログと価格表です。,这是我们的产品目录和价格表。,여기에 저희 카탈로그와 가격표가 있습니다.,Вот наш каталог и прайс-лист.
 3551,7,Advanced 2,Shopping,Personal Care,Mi serĉas ungofajlilon,I'm looking for a nail file.,爪やすりを探しています。,我在找指甲锉。,손톱 파일을 찾고 있어요.,Я ищу пилку для ногтей.
 3552,4,Intermediate 2,Shopping,Personal Care,Bonvolu doni al mi pecon da sapo,Please give me a bar of soap.,石けんを一つください。,请给我一块肥皂。,비누 한 개 주세요.,"Пожалуйста, дайте мне кусок мыла."
-3553,6,Advanced 1,Shopping,Personal Care,"Akvorezistan maskaron, bonvolu","A waterproof mascara, please.",ウォータープルーフのマスカラをお願いします。,请给我一款防水睫毛膏。,워터프루프 마스카라로 주세요.,"Водостойкую тушь для ресниц, пожалуйста."
+3553,6,Advanced 1,Shopping,Personal Care,"Akvorezistan ŝminkon por okulharoj, bonvolu","A waterproof mascara, please.",ウォータープルーフのマスカラをお願いします。,请给我一款防水睫毛膏。,워터프루프 마스카라로 주세요.,"Водостойкую тушь для ресниц, пожалуйста."
 3554,7,Advanced 2,Shopping,Personal Care,"Donu al mi skatoleton da vizaĝpudro, mi petas","Give me a box of face powder, please.",フェイスパウダーをひとつください。,请给我一盒粉饼。,페이스 파우더 한 상자 주세요.,"Дайте мне коробочку пудры для лица, пожалуйста."
 3555,6,Advanced 1,Shopping,Personal Care,Mi ŝatus vidi pli helan nuancon,I would like to see a lighter shade.,もう少し明るい色を見てみたいです。,我想看看更浅一点的颜色。,좀 더 밝은 색상을 보고 싶어요.,Я бы хотела посмотреть более светлый оттенок.
 3556,5,Intermediate 3,Shopping,Personal Care,Kie mi povas trovi pinĉilon?,Where can I find a pair of tweezers?,ピンセットはどこにありますか？,哪里可以找到一把镊子？,핀셋을 어디에서 찾을 수 있나요?,Где я могу найти щипчики?
@@ -3435,10 +3435,10 @@
 3589,5,Intermediate 3,Shopping,Electronic Devices,Ĉu la garantio kovras la riparojn?,Does the guarantee cover the repairs?,保証は修理を対象としていますか？,保修是否包括维修？,보증이 수리를 포함하나요?,Гарантия распространяется на ремонт?
 3590,1,Beginner 1,Shopping,Other Goods,Ĉu mi povas helpi vin?,Can I help you?,何かお手伝いしましょうか？,需要帮忙吗？,무엇을 도와드릴까요?,Могу ли я вам чем-то помочь?
 3591,1,Beginner 1,Shopping,Other Goods,Mi aĉetos ĉi tion,I will buy this.,これを買います。,我买这个。,이거 살게요.,Я куплю это.
-3592,1,Beginner 1,Shopping,Other Goods,Ĉe ni estas rabatvendado,We're having a sale.,セールを開催しています。,我们正在进行促销活动。,세일을 진행하고 있어요.,У нас распродажа.
+3592,1,Beginner 1,Shopping,Other Goods,Ĉe ni estas rabatvendo,We're having a sale.,セールを開催しています。,我们正在进行促销活动。,세일을 진행하고 있어요.,У нас распродажа.
 3593,1,Beginner 1,Shopping,Other Goods,Ĉu vi liveras?,Do you deliver?,配達はしていますか？,您提供送货服务吗？,배달하시나요?,Вы осуществляете доставку?
 3594,2,Beginner 2,Shopping,Other Goods,Ĉu vi decidis?,Have you decided?,お決まりになりましたか？,你决定了吗？,결정하셨나요?,Вы решили?
-3595,2,Beginner 2,Shopping,Other Goods,Ĉu vi havas tian saman?,Have you got one like this?,これと同じものはありますか？,你有同样的吗？,이와 같은 것이 있나요?,У вас есть такая же?
+3595,2,Beginner 2,Shopping,Other Goods,Ĉu vi havas la saman?,Have you got one like this?,これと同じものはありますか？,你有同样的吗？,이와 같은 것이 있나요?,У вас есть такая же?
 3596,8,Advanced 3,Shopping,Other Goods,Ĉu vi havas orajn monerojn?,Have you got any gold coins?,金貨を持っていますか？,你有金币吗？,금화가 있나요?,У вас есть золотые монеты?
 3597,3,Intermediate 1,Shopping,Other Goods,Ĉu vi havas ion pli malmultekostan?,Have you got anything cheaper?,もう少し安いものはありますか？,还有更便宜的吗？,더 저렴한 상품도 있나요?,У вас есть что-нибудь подешевле?
 3598,3,Intermediate 1,Shopping,Other Goods,"Tio estas ĉio, kion ni havas",That's all we have.,以上で全てです。,我们只有这些。,이것이 저희가 가진 전부입니다.,"Это всё, что у нас есть."
@@ -3634,7 +3634,7 @@
 3788,8,Advanced 3,Shopping,Payments & Returns,Tiam mi iros ien alian,Then I will go somewhere else.,それなら、ほかの場所に行きます。,那我就去别的地方。,그럼 저는 다른 곳으로 가겠습니다.,Тогда я пойду куда-нибудь ещё.
 3789,5,Intermediate 3,Shopping,Payments & Returns,Ĉu mi povus ricevi repagon?,Could I have a refund?,返金していただけますか？,我可以申请退款吗？,환불해 주실 수 있나요?,Я могу получить деньги обратно?
 3790,7,Advanced 2,Shopping,Payments & Returns,"Ĉu mi povas interŝanĝi la aĵojn, kiujn mi aĉetis?",Can I exchange the things I have bought?,購入した商品を交換できますか？,我买的东西可以换货吗？,구입한 상품을 교환할 수 있나요?,"Я могу обменять вещи, которые купил?"
-3791,1,Beginner 1,Leisure Time,At the Cinema,Ĝi estas trilero,It's a thriller.,スリラーです。,这是一部惊悚片。,스릴러예요.,Это триллер.
+3791,1,Beginner 1,Leisure Time,At the Cinema,Ĝi estas filmo de suspenso,It's a thriller.,スリラーです。,这是一部惊悚片。,스릴러예요.,Это триллер.
 3792,1,Beginner 1,Leisure Time,At the Cinema,Ĉu vi vidis ĝin?,Have you seen it?,見ましたか？,你看过了吗？,그것을 보셨나요?,Ты видел это?
 3793,1,Beginner 1,Leisure Time,At the Cinema,Kiu ludas en ĝi?,Who's playing in it?,誰が出演しているの？,谁参演了？,누가 출연하나요?,Кто в нём играет?
 3794,1,Beginner 1,Leisure Time,At the Cinema,Ĝi estis bonega,It was great.,とても良かったです。,非常棒。,정말 좋았어요.,Он был отличным.
@@ -3663,11 +3663,11 @@
 3817,5,Intermediate 3,Leisure Time,At the Cinema,Li estas tre bona aktoro,He's a very good actor.,彼はとても演技が上手です。,他是一位非常出色的演员。,그는 정말 연기를 잘하는 배우예요.,Он очень хороший актёр.
 3818,6,Advanced 1,Leisure Time,At the Cinema,Ĉu la filmo estas kolora?,Is the film in colour?,この映画はカラーですか？,这部电影是彩色的吗？,이 영화는 컬러인가요?,Этот фильм цветной?
 3819,6,Advanced 1,Leisure Time,At the Cinema,Mi aĉetos la biletojn,I'll get the tickets.,私がチケットを取っておきます。,我来买票。,제가 표를 살게요.,Я куплю билеты.
-3820,7,Advanced 2,Leisure Time,At the Cinema,Ĉu ni prenu popcornon?,Shall we get some popcorn?,ポップコーンを買ってこようか？,要不要去买点爆米花？,팝콘 좀 사올까요?,Возьмём попкорн?
+3820,7,Advanced 2,Leisure Time,At the Cinema,Ĉu ni prenu pufmaizon?,Shall we get some popcorn?,ポップコーンを買ってこようか？,要不要去买点爆米花？,팝콘 좀 사올까요?,Возьмём попкорн?
 3821,7,Advanced 2,Leisure Time,At the Cinema,Ĉu vi volas ion trinki?,Do you want anything to drink?,何か飲み物はいかがですか？,你想喝点什么吗？,마실 것 좀 드릴까요?,Ты хочешь что-нибудь попить?
 3822,10,Expert 2,Leisure Time,At the Cinema,Bonvolu fotiĝi kun mi,Please take a picture with me.,一緒に写真を撮ってください。,请和我合影。,저와 함께 사진 찍어 주세요.,"Пожалуйста, сфотографируйтесь со мной."
 3823,6,Advanced 1,Leisure Time,At the Cinema,La premiero de la filmo okazas hodiaŭ en la kinejo,The premiere of the film is at the cinema today.,映画の初上映は今日、映画館で行われます。,这部电影今天在电影院首映。,오늘 영화관에서 그 영화의 프리미어가 열립니다.,Премьера фильма состоится сегодня в кинотеатре.
-3824,10,Expert 2,Leisure Time,At the Cinema,La filmo gajnis premion ĉe la Kana festivalo,The film won a prize at the Cannes festival.,その映画はカンヌ映画祭で賞を受賞しました。,这部电影在戛纳电影节上获奖。,그 영화는 칸 영화제에서 상을 받았어요.,Фильм получил награду Каннского фестиваля.
+3824,10,Expert 2,Leisure Time,At the Cinema,La filmo gajnis premion ĉe la Festivalo de Cannes,The film won a prize at the Cannes festival.,その映画はカンヌ映画祭で賞を受賞しました。,这部电影在戛纳电影节上获奖。,그 영화는 칸 영화제에서 상을 받았어요.,Фильм получил награду Каннского фестиваля.
 3825,7,Advanced 2,Leisure Time,At the Cinema,Ĝi devas esti bona,It's meant to be good.,良いもののはずです。,它应该不错。,좋을 거예요.,Он должен быть хорошим.
 3826,10,Expert 2,Leisure Time,At the Cinema,Kiu estas la reĝisoro de ĉi tiu filmo?,Who is the director of this film?,この映画の監督は誰ですか。,这部电影的导演是谁？,이 영화의 감독은 누구인가요?,Кто режиссёр этого фильма?
 3827,10,Expert 2,Leisure Time,At the Cinema,Kiu estas la scenaristo de ĉi tiu filmo?,Who is the scriptwriter of this film?,この映画の脚本家は誰ですか？,这部电影的编剧是谁？,이 영화의 각본가는 누구인가요?,Кто сценарист этого фильма?
@@ -3712,7 +3712,7 @@
 3866,5,Intermediate 3,Leisure Time,At the Theatre,Ĉu vi povas rekomendi baleton?,Can you recommend a ballet?,おすすめのバレエ作品はありますか？,你能推荐一部芭蕾舞剧吗？,추천할 만한 발레 작품이 있나요?,Вы можете порекомендовать балет?
 3867,5,Intermediate 3,Leisure Time,At the Theatre,Mi ŝatus vidi dramon,I would like to see a drama.,ドラマを観たいです。,我想看一场话剧。,드라마를 보고 싶어요.,Я бы хотел посмотреть драму.
 3868,5,Intermediate 3,Leisure Time,At the Theatre,Mi ŝatus preni teatran lorneton,I would like to take opera glasses.,オペラグラスを持っていきたいです。,我想带上歌剧望远镜。,오페라 글라스를 가지고 가고 싶어요.,Я бы хотела взять театральный бинокль.
-3869,6,Advanced 1,Leisure Time,At the Theatre,Kie estas la vestogardeejo?,Where is the cloakroom?,クロークはどこですか？,请问衣帽间在哪里？,물품 보관소가 어디에 있나요?,Где гардероб?
+3869,6,Advanced 1,Leisure Time,At the Theatre,Kie estas la vestejo?,Where is the cloakroom?,クロークはどこですか？,请问衣帽间在哪里？,물품 보관소가 어디에 있나요?,Где гардероб?
 3870,7,Advanced 2,Leisure Time,At the Theatre,Ĉu vi ŝatus programeton?,Would you like a programme?,プログラムをお持ちしましょうか？,您需要一份节目单吗？,프로그램을 받아보시겠어요?,Вы бы хотели программку?
 3871,6,Advanced 1,Leisure Time,At the Theatre,Kiom da aktoj estas en ĝi?,How many acts are there?,いくつの幕がありますか？,一共有多少幕？,몇 막으로 구성되어 있나요?,Сколько в нём актов?
 3872,6,Advanced 1,Leisure Time,At the Theatre,Kiom longe daŭras la interakto?,How long is the interval?,休憩時間はどのくらいですか？,中场休息有多长？,인터미션은 얼마나 되나요?,Сколько длится антракт?
@@ -3813,9 +3813,9 @@
 3967,6,Advanced 1,Leisure Time,At the Nightclub,Mi estas en la gastlisto,I'm on the guest list.,ゲストリストに名前があります。,我在嘉宾名单上。,저는 게스트 리스트에 올라 있어요.,Я в списке гостей.
 3968,6,Advanced 1,Leisure Time,At the Nightclub,Vi ne povas eniri kun sportŝuoj,You can't come in with trainers on.,スニーカーを履いたままでは入れません。,你不能穿运动鞋进来。,운동화를 신고는 들어올 수 없습니다.,Вы не можете войти в кедах.
 3969,10,Expert 2,Leisure Time,At the Nightclub,Ĉu vi havas vivan muzikon ĉi-vespere?,Have you got any live music tonight?,今夜は生演奏がありますか？,你们今晚有现场音乐表演吗？,오늘 밤에 라이브 음악 공연이 있나요?,Сегодня у вас будет живая музыка?
-3970,10,Expert 2,Leisure Time,At the Nightclub,Ĉi-vespere estas tre homplena,It's very crowded tonight.,今夜はとても混んでいます。,今晚人很多。,오늘 밤은 사람이 정말 많아요.,Сегодня очень многолюдно.
+3970,10,Expert 2,Leisure Time,At the Nightclub,Ĉi-vespere estas tre homplene,It's very crowded tonight.,今夜はとても混んでいます。,今晚人很多。,오늘 밤은 사람이 정말 많아요.,Сегодня очень многолюдно.
 3971,10,Expert 2,Leisure Time,At the Nightclub,Ĉi tie estas mortige enue,It's dead in here.,ここは退屈でたまらない。,这里无聊得要命。,여기 정말 지루해 죽겠어요.,Здесь тоска смертная.
-3972,10,Expert 2,Leisure Time,At the Nightclub,Kion vi pensas pri la diskoĵokeo?,What do you think of the DJ?,そのDJについてどう思いますか？,你觉得这位DJ怎么样？,DJ에 대해 어떻게 생각하세요?,Что ты думаешь о диджее?
+3972,10,Expert 2,Leisure Time,At the Nightclub,Kion vi pensas pri la diskĵokeo?,What do you think of the DJ?,そのDJについてどう思いますか？,你觉得这位DJ怎么样？,DJ에 대해 어떻게 생각하세요?,Что ты думаешь о диджее?
 3973,10,Expert 2,Leisure Time,At the Nightclub,Ĉe la drinkejo estas longa vico,There's a long queue at the bar.,バーには長い列ができている。,酒吧排着长队。,바에 줄이 길게 늘어서 있어요.,В баре длинная очередь.
 3974,10,Expert 2,Leisure Time,At the Nightclub,Estis mirinda nokto,It's been a wonderful night.,素晴らしい夜でした。,今晚过得很愉快。,정말 멋진 밤이었어요.,Это была чудесная ночь.
 3975,2,Beginner 2,Leisure Time,At the Beach,Ŝi estas ĉi tie por ferioj,She's here on holiday.,彼女は休暇でここに来ています。,她是来这里度假的。,그녀는 휴가차 여기 왔어요.,Она здесь в отпуске.
@@ -3851,7 +3851,7 @@
 4005,9,Expert 1,Leisure Time,At the Beach,Kiam mi devas redoni la boaton?,When do I have to bring the boat back?,ボートはいつまでに返却すればいいですか？,我需要什么时候把船还回来？,보트를 언제까지 반납해야 하나요?,Когда я должен вернуть лодку?
 4006,9,Expert 1,Leisure Time,At the Beach,Ĉu la jaĥto estas asekurita por urĝaj situacioj?,Is the yacht insured in case of emergency?,緊急時にヨットは保険に入っていますか？,游艇在紧急情况下有保险吗？,비상 상황이 발생할 경우 요트에 보험이 가입되어 있나요?,Яхта застрахована на случай аварийной ситуации?
 4007,9,Expert 1,Leisure Time,At the Beach,Ĉu necesas lasi garantiaĵon?,Is it necessary to put down a deposit?,保証金は必要ですか？,需要支付定金吗？,보증금을 꼭 내야 하나요?,Нужно оставлять залог?
-4008,10,Expert 2,Leisure Time,At the Beach,"Certiĝu, ke vi havas savveŝton",Make sure you've got a life jacket.,ライフジャケットがあることを確認してください。,请确认你有救生衣。,구명조끼가 있는지 꼭 확인하세요.,"Убедитесь, что у вас есть спасательный жилет."
+4008,10,Expert 2,Leisure Time,At the Beach,"Certiĝu, ke vi havas savjakon",Make sure you've got a life jacket.,ライフジャケットがあることを確認してください。,请确认你有救生衣。,구명조끼가 있는지 꼭 확인하세요.,"Убедитесь, что у вас есть спасательный жилет."
 4009,1,Beginner 1,Leisure Time,Sport,Mi ludas tenison,I play tennis.,テニスをします。,我打网球。,저는 테니스를 쳐요.,Я играю в теннис.
 4010,1,Beginner 1,Leisure Time,Sport,Ĉu vi povas naĝi?,Can you swim?,泳げますか？,你会游泳吗？,수영할 수 있나요?,Ты умеешь плавать?
 4011,1,Beginner 1,Leisure Time,Sport,Kie estas la stadiono?,Where's the stadium?,スタジアムはどこですか？,体育场在哪里？,경기장이 어디에 있나요?,Где находится стадион?
@@ -3900,7 +3900,7 @@
 4054,7,Advanced 2,Leisure Time,Sport,Kiuj estas la membroj de ĉi tiu basketbala teamo?,Who are the members of the basketball team?,バスケットボールチームのメンバーは誰ですか。,篮球队有哪些成员？,농구팀의 구성원은 누구인가요?,Кто члены этой баскетбольной команды?
 4055,7,Advanced 2,Leisure Time,Sport,Kiu teamo portas la flavan uniformon?,Which team is wearing the yellow strip?,黄色いユニフォームを着ているのはどのチームですか？,哪支队伍穿着黄色球衣？,어느 팀이 노란색 유니폼을 입고 있나요?,Какая команда в жёлтой форме?
 4056,7,Advanced 2,Leisure Time,Sport,"Kiel vi pensas, kia estos la fina rezulto?",What do you think will be the final score?,最終的なスコアはどうなると思いますか？,你觉得最终比分会是多少？,최종 점수가 어떻게 나올 것 같으세요?,"Как ты думаешь, каким будет итоговый счёт?"
-4057,8,Advanced 3,Leisure Time,Sport,Kie okazos la ĵudoa konkurso?,Where will the judo competition take place?,柔道の試合はどこで行われますか。,柔道比赛将在什么地方举行？,유도 경기는 어디에서 열리나요?,Где будет проходить соревнование по дзюдо?
+4057,8,Advanced 3,Leisure Time,Sport,Kie okazos la konkurso de ĵudo?,Where will the judo competition take place?,柔道の試合はどこで行われますか。,柔道比赛将在什么地方举行？,유도 경기는 어디에서 열리나요?,Где будет проходить соревнование по дзюдо?
 4058,8,Advanced 3,Leisure Time,Sport,"Donu al mi bileton por la centra tribuno, mi petas","Give me a ticket in the centre stand, please.",センタースタンドのチケットを一枚お願いします。,请给我一张中间看台的票。,센터 스탠드에 있는 티켓 한 장 주세요.,"Дайте мне билет на центральную трибуну, пожалуйста."
 4059,8,Advanced 3,Leisure Time,Sport,Kiom kostas lui la korton?,What is the fee to hire a court?,コートを借りる際の料金はいくらですか。,租用场地的费用是多少？,코트를 대여하는 데 드는 비용이 얼마인가요?,Сколько стоит аренда корта?
 4060,8,Advanced 3,Leisure Time,Sport,Ĉu eblas lui tenisan rakedon?,Is it possible to hire a tennis racket?,テニスラケットをレンタルすることはできますか？,可以租用网球拍吗？,테니스 라켓을 대여할 수 있나요?,Возможно арендовать теннисную ракетку?
@@ -3913,7 +3913,7 @@
 4067,9,Expert 1,Leisure Time,Sport,Kiu ĉevalo estas la favorato en ĉi tiu kuro?,Which horse is the favourite in this race?,このレースで一番人気の馬はどれですか？,这场比赛中哪匹马是热门？,이 경주에서 가장 인기 있는 말이 어느 말인가요?,Какая лошадь является фаворитом в этом заезде?
 4068,9,Expert 1,Leisure Time,Sport,"Kiu estas la minimuma veto, kiun mi povas fari?",What is the minimum bet I can place?,最低ベット額はいくらですか？,我可以下注的最低金额是多少？,최소 베팅 금액이 얼마인가요?,Какую минимальную ставку я могу сделать?
 4069,9,Expert 1,Leisure Time,Sport,"Kiu venkos hodiaŭ, laŭ vi?","Who'll win today, in your opinion?",今日は誰が勝つと思いますか？,你觉得今天谁会赢？,오늘은 누가 이길 것 같으세요?,"Кто сегодня выиграет, по твоему мнению?"
-4070,10,Expert 2,Leisure Time,Sport,Kie mi povas lui golfbastonojn kaj golfveturileton?,Where can I hire clubs and a buggy?,クラブやカートはどこで借りられますか？,我可以在哪里租高尔夫球杆和球车？,클럽과 카트를 어디에서 대여할 수 있나요?,Где я могу арендовать клюшки и гольф-кар?
+4070,10,Expert 2,Leisure Time,Sport,Kie mi povas lui golfbastonojn kaj golfĉaron?,Where can I hire clubs and a buggy?,クラブやカートはどこで借りられますか？,我可以在哪里租高尔夫球杆和球车？,클럽과 카트를 어디에서 대여할 수 있나요?,Где я могу арендовать клюшки и гольф-кар?
 4071,10,Expert 2,Leisure Time,Sport,Kio estas la paro por ĉi tiu truo?,What is par for this hole?,このホールのパーはいくつですか？,这个洞的标准杆是多少？,이 홀의 파는 몇입니까?,Какой пар у этой лунки?
 4072,10,Expert 2,Leisure Time,Sport,Kiom malproksimen vi batis la pilkon per tiu bato?,How far did you hit the ball with that stroke?,今のショットでどれくらい飛ばしましたか？,你刚才那一杆把球打了多远？,방금 그 샷으로 공을 얼마나 멀리 쳤나요?,Как далеко ты послала мяч тем ударом?
 4073,10,Expert 2,Leisure Time,Sport,Kiom da boatoj partoprenas en ĉi tiu regato?,How many boats are included in this regatta?,このレガッタには何艇のボートが参加していますか？,这次帆船赛共有多少艘船参赛？,이번 레가타에는 몇 척의 보트가 참가하나요?,Сколько лодок участвует в этой регате?
@@ -3968,7 +3968,7 @@
 4122,4,Intermediate 2,Leisure Time,Going Camping,Ĉu estas tendejo proksime?,Is there a campsite nearby?,近くにキャンプ場はありますか？,附近有露营地吗？,근처에 캠핑장이 있나요?,Здесь поблизости есть площадка для кемпинга?
 4123,4,Intermediate 2,Leisure Time,Going Camping,Ĉu fiŝkaptado estas permesata ĉi tie?,Is fishing allowed here?,ここで釣りをしてもいいですか？,这里可以钓鱼吗？,여기서 낚시해도 되나요?,Здесь разрешено ловить рыбу?
 4124,6,Advanced 1,Leisure Time,Going Camping,Ĉu la urbo estas malproksime de ĉi tie?,Is the town far from here?,この町はここから遠いですか？,这个镇离这里远吗？,여기서 마을까지 멀어요?,Город далеко отсюда?
-4125,6,Advanced 1,Leisure Time,Going Camping,Ĝi estas pli longa ol 2 kilometroj,It's longer than 2 kilometres.,2キロ以上あります。,距离超过两公里。,2킬로미터 넘게 떨어져 있어요.,Больше 2 километров.
+4125,6,Advanced 1,Leisure Time,Going Camping,Estas pli ol 2 kilometroj,It's longer than 2 kilometres.,2キロ以上あります。,距离超过两公里。,2킬로미터 넘게 떨어져 있어요.,Больше 2 километров.
 4126,6,Advanced 1,Leisure Time,Going Camping,Hodiaŭ estas mirinda tago,Today is a wonderful day.,今日は素晴らしい一日です。,今天是美好的一天。,오늘은 정말 멋진 날이에요.,Сегодня чудесный день.
 4127,9,Expert 1,Leisure Time,Going Camping,Jen ĉi tie la rando de la arbaro!,Here is the edge of the woods!,ここが森の端だ！,这里就是林子的边缘！,여기가 숲의 가장자리예요!,Вот тут окраина леса!
 4128,8,Advanced 3,Leisure Time,Going Camping,Ĉu ĉi tiuj valoj ne estas belegaj?,Aren't these valleys great?,この谷、本当に素晴らしいですよね？,这些山谷是不是很棒？,이 계곡들 정말 멋지지 않아요?,Разве эти долины не великолепны?
@@ -3986,7 +3986,7 @@
 4140,7,Advanced 2,Leisure Time,Going Camping,Lasu min pripensi tion,Let me think about it.,少し考えさせてください。,让我考虑一下。,생각해 볼게요.,Дай мне подумать об этом.
 4141,7,Advanced 2,Leisure Time,Going Camping,Kio estas la plej bona aktiveco dum tendumado?,What is the best activity to do while camping?,キャンプ中に一番おすすめのアクティビティは何ですか？,露营时最适合做的活动是什么？,캠핑 중 가장 좋은 활동은 무엇인가요?,Чем лучше всего заниматься в походе?
 4142,8,Advanced 3,Leisure Time,Going Camping,Ni volus iri ĉasi,We would like to go hunting.,狩りに行きたいです。,我们想去打猎。,저희는 사냥을 가고 싶어요.,Мы бы хотели пойти на охоту.
-4143,8,Advanced 3,Leisure Time,Going Camping,Ĉasado estas malpermesata ĉi tie,Hunting is not allowed here.,ここでは狩猟は禁止されています。,此处禁止狩猎。,이곳에서는 사냥이 허용되지 않습니다.,Охота запрещена.
+4143,8,Advanced 3,Leisure Time,Going Camping,Ĉasado estas malpermesita ĉi tie,Hunting is not allowed here.,ここでは狩猟は禁止されています。,此处禁止狩猎。,이곳에서는 사냥이 허용되지 않습니다.,Охота запрещена.
 4144,8,Advanced 3,Leisure Time,Going Camping,Ĉu ni povus tranokti ĉi tie?,Could we spend the night here?,ここで一晩過ごしてもいいですか？,我们可以在这里过夜吗？,여기서 하룻밤 묵어도 될까요?,Мы могли бы здесь переночевать?
 4145,8,Advanced 3,Leisure Time,Going Camping,Kiom kostas tendo?,What is the charge for a tent?,テントの料金はいくらですか。,帐篷的收费是多少？,텐트 대여 요금이 얼마인가요?,Сколько стоит одна палатка?
 4146,8,Advanced 3,Leisure Time,Going Camping,Ĉu vi havas lokon por tendo?,Have you got space for a tent?,テントを張るスペースはありますか？,你们这里还有地方可以搭帐篷吗？,텐트를 칠 공간이 있나요?,У вас есть место для палатки?
@@ -3997,7 +3997,7 @@
 4151,7,Advanced 2,Leisure Time,Going Camping,Kiel pri promeno en la arbaro?,How about going for a walk in the woods?,森を散歩しに行きませんか？,要不要去树林里散步？,숲속을 산책하러 가는 건 어때요?,Как насчёт прогулки в лесу?
 4152,9,Expert 1,Leisure Time,Going Camping,Ni serĉu berojn kaj fungojn,Let's look for berries and mushrooms.,ベリーやきのこを探しに行こう。,我们去找些浆果和蘑菇吧。,베리와 버섯을 찾아봐요.,Давай поищем ягоды и грибы.
 4153,10,Expert 2,Leisure Time,Going Camping,Ĉi tie estas hirunda nesto,There is a swallow's nest.,ツバメの巣があります。,有一个燕子的巢。,제비집이 있어요.,Здесь гнездо ласточки.
-4154,10,Expert 2,Leisure Time,Going Camping,Ĉu ni supreniros per teleferilo?,Are we going up on a cable railway?,ケーブルカーで上に登るんですか？,我们要坐缆车上去吗？,우리 케이블카 타고 올라가는 건가요?,Мы поднимемся по канатной дороге?
+4154,10,Expert 2,Leisure Time,Going Camping,Ĉu ni supreniros per telfero?,Are we going up on a cable railway?,ケーブルカーで上に登るんですか？,我们要坐缆车上去吗？,우리 케이블카 타고 올라가는 건가요?,Мы поднимемся по канатной дороге?
 4155,10,Expert 2,Leisure Time,Going Camping,Ĉu ni supreniros laŭ la monta pado?,Are we going up on the mountain path?,山道を登っていくんですか？,我们要走山路上去吗？,우리 산길로 올라가는 건가요?,Мы поднимемся по горной тропе?
 4156,10,Expert 2,Leisure Time,Going Camping,Mi ŝatus mapon de la piedvojetoj en ĉi tiu regiono,I'd like a map of the walking trails in this region.,この地域のハイキングコースの地図をいただけますか。,我想要一份本地区步行路线的地图。,이 지역의 산책로 지도가 필요합니다.,Я бы хотел карту пеших маршрутов в этом районе.
 4157,10,Expert 2,Leisure Time,Going Camping,Rakontu historion pri tendumado,Tell a story about a camping trip.,キャンプ旅行の話を聞かせてください。,讲一个关于露营旅行的故事。,캠핑 여행 이야기를 들려주세요.,Расскажи какую-нибудь историю о турпоходе.
@@ -4018,7 +4018,7 @@
 4172,7,Advanced 2,Leisure Time,Family Time,Ĉu vi povas transdoni al mi la telekomandilon?,Can you pass me the remote control?,リモコンを取ってもらえますか？,你能把遥控器递给我吗？,리모컨 좀 건네줄 수 있어요?,Можешь передать мне пульт?
 4173,7,Advanced 2,Leisure Time,Family Time,Ĉu hodiaŭ vespere estos iuj bonaj filmoj en la televido?,Are there any good films on TV tonight?,今夜、テレビで面白い映画はやっていますか？,今晚电视上有好看的电影吗？,오늘 밤 TV에서 볼 만한 좋은 영화가 있나요?,Сегодня вечером по телевизору будут какие-нибудь хорошие фильмы?
 4174,7,Advanced 2,Leisure Time,Family Time,Pli poste estos bona filmo,There's a good film on later.,あとでいい映画がやるよ。,晚上有一部不错的电影。,나중에 좋은 영화를 해요.,Попозже будет хороший фильм.
-4175,7,Advanced 2,Leisure Time,Family Time,Mia patrino estas fanatikulo pri sapoperoj,My mother is a soap opera addict.,私の母はソープオペラに夢中です。,我妈妈特别迷恋肥皂剧。,저희 어머니는 연속극에 푹 빠져 계세요.,Моя мама помешана на мыльных операх.
+4175,7,Advanced 2,Leisure Time,Family Time,Mia patrino estas fanatikulo pri televidaj romanoj,My mother is a soap opera addict.,私の母はソープオペラに夢中です。,我妈妈特别迷恋肥皂剧。,저희 어머니는 연속극에 푹 빠져 계세요.,Моя мама помешана на мыльных операх.
 4176,9,Expert 1,Leisure Time,Family Time,Ĉu iu volus ludi dartojn?,Does anyone fancy a game of darts?,誰かダーツをやりませんか？,有人想玩飞镖吗？,혹시 다트 게임 한 판 하실 분 계신가요?,Кто-нибудь хочет поиграть в дартс?
 4177,9,Expert 1,Leisure Time,Family Time,"Ĉu mi povas proponi al vi legadon, do?","May I suggest reading, then?",それでは、読書をおすすめしてもよろしいでしょうか。,那么我可以建议你读书吗？,그렇다면 책을 읽어보시는 건 어떨까요?,Тогда я могу предложить тебе почитать?
 4178,9,Expert 1,Leisure Time,Family Time,Mia tuta familio sidas ĉirkaŭ la tablo,My whole family is round the table.,家族全員がテーブルを囲んでいます。,我全家人都围坐在桌子旁。,우리 가족 모두가 식탁에 둘러앉아 있어요.,Вся моя семья за столом.
@@ -4078,7 +4078,7 @@
 4232,8,Advanced 3,Leisure Time,Having Guests,Ĉu vi havis bonan vojaĝon?,Did you have a good journey?,道中はいかがでしたか？,一路还顺利吗？,오는 길은 괜찮으셨어요?,Вы хорошо добрались?
 4233,8,Advanced 3,Leisure Time,Having Guests,Mi montros al vi vian ĉambron,I'll show you your room.,お部屋をご案内いたします。,我带你去看看你的房间。,방을 안내해 드릴게요.,Я покажу вам вашу комнату.
 4234,7,Advanced 2,Leisure Time,Having Guests,Ni iru en la manĝoĉambron,Let's go into the dining room.,ダイニングルームに行きましょう。,我们去餐厅吧。,식당으로 들어가요.,Пойдём в столовую.
-4235,8,Advanced 3,Leisure Time,Having Guests,Komfortigu vin en la salono,Make yourself comfortable in the living room.,どうぞリビングでくつろいでください。,请在客厅里随意放松。,거실에서 편하게 계세요.,Располагайся в гостиной.
+4235,8,Advanced 3,Leisure Time,Having Guests,Sentu vin komforte en la salono,Make yourself comfortable in the living room.,どうぞリビングでくつろいでください。,请在客厅里随意放松。,거실에서 편하게 계세요.,Располагайся в гостиной.
 4236,10,Expert 2,Leisure Time,Having Guests,Ĉu vi sidas sufiĉe komforte sur tiu seĝo?,Are you comfortable enough on that chair?,その椅子でおくつろぎいただけていますか？,你坐在那把椅子上还舒服吗？,그 의자가 편안하신가요?,Вам удобно на этом стуле?
 4237,8,Advanced 3,Leisure Time,Having Guests,Ĉu vi povas ŝalti la lumon?,Can you switch the light on?,電気をつけてもらえますか？,你能把灯打开吗？,불 좀 켜줄 수 있어요?,Можешь включить свет?
 4238,8,Advanced 3,Leisure Time,Having Guests,Ĉu vi povas estingi la lumon?,Can you switch the light off?,電気を消してくれる？,你能把灯关掉吗？,불 좀 꺼줄 수 있어요?,Можешь выключить свет?
@@ -4138,7 +4138,7 @@
 4292,7,Advanced 2,Services,At the Bank,Mi ŝatus raporti pri perdita kreditkarto,I would like to report a lost credit card.,クレジットカードの紛失を届け出たいのですが。,我想挂失一张信用卡。,분실한 신용카드를 신고하고 싶습니다.,Я хочу заявить об утере кредитной карточки.
 4293,7,Advanced 2,Services,At the Bank,Mi forgesis mian pasvorton por la interreta bankado,I've forgotten my internet banking password.,インターネットバンキングのパスワードを忘れてしまいました。,我忘记了我的网银密码。,인터넷 뱅킹 비밀번호를 잊어버렸어요.,Я забыла пароль от интернет-банка.
 4294,7,Advanced 2,Services,At the Bank,"Ĉu mi povus ricevi kontoekstrakton, mi petas?","Could I have a statement, please?",明細書をいただけますか？,请给我一份对账单。,명세서를 주시겠어요?,"Могу я получить выписку, пожалуйста?"
-4295,9,Expert 1,Services,At the Bank,"Ĉu mi povus mendi novan ĉeklibron, mi petas?","Could I order a new chequebook, please?",新しい小切手帳を注文できますか？,请问可以帮我申请一本新的支票簿吗？,새 수표책을 주문할 수 있을까요?,"Я могу заказать новую чековую книжку, пожалуйста?"
+4295,9,Expert 1,Services,At the Bank,"Ĉu mi povus mendi novan ĉekaron, mi petas?","Could I order a new chequebook, please?",新しい小切手帳を注文できますか？,请问可以帮我申请一本新的支票簿吗？,새 수표책을 주문할 수 있을까요?,"Я могу заказать новую чековую книжку, пожалуйста?"
 4296,8,Advanced 3,Services,At the Bank,Ĉu mi povas retiri monon de mia kreditkarto ĉi tie?,Can I withdraw money from my credit card here?,こちらでクレジットカードから現金を引き出せますか？,我可以在这里用信用卡取现吗？,여기서 제 신용카드로 현금 인출할 수 있나요?,Могу я снять деньги с кредитной карты здесь?
 4297,8,Advanced 3,Services,At the Bank,Sur via konto ne estas mono,You've got no money on your account.,口座に残高がありません。,您的账户余额为零。,계좌에 잔액이 없습니다.,На вашем счёте нет денег.
 4298,8,Advanced 3,Services,At the Bank,Kie estas la monŝanĝejo?,Where is the bureau de change?,両替所はどこですか。,请问哪里有外币兑换处？,환전소가 어디에 있나요?,Где пункт обмена валюты?
@@ -4208,7 +4208,7 @@
 4362,10,Expert 2,Services,At the Estate Agency,"Ĉu vi ŝatus, ke ni aldonu vin al nia dissendolisto?",Would you like us to put you on our mailing list?,メール配信リストにご登録いたしましょうか。,您希望我们将您加入我们的邮件列表吗？,저희 메일링 리스트에 등록해 드릴까요?,"Вы хотите, чтобы мы добавили вас в список рассылки?"
 4363,1,Beginner 1,Services,At the Beauty Salon,Kiam mi povas veni?,When can I come?,いつ伺えばよろしいでしょうか。,我什么时候可以来？,언제 오면 될까요?,Когда я могу прийти?
 4364,1,Beginner 1,Services,At the Beauty Salon,Mi bezonas hartondon,I need a haircut.,髪を切りたいです。,我需要理发。,머리를 잘라야겠어요.,Мне нужно постричься.
-4365,1,Beginner 1,Services,At the Beauty Salon,Mi ŝatus fruntoharojn,I'd like a fringe.,前髪を作りたいです。,我想剪刘海。,앞머리를 내고 싶어요.,Я бы хотела чёлку.
+4365,1,Beginner 1,Services,At the Beauty Salon,Mi ŝatus franĝon,I'd like a fringe.,前髪を作りたいです。,我想剪刘海。,앞머리를 내고 싶어요.,Я бы хотела чёлку.
 4366,1,Beginner 1,Services,At the Beauty Salon,Mi ŝatus novan stilon,I'd like a new style.,新しいスタイルにしたいです。,我想换个新风格。,새로운 스타일로 하고 싶어요.,Я бы хотела новый стиль.
 4367,1,Beginner 1,Services,At the Beauty Salon,Miaj haroj estas sekaj,My hair is dry.,髪が乾燥しています。,我的头发很干。,제 머리카락이 건조해요.,Мои волосы - сухие.
 4368,1,Beginner 1,Services,At the Beauty Salon,Mi ŝatas mian ŝminkon,I like my make-up.,自分のメイクが気に入っています。,我喜欢我的妆容。,저는 제 메이크업이 마음에 들어요.,Мне нравится мой макияж.
@@ -4248,22 +4248,22 @@
 4402,7,Advanced 2,Services,At the Beauty Salon,"Kiel vi ŝatus, ke mi tondu ilin?",How would you like me to cut it?,どのように切りましょうか？,你想让我怎么切？,어떻게 잘라드릴까요?,Как вы бы хотели их постричь?
 4403,7,Advanced 2,Services,At the Beauty Salon,"Malantaŭe kojne, mi petas","Tapered at the back, please.",後ろはすっきりと刈り上げてください。,后面请剪成渐层。,뒷부분은 점점 짧아지게 다듬어 주세요.,"Сзади клином, пожалуйста."
 4404,7,Advanced 2,Services,At the Beauty Salon,Nur iomete pritondu la pintojn,Just take some off the edges.,端の方を少しだけ切ってください。,只需要修剪一下边缘。,끝부분만 조금 다듬어 주세요.,Только немного подстригите кончики.
-4405,8,Advanced 3,Services,At the Beauty Salon,Bonvolu tondi kaj fensekigi miajn harojn,Please cut and blow-dry my hair.,カットとブローをお願いします。,请帮我剪发并吹干。,제 머리를 잘라서 드라이해 주세요.,"Пожалуйста, постригите и высушите мне феном волосы."
+4405,8,Advanced 3,Services,At the Beauty Salon,Bonvolu tondi kaj feni miajn harojn,Please cut and blow-dry my hair.,カットとブローをお願いします。,请帮我剪发并吹干。,제 머리를 잘라서 드라이해 주세요.,"Пожалуйста, постригите и высушите мне феном волосы."
 4406,7,Advanced 2,Services,At the Beauty Salon,Bonvolu iom mallongigi la flankojn,Please shorten the sides a little.,サイドを少し短くしてください。,请把两边稍微修短一点。,옆머리를 조금만 더 다듬어 주세요.,"Пожалуйста, укоротите немного по бокам."
 4407,8,Advanced 3,Services,At the Beauty Salon,Bonvolu ŝampui kaj aranĝi miajn harojn,Please shampoo and style my hair.,シャンプーとヘアセットをお願いします。,请帮我洗发并做个造型。,제 머리를 샴푸하고 스타일링해 주세요.,"Пожалуйста, помойте мне голову и уложите волосы."
-4408,8,Advanced 3,Services,At the Beauty Salon,Bonvolu fari al mi mezan harfendon,Please part my hair in the middle.,髪を真ん中で分けてください。,请帮我把头发中分。,머리를 가운데 가르마로 나눠 주세요.,"Пожалуйста, сделайте мне пробор посередине."
+4408,8,Advanced 3,Services,At the Beauty Salon,Bonvolu fari al mi mezan disigon en la haroj,Please part my hair in the middle.,髪を真ん中で分けてください。,请帮我把头发中分。,머리를 가운데 가르마로 나눠 주세요.,"Пожалуйста, сделайте мне пробор посередине."
 4409,9,Expert 1,Services,At the Beauty Salon,Bonvolu kombi miajn harojn de la frunto malantaŭen,Please comb my hair back from the forehead.,おでこから髪を後ろにとかしてください。,请把我的头发从额头往后梳。,이마에서부터 머리를 뒤로 빗어 주세요.,"Пожалуйста, зачешите мне волосы со лба назад."
 4410,7,Advanced 2,Services,At the Beauty Salon,Ĉu vi povas tondi iom pli ĉe la nuko?,Can you cut a little more off the neck?,首元をもう少しだけ詰めてもらえますか？,脖子部分能再剪短一点吗？,목 부분을 조금 더 잘라줄 수 있나요?,Вы можете состричь ещё немного на шее?
 4411,9,Expert 1,Services,At the Beauty Salon,Ĉu vi ŝatus ion sur ĝi?,Would you like anything on it?,何かおつけしますか？,您要加点什么吗？,뭔가 발라드릴까요?,Вы бы хотели что-нибудь нанести?
-4412,9,Expert 1,Services,At the Beauty Salon,"Jes. Iom da harsprajo, mi petas","Yes. Some hairspray, please.",はい。ヘアスプレーをお願いします。,好的，请给我一些发胶喷雾。,"네, 헤어스프레이 좀 주세요.","Да. Немного спрея для волос, пожалуйста."
-4413,9,Expert 1,Services,At the Beauty Salon,"Iom da harĝelo, mi petas","Some hair gel, please.",ヘアジェルをお願いします。,请给我一些发胶。,헤어젤 좀 주세요.,"Немного геля для волос, пожалуйста."
+4412,9,Expert 1,Services,At the Beauty Salon,"Jes. Iom da sprajo por haroj, mi petas","Yes. Some hairspray, please.",はい。ヘアスプレーをお願いします。,好的，请给我一些发胶喷雾。,"네, 헤어스프레이 좀 주세요.","Да. Немного спрея для волос, пожалуйста."
+4413,9,Expert 1,Services,At the Beauty Salon,"Iom da ĝelo por haroj, mi petas","Some hair gel, please.",ヘアジェルをお願いします。,请给我一些发胶。,헤어젤 좀 주세요.,"Немного геля для волос, пожалуйста."
 4414,9,Expert 1,Services,At the Beauty Salon,"Nenion, dankon","Nothing, thanks.",いえ、大丈夫です。,没事，谢谢。,"아니요, 괜찮아요. 감사합니다.","Ничего, спасибо."
-4415,9,Expert 1,Services,At the Beauty Salon,"Ĉu vi povus tondeti miajn lipharojn, mi petas?","Could you trim my moustache, please?",口ひげを整えていただけますか？,请帮我修剪一下小胡子好吗？,제 콧수염 좀 다듬어 주시겠어요?,"Не могли бы вы побрить мне усы, пожалуйста?"
+4415,9,Expert 1,Services,At the Beauty Salon,"Ĉu vi povus tondi miajn lipharojn, mi petas?","Could you trim my moustache, please?",口ひげを整えていただけますか？,请帮我修剪一下小胡子好吗？,제 콧수염 좀 다듬어 주시겠어요?,"Не могли бы вы побрить мне усы, пожалуйста?"
 4416,9,Expert 1,Services,At the Beauty Salon,"Ĉu vi povus pritondi mian barbon, mi petas?","Could you trim my beard, please?",あごひげを整えていただけますか？,请帮我修剪一下胡子。,제 수염을 다듬어 주시겠어요?,"Не могли бы вы побрить мне бороду, пожалуйста?"
 4417,10,Expert 2,Services,At the Beauty Salon,Ŝi havas senteman haŭton,She has got a sensitive skin.,彼女は肌が敏感です。,她的皮肤比较敏感。,그녀는 피부가 예민해요.,У неё чувствительная кожа.
 4418,10,Expert 2,Services,At the Beauty Salon,Bonvolu fari al mi vizaĝan masaĝon,Please give me a facial massage.,顔のマッサージをしてもらえますか。,请帮我做个面部按摩。,얼굴 마사지를 해 주세요.,"Пожалуйста, сделайте мне массаж лица."
-4419,10,Expert 2,Services,At the Beauty Salon,Mi ŝatus havi vizaĝtraktadon,I'd like to have a skin treatment.,スキンケアの施術を受けたいのですが。,我想做个皮肤护理。,피부 관리를 받고 싶어요.,Я хочу сделать процедуру для лица.
-4420,10,Expert 2,Services,At the Beauty Salon,Mi ŝatus ricevi skalpomasaĝon,I would like to have my scalp massaged.,頭皮をマッサージしていただきたいです。,我想做头部按摩。,두피 마사지를 받고 싶어요.,Я бы хотела сделать массаж головы.
+4419,10,Expert 2,Services,At the Beauty Salon,Mi ŝatus havi traktadon de la vizaĝo,I'd like to have a skin treatment.,スキンケアの施術を受けたいのですが。,我想做个皮肤护理。,피부 관리를 받고 싶어요.,Я хочу сделать процедуру для лица.
+4420,10,Expert 2,Services,At the Beauty Salon,Mi ŝatus ricevi masaĝon de la skalpo,I would like to have my scalp massaged.,頭皮をマッサージしていただきたいです。,我想做头部按摩。,두피 마사지를 받고 싶어요.,Я бы хотела сделать массаж головы.
 4421,10,Expert 2,Services,At the Beauty Salon,Ĉu vi bonvolus elpluki miajn brovojn?,Would you please pluck my eyebrows?,眉毛を整えていただけますか？,你能帮我修一下眉毛吗？,제 눈썹을 다듬어 주시겠어요?,"Не могли бы вы, пожалуйста, выщипать мне брови?"
 4422,6,Advanced 1,Services,At the Beauty Salon,"Mi ŝatus, ke vi fajlu kaj formigu miajn ungojn",I'd like you to file and shape my nails.,爪の形を整えて、ファイリングをお願いします。,请帮我修剪并打磨一下指甲。,손톱을 다듬고 모양을 내주세요.,Я бы хотела подпилить ногти и скорректировать их форму.
 4423,6,Advanced 1,Services,At the Beauty Salon,Mi ŝatus laki miajn ungojn,I would like to have my nails polished.,ネイルを塗っていただきたいのですが。,我想做个美甲。,손톱에 매니큐어를 바르고 싶어요.,Я бы хотела накрасить ногти.
@@ -4304,10 +4304,10 @@
 4458,2,Beginner 2,Services,Repairs,Mia ombrelo estas rompita,My umbrella is broken.,傘が壊れてしまいました。,我的伞坏了。,제 우산이 고장 났어요.,Мой зонтик сломан.
 4459,2,Beginner 2,Services,Repairs,Estas neeble ripari ĝin,It's impossible to fix it.,修理は不可能です。,无法修复。,그것은 고칠 수 없어요.,Его невозможно починить.
 4460,3,Intermediate 1,Services,Repairs,Mia brakhorloĝo haltis,My watch has stopped.,時計が止まってしまいました。,我的手表停了。,제 시계가 멈췄어요.,Мои наручные часы остановились.
-4461,3,Intermediate 1,Services,Repairs,Ĉu mi povas rigardi ilin?,Can I have a look at it?,それを見せてもらえますか？,我可以看一下吗？,제가 한 번 볼 수 있을까요?,Я могу на них взглянуть?
+4461,3,Intermediate 1,Services,Repairs,Ĉu mi povas rigardi ĝin?,Can I have a look at it?,それを見せてもらえますか？,我可以看一下吗？,제가 한 번 볼 수 있을까요?,Я могу на них взглянуть?
 4462,3,Intermediate 1,Services,Repairs,"Mi pensas, ke ĝi bezonas novan baterion",I think it needs a new battery.,新しいバッテリーが必要だと思います。,我觉得它需要换块新电池。,배터리를 새로 교체해야 할 것 같아요.,"Я думаю, нужна новая батарейка."
 4463,3,Intermediate 1,Services,Repairs,Kiam ĝi estos preta?,When will it be ready?,いつごろ準備が整いますか？,什么时候能准备好？,언제 준비되나요?,Когда она будет готова?
-4464,3,Intermediate 1,Services,Repairs,Ili estos pretaj ĝis morgaŭ,It will be ready by tomorrow.,明日までに準備が整います。,明天就能准备好。,내일까지 준비될 거예요.,Будут готовы к завтрашнему дню.
+4464,3,Intermediate 1,Services,Repairs,Ĝi estos preta ĝis morgaŭ,It will be ready by tomorrow.,明日までに準備が整います。,明天就能准备好。,내일까지 준비될 거예요.,Будут готовы к завтрашнему дню.
 4465,5,Intermediate 3,Services,Repairs,Mia komputilo havas viruson,My computer has a virus.,私のパソコンにウイルスが感染しています。,我的电脑中病毒了。,제 컴퓨터에 바이러스가 걸렸어요.,В моём компьютере вирус.
 4466,4,Intermediate 2,Services,Repairs,Ni ne povas fari ion ajn kun ĝi,We can't do anything with it.,それについてはどうすることもできません。,我们对此无能为力。,우리는 그것으로 아무것도 할 수 없어요.,Мы не можем ничего с ним сделать.
 4467,4,Intermediate 2,Services,Repairs,Mi rompis la kalkanumon de mia ŝuo,I broke the heel of my shoe.,靴のかかとが壊れてしまいました。,我的鞋跟断了。,신발 굽이 부러졌어요.,Я сломала каблук на туфле.
@@ -4329,7 +4329,7 @@
 4483,7,Advanced 2,Services,Repairs,Ĉu vi havas baterion por ĉi tio?,Have you got a battery for this?,これに使える電池はありますか？,你有这个的电池吗？,이것에 맞는 배터리가 있나요?,У вас есть к нему батарейка?
 4484,10,Expert 2,Services,Repairs,Ĉu vi bonvolus ŝanĝi la baterion en mia horloĝo?,Would you please change the battery in my watch?,時計の電池を交換していただけますか。,请帮我换一下手表的电池好吗？,제 시계의 배터리를 교체해 주시겠어요?,"Не могли бы вы, пожалуйста, поменять батарейку в моих часах?"
 4485,7,Advanced 2,Services,Repairs,Io ne estas en ordo kun mia horloĝo,There's something wrong with my watch.,私の時計の調子が悪いです。,我的手表好像有点问题。,제 시계에 뭔가 이상이 있어요.,Что-то не в порядке с моими часами.
-4486,8,Advanced 3,Services,Repairs,Kie estas la plej proksima ŝuriparejo?,Where is the nearest shoe repair shop?,一番近い靴の修理屋はどこですか？,最近的修鞋店在哪里？,가장 가까운 구두 수선점이 어디에 있나요?,Где ближайшая обувная мастерская?
+4486,8,Advanced 3,Services,Repairs,Kie estas la plej proksima riparejo por ŝuoj?,Where is the nearest shoe repair shop?,一番近い靴の修理屋はどこですか？,最近的修鞋店在哪里？,가장 가까운 구두 수선점이 어디에 있나요?,Где ближайшая обувная мастерская?
 4487,8,Advanced 3,Services,Repairs,Ĉu vi povus almeti novajn plandumojn al ĉi tiuj ŝuoj por mi?,Could you put new soles on these shoes for me?,この靴のソールを新しく張り替えていただけますか？,你能帮我给这双鞋换个新鞋底吗？,이 신발에 새 밑창을 달아주실 수 있나요?,Не могли бы вы поставить мне новую подошву на эти ботинки?
 4488,8,Advanced 3,Services,Repairs,Kiom longe daŭros la riparoj?,How long will the repairs take?,修理にはどれくらい時間がかかりますか。,维修需要多长时间？,수리는 얼마나 걸릴까요?,Сколько времени займёт ремонт?
 4489,8,Advanced 3,Services,Repairs,Ni bezonos unu horon por ripari ĝin,It will take us an hour to repair it.,修理には1時間かかります。,我们修好它需要一个小时。,수리하는 데 한 시간이 걸릴 거예요.,Его починка займёт у нас час.
@@ -4341,7 +4341,7 @@
 4495,10,Expert 2,Services,Repairs,Ĉu riparoj estas inkluzivitaj en la garantio?,Are repairs included in the guarantee?,修理は保証に含まれていますか？,维修是否包含在保修范围内？,수리도 보증에 포함되나요?,Ремонт входит в гарантию?
 4496,10,Expert 2,Services,Repairs,La riparoj ne estas kovrataj de la garantio,The repairs are not covered by the guarantee.,修理は保証の対象外です。,这些维修不在保修范围内。,수리는 보증 대상에 포함되지 않습니다.,Ремонт не покрывается гарантией.
 4497,10,Expert 2,Services,Repairs,Ni devas resendi ĝin al la fabrikanto,We have to send it back to the manufacturer.,メーカーに返送しなければなりません。,我们得把它退回给制造商。,제조사에 다시 보내야 합니다.,Нам придётся отправить его обратно изготовителю.
-4498,1,Beginner 1,Health,At the Doctor,Mi ŝatus kontrolekzamenon,I'd like a check-up.,健康診断をお願いしたいのですが。,我想做个检查。,건강 검진을 받고 싶어요.,Я бы хотела пройти осмотр.
+4498,1,Beginner 1,Health,At the Doctor,Mi ŝatus kontrolan ekzamenon,I'd like a check-up.,健康診断をお願いしたいのですが。,我想做个检查。,건강 검진을 받고 싶어요.,Я бы хотела пройти осмотр.
 4499,1,Beginner 1,Health,At the Doctor,Doloras ĉi tie,It hurts here.,ここが痛いです。,这里疼。,여기가 아파요.,Болит здесь.
 4500,1,Beginner 1,Health,At the Doctor,Ĉu doloras al vi?,Are you in pain?,痛みはありますか？,你感觉疼吗？,아프신가요?,Вам больно?
 4501,1,Beginner 1,Health,At the Doctor,Ĉu vi kapturnas?,Are you dizzy?,めまいがしますか？,你头晕吗？,어지러우세요?,У вас кружится голова?
@@ -4362,7 +4362,7 @@
 4516,3,Intermediate 1,Health,At the Doctor,Mi bezonas fari rentgenon,I need to take an X-ray.,レントゲンを撮る必要があります。,我需要拍个X光片。,엑스레이를 촬영해야 합니다.,Мне нужно сделать рентген.
 4517,4,Intermediate 2,Health,At the Doctor,Mi havas alergian reakcion,I'm having an allergic reaction.,アレルギー反応が出ています。,我出现过敏反应了。,알레르기 반응이 나타나고 있어요.,У меня аллергическая реакция.
 4518,4,Intermediate 2,Health,At the Doctor,Ĉu vi faras aŭdotestojn?,Do you do hearing tests?,聴力検査は行っていますか？,你们做听力测试吗？,청력 검사를 하시나요?,Вы делаете проверку слуха?
-4519,4,Intermediate 2,Health,At the Doctor,Kie estas la rentgenejo?,Where's the X-ray room?,レントゲン室はどこですか？,请问X光室在哪里？,엑스레이실이 어디에 있나요?,Где рентгеновский кабинет?
+4519,4,Intermediate 2,Health,At the Doctor,Kie estas la rentgena ĉambro?,Where's the X-ray room?,レントゲン室はどこですか？,请问X光室在哪里？,엑스레이실이 어디에 있나요?,Где рентгеновский кабинет?
 4520,4,Intermediate 2,Health,At the Doctor,Mi bezonas medicinan konsulton,I need a medical consultation.,診察を受けたいです。,我需要看医生。,진료를 받고 싶습니다.,Мне нужна консультация врача.
 4521,4,Intermediate 2,Health,At the Doctor,Kio okazis al vi?,What happened to you?,どうしたの？,你怎么了？,무슨 일이 있었어요?,Что с вами случилось?
 4522,6,Advanced 1,Health,At the Doctor,Ĉu vi fartas bone?,Are you feeling alright?,体調は大丈夫ですか？,你还好吗？,괜찮으세요?,Вы нормально себя чувствуете?
@@ -4443,7 +4443,7 @@
 4597,8,Advanced 3,Health,Diseases,Ĉu vi havas kronikajn malsanojn?,Have you got any chronic diseases?,何か持病はありますか？,你有慢性疾病吗？,만성 질환이 있으신가요?,У вас есть хронические болезни?
 4598,7,Advanced 2,Health,Diseases,Kiom longe vi jam sentas vin tiel?,How long have you been feeling like this?,どれくらい前からこのように感じていますか？,你这种感觉持续多久了？,언제부터 이렇게 느끼기 시작하셨나요?,Как долго вы уже себя так чувствуете?
 4599,7,Advanced 2,Health,Diseases,Kiaj estas viaj simptomoj?,What are your symptoms?,どのような症状がありますか？,你有哪些症状？,어떤 증상이 있으신가요?,Какие у вас симптомы?
-4600,7,Advanced 2,Health,Diseases,Mi havas gorĝodoloron,I've got a sore throat.,喉が痛いです。,我喉咙疼。,목이 아파요.,У меня болит горло.
+4600,7,Advanced 2,Health,Diseases,Mi havas gorĝdoloron,I've got a sore throat.,喉が痛いです。,我喉咙疼。,목이 아파요.,У меня болит горло.
 4601,7,Advanced 2,Health,Diseases,Mi havas ŝvelintan maleolon,I've got a swollen ankle.,足首が腫れています。,我的脚踝肿了。,발목이 부었어요.,У меня опухла лодыжка.
 4602,7,Advanced 2,Health,Diseases,Mi havas doloron en la brusto,I've got a pain in my chest.,胸が痛みます。,我胸口有点疼。,가슴에 통증이 있어요.,У меня боль в груди.
 4603,8,Advanced 3,Health,Diseases,Mi havas kormalsanon,I've got a heart condition.,心臓に持病があります。,我有心脏病。,저는 심장 질환이 있어요.,У меня заболевание сердца.
@@ -4573,7 +4573,7 @@
 4727,8,Advanced 3,Health,At the Optician,Ĉi tiuj okulvitroj estas tro malfortaj por mi,These glasses are too weak for me.,このメガネでは度が弱すぎます。,这副眼镜对我来说度数太低了。,이 안경은 저한테 너무 약해요.,Эти очки для меня слишком слабые.
 4728,8,Advanced 3,Health,At the Optician,Mi ŝatus provi pli fortajn okulvitrojn,I would like to try some stronger glasses.,もう少し度の強い眼鏡を試してみたいです。,我想试试度数更高的眼镜。,좀 더 도수가 센 안경을 써보고 싶어요.,Я бы хотел примерить очки посильнее.
 4729,9,Expert 1,Health,At the Optician,Ĉu mi povus mendi pliajn kontaktlensojn?,Could I order some more contact lenses?,コンタクトレンズを追加で注文できますか？,我可以再订一些隐形眼镜吗？,콘택트렌즈를 좀 더 주문할 수 있을까요?,Я могла бы заказать ещё контактные линзы?
-4730,9,Expert 1,Health,At the Optician,Ĉu ĉi tiuj sunokularoj havas UV-protekton?,Do these sunglasses have UV protection?,このサングラスにはUVカット機能がありますか？,这款太阳镜有防紫外线功能吗？,이 선글라스는 자외선 차단 기능이 있나요?,У этих солнцезащитных очков есть защита от УФ-излучения?
+4730,9,Expert 1,Health,At the Optician,Ĉu ĉi tiuj sunokulvitroj havas UV-protekton?,Do these sunglasses have UV protection?,このサングラスにはUVカット機能がありますか？,这款太阳镜有防紫外线功能吗？,이 선글라스는 자외선 차단 기능이 있나요?,У этих солнцезащитных очков есть защита от УФ-излучения?
 4731,4,Intermediate 2,Health,At the Optician,Mi ŝatus fari rendevuon,I'd like to make an appointment.,予約をお願いしたいのですが。,我想预约一下。,예약을 하고 싶어요.,Я бы хотел записаться на приём.
 4732,9,Expert 1,Health,At the Optician,Kiom longe ni devos atendi ĉi tie?,How long do we have to wait here?,ここでどのくらい待てばいいですか？,我们还要在这里等多久？,여기서 얼마나 더 기다려야 하나요?,Как долго нам придётся здесь ждать?
 4733,10,Expert 2,Health,At the Optician,"Mi ŝatus kontroligi mian vidon, mi petas","I'd like to have an eye test, please.",視力検査をお願いしたいのですが。,我想做个视力检查。,시력 검사를 받고 싶어요.,"Я бы хотела проверить зрение, пожалуйста."
@@ -4588,7 +4588,7 @@
 4742,2,Beginner 2,Health,At the Pharmacy,Mi bezonas inhalilon,I need an inhaler.,吸入器が必要です。,我需要一个吸入器。,흡입기가 필요해요.,Мне нужен респиратор.
 4743,3,Intermediate 1,Health,At the Pharmacy,Mi bezonas dezinfektilon,I need a disinfectant.,消毒液が必要です。,我需要消毒剂。,소독제가 필요해요.,Мне нужно дезинфицирующее средство.
 4744,2,Beginner 2,Health,At the Pharmacy,Ĉu vi havas plastrojn?,Have you got any plasters?,絆創膏を持っていますか？,你有创可贴吗？,밴드 좀 있으세요?,У вас есть пластыри?
-4745,3,Intermediate 1,Health,At the Pharmacy,Ĉu vi havas dolorsilentilojn?,Have you got any painkillers?,痛み止めを持っていますか？,你有止痛药吗？,진통제 있으세요?,У вас есть обезболивающие?
+4745,3,Intermediate 1,Health,At the Pharmacy,Ĉu vi havas kontraŭdolorilojn?,Have you got any painkillers?,痛み止めを持っていますか？,你有止痛药吗？,진통제 있으세요?,У вас есть обезболивающие?
 4746,2,Beginner 2,Health,At the Pharmacy,Ĉu vi havas recepton?,Have you got a prescription?,処方箋はお持ちですか？,你有处方吗？,처방전이 있으신가요?,У вас есть рецепт?
 4747,7,Advanced 2,Health,At the Pharmacy,Ĉu vi ne havas analogon?,Haven't you got an analogue?,同じようなものはありませんか？,你没有类似的东西吗？,비슷한 것이 없나요?,У вас нет аналога?
 4748,3,Intermediate 1,Health,At the Pharmacy,Ĉu ĝi taŭgas por infanoj?,Is it suitable for children?,子どもに適していますか？,适合儿童吗？,어린이에게 적합한가요?,Оно подходит для детей?
@@ -4640,7 +4640,7 @@
 4794,3,Intermediate 1,Communication Means,Phone,Ĉu vi bone aŭdas min?,Can you hear me OK?,聞こえていますか？,你能听清楚我说话吗？,제 목소리가 잘 들리시나요?,Ты меня нормально слышишь?
 4795,3,Intermediate 1,Communication Means,Phone,Bonvolu paroli pli laŭte,"Speak louder, please.",もう少し大きな声で話してください。,请大声一点。,좀 더 크게 말씀해 주세요.,"Говорите громче, пожалуйста."
 4796,3,Intermediate 1,Communication Means,Phone,Malbona konekto,It's a bad line.,回線の調子が悪いです。,信号不好。,통화 상태가 좋지 않아요.,Плохая связь.
-4797,2,Beginner 2,Communication Means,Phone,Restu surlinie,Hold on.,電話を切らずにお待ちください。,请不要挂断。,전화를 끊지 말고 잠시 기다려 주세요.,Оставайтесь на линии.
+4797,2,Beginner 2,Communication Means,Phone,Restu sur la linio,Hold on.,電話を切らずにお待ちください。,请不要挂断。,전화를 끊지 말고 잠시 기다려 주세요.,Оставайтесь на линии.
 4798,2,Beginner 2,Communication Means,Phone,Bonvolu sendi al mi mesaĝon,Please text me.,メッセージを送ってください。,请给我发短信。,문자 메시지 보내 주세요.,"Пожалуйста, пришли СМС."
 4799,3,Intermediate 1,Communication Means,Phone,Mia telefono paneis,My phone is broken.,電話が壊れました。,我的电话坏了。,전화가 고장 났어요.,У меня сломался телефон.
 4800,4,Intermediate 2,Communication Means,Phone,Donu al mi vian numeron,Give me your number.,電話番号を教えてください。,把你的号码给我。,전화번호를 알려 주세요.,Дай мне свой номер.
@@ -4662,7 +4662,7 @@
 4816,8,Advanced 3,Communication Means,Phone,Nek Oskaro nek Vilhelmo estas hejme,Neither Oscar nor William is at home.,オスカーもウィリアムも家にいません。,奥斯卡和威廉都不在家。,오스카도 윌리엄도 집에 없어요.,"Ни Оскара, ни Уильяма нет дома."
 4817,8,Advanced 3,Communication Means,Phone,Vi havas la malĝustan numeron,You've got the wrong number.,番号をお間違えです。,你打错电话了。,전화 잘못 거셨어요.,У вас неправильный номер.
 4818,8,Advanced 3,Communication Means,Phone,Mi petos lin retelefoni al vi,I'll tell him to call you back.,折り返しお電話するように伝えておきます。,我会让他回电给你。,그분에게 다시 전화드리라고 전하겠습니다.,Я скажу ему перезвонить вам.
-4819,8,Advanced 3,Communication Means,Phone,Mi ne ricevas elvokan tonon,I can't get a dialling tone.,発信音が聞こえません。,我没有听到拨号音。,신호음이 들리지 않아요.,Нет гудка.
+4819,8,Advanced 3,Communication Means,Phone,Mi ne ricevas vokan signalon,I can't get a dialling tone.,発信音が聞こえません。,我没有听到拨号音。,신호음이 들리지 않아요.,Нет гудка.
 4820,9,Expert 1,Communication Means,Phone,Mia kredito baldaŭ elĉerpiĝos,I'm about to run out of credit.,もうすぐ残高がなくなりそうです。,我的余额快用完了。,곧 잔액이 다 떨어질 것 같아요.,У меня почти закончились деньги на счёте.
 4821,10,Expert 2,Communication Means,Phone,Mi ŝatus fari vokon pagatan de la ricevanto,I'd like to make a reverse-charge call.,コレクトコールをお願いしたいのですが。,我想打一个对方付费电话。,수신자 부담 전화를 걸고 싶어요.,Я хочу сделать звонок за счёт вызываемого абонента.
 4822,8,Advanced 3,Communication Means,Phone,Mi ĉiam trafas nur aŭtomatan respondilon,I'm only getting an answering machine.,留守番電話にしかつながりません。,我打过去只有语音信箱。,계속 자동응답기만 연결돼요.,Я всё время попадаю на автоответчик.
@@ -4691,9 +4691,9 @@
 4845,4,Intermediate 2,Communication Means,Phone Calls at Work,Atendu momenton. Mi prenos skribilon,Hold on. I'll get a pen.,ちょっと待ってください。今、ペンを取ってきます。,等一下，我去拿支笔。,잠깐만요. 펜을 가져올게요.,Оставайтесь на линии. Я возьму ручку.
 4846,4,Intermediate 2,Communication Means,Phone Calls at Work,Kun kiu vi ŝatus paroli?,Who would you like to speak to?,どなたとお話しされますか？,您想和谁通话？,누구와 통화하시겠습니까?,С кем вы бы хотели поговорить?
 4847,5,Intermediate 3,Communication Means,Phone Calls at Work,Mi konektos vin kun li,I'll put you through to him.,彼におつなぎします。,我帮你把电话转接给他。,그분께 연결해 드릴게요.,Я соединю вас с ним.
-4848,6,Advanced 1,Communication Means,Phone Calls at Work,"Ne surmetu ankoraŭ la aŭdilon, mi petas","Don't ring off yet, please.",まだ電話を切らないでください。,请别挂电话。,아직 전화를 끊지 말아 주세요.,"Не кладите пока трубку, пожалуйста."
+4848,6,Advanced 1,Communication Means,Phone Calls at Work,"Ne demetu ankoraŭ la aŭdilon, mi petas","Don't ring off yet, please.",まだ電話を切らないでください。,请别挂电话。,아직 전화를 끊지 말아 주세요.,"Не кладите пока трубку, пожалуйста."
 4849,5,Intermediate 3,Communication Means,Phone Calls at Work,Ĉu mi povas telefoni rekte?,Can I dial directly?,直接おかけしてもよろしいですか？,我可以直接拨打吗？,직접 전화할 수 있나요?,Я могу набрать напрямую?
-4850,5,Intermediate 3,Communication Means,Phone Calls at Work,Ĉu vi povas tajpi la numeron por mi?,Can you dial for me?,電話をかけてもらえますか？,你能帮我拨个电话吗？,전화 좀 걸어 주시겠어요?,Вы можете набрать для меня номер?
+4850,5,Intermediate 3,Communication Means,Phone Calls at Work,Ĉu vi povas diski la numeron por mi?,Can you dial for me?,電話をかけてもらえますか？,你能帮我拨个电话吗？,전화 좀 걸어 주시겠어요?,Вы можете набрать для меня номер?
 4851,5,Intermediate 3,Communication Means,Phone Calls at Work,Mi vidos ĉu mi povas transligi vin,I'll see if I can transfer you.,おつなぎできるか確認いたします。,我看看能不能帮你转接。,제가 연결해 드릴 수 있는지 확인해 보겠습니다.,Я попробую перевести вас на другую линию.
 4852,5,Intermediate 3,Communication Means,Phone Calls at Work,Bonvolu resti sur la linio,"Hold the line, please.",少々お待ちください。,请稍等。,잠시만 기다려 주세요.,"Пожалуйста, оставайтесь на линии."
 4853,5,Intermediate 3,Communication Means,Phone Calls at Work,La linio estas okupata,The line is engaged.,電話が話し中です。,线路正在占用。,통화 중입니다.,Линия занята.
@@ -4702,7 +4702,7 @@
 4856,6,Advanced 1,Communication Means,Phone Calls at Work,Ĉu vi ŝatus lasi mesaĝon?,Would you like to leave a message?,メッセージをお残しになりますか？,您需要留言吗？,메시지를 남기시겠습니까?,Вы бы хотели оставить сообщение?
 4857,6,Advanced 1,Communication Means,Phone Calls at Work,Bonvolu revoki morgaŭ,Please call again tomorrow.,恐れ入りますが、また明日お電話いただけますでしょうか。,请明天再打电话。,내일 다시 전화해 주세요.,"Пожалуйста, перезвоните завтра."
 4858,8,Advanced 3,Communication Means,Phone Calls at Work,Pardonu pro la ĝeno,I'm sorry for troubling you.,ご迷惑をおかけして申し訳ありません。,不好意思，给您添麻烦了。,불편을 드려 죄송합니다.,Прошу прощения за беспокойство.
-4859,7,Advanced 2,Communication Means,Phone Calls at Work,Atendu la signalon kaj komponu la numeron,Wait for the signal and dial the number.,合図があったら番号をダイヤルしてください。,等待信号后拨打号码。,신호를 기다렸다가 번호를 누르세요.,Дождитесь сигнала и наберите номер.
+4859,7,Advanced 2,Communication Means,Phone Calls at Work,Atendu la signalon kaj disku la numeron,Wait for the signal and dial the number.,合図があったら番号をダイヤルしてください。,等待信号后拨打号码。,신호를 기다렸다가 번호를 누르세요.,Дождитесь сигнала и наберите номер.
 4860,7,Advanced 2,Communication Means,Phone Calls at Work,El kiu kompanio vi telefonas?,What company are you calling from?,どちらの会社からお電話いただいていますか？,请问您是哪个公司打来的？,어느 회사에서 전화하셨나요?,Из какой компании вы звоните?
 4861,7,Advanced 2,Communication Means,Phone Calls at Work,"Mi provis telefoni al ŝi, sed ne sukcesis",I tried to call her but couldn't get through.,彼女に電話をかけてみましたが、つながりませんでした。,我试着给她打电话，但一直打不通。,제가 그녀에게 전화해봤지만 연결되지 않았어요.,"Я пытался позвонить ей, но у меня не получилось."
 4862,7,Advanced 2,Communication Means,Phone Calls at Work,Ĉu vi havas telefonlibron?,Have you got a telephone directory?,電話帳をお持ちですか？,你有电话簿吗？,전화번호부 있으신가요?,У вас есть телефонный справочник?
@@ -4710,9 +4710,9 @@
 4864,8,Advanced 3,Communication Means,Phone Calls at Work,Ĉu vi scias lian internumeron?,Do you know what extension he's on?,彼の内線番号、分かりますか？,你知道他的分机号是多少吗？,그 사람이 내선번호가 몇 번인지 아세요?,Вы знаете его добавочный?
 4865,8,Advanced 3,Communication Means,Phone Calls at Work,Bonvolu konekti min al interna numero 212,"Give me extension 212, please.",内線212番をお願いします。,请帮我接212分机，谢谢。,212번 내선으로 연결해 주세요.,"Соедините меня с добавочным 212, пожалуйста."
 4866,8,Advanced 3,Communication Means,Phone Calls at Work,Ĉu estas oportune por vi paroli nun?,Is it convenient to talk at the moment?,今、お話ししても大丈夫でしょうか？,现在方便说话吗？,지금 통화해도 괜찮으신가요?,Вам удобно сейчас разговаривать?
-4867,8,Advanced 3,Communication Means,Phone Calls at Work,"Pardonu, ŝi parolas per alia linio","I'm sorry, she's on another call.",申し訳ありませんが、ただいま別の電話に出ております。,很抱歉，她正在接听另一个电话。,"죄송하지만, 지금 다른 전화를 받고 계십니다.","Извините, она говорит по другой линии."
+4867,8,Advanced 3,Communication Means,Phone Calls at Work,"Pardonu, ŝi estas sur alia linio","I'm sorry, she's on another call.",申し訳ありませんが、ただいま別の電話に出ております。,很抱歉，她正在接听另一个电话。,"죄송하지만, 지금 다른 전화를 받고 계십니다.","Извините, она говорит по другой линии."
 4868,9,Expert 1,Communication Means,Phone Calls at Work,"Ĉu mi povus noti vian nomon kaj numeron, mi petas?","Could I take your name and number, please?",お名前とお電話番号をお伺いしてもよろしいでしょうか。,请问您能留下您的姓名和电话号码吗？,성함과 연락처를 알려주실 수 있으신가요?,"Я могла бы записать ваше имя и номер, пожалуйста?"
-4869,9,Expert 1,Communication Means,Phone Calls at Work,Bonvolu meti la aŭdilon kaj telefoni denove,Please ring off and call again.,一度電話を切って、もう一度おかけ直しください。,请挂断电话后重新拨打。,전화를 끊고 다시 걸어주세요.,"Пожалуйста, положите трубку и перезвоните снова."
+4869,9,Expert 1,Communication Means,Phone Calls at Work,Bonvolu demeti la aŭdilon kaj telefoni denove,Please ring off and call again.,一度電話を切って、もう一度おかけ直しください。,请挂断电话后重新拨打。,전화를 끊고 다시 걸어주세요.,"Пожалуйста, положите трубку и перезвоните снова."
 4870,9,Expert 1,Communication Means,Phone Calls at Work,"Pardonu, li momente ne estas disponebla","I'm sorry, he's not available at the moment.",申し訳ありませんが、ただいま彼は席を外しております。,很抱歉，他现在不方便接听。,"죄송하지만, 지금은 자리에 계시지 않습니다.","Извините, в настоящий момент он отсутствует."
 4871,9,Expert 1,Communication Means,Phone Calls at Work,Je kioma horo li estas atendata reveni?,What time is he expected back?,彼は何時ごろ戻る予定ですか？,他预计什么时候回来？,그는 몇 시에 돌아올 예정인가요?,Во сколько он должен вернуться?
 4872,9,Expert 1,Communication Means,Phone Calls at Work,Ĉu mi povus revoki vin post kelkaj minutoj?,Could I call you back in a few minutes?,少ししたらかけ直してもよろしいですか？,我可以几分钟后再给你回电吗？,잠시 후에 다시 전화드려도 될까요?,Я могла бы перезвонить вам через несколько минут?
@@ -4766,7 +4766,7 @@
 4920,2,Beginner 2,Communication Means,At the Post Office,Kie mi povas sendi ĉi tion?,Where can I post this?,これはどこで送れますか？,这个在哪里可以寄出？,이것은 어디에서 보낼 수 있나요?,Где я могу это отправить?
 4921,3,Intermediate 1,Communication Means,At the Post Office,Sendu ĉi tiun pakaĵon per aerpoŝto,Send this parcel by airmail.,この小包を航空便で送ってください。,请用航空邮件寄送这个包裹。,이 소포를 항공우편으로 보내 주세요.,Отправьте эту посылку авиапочтой.
 4922,3,Intermediate 1,Communication Means,At the Post Office,Kio estas interne?,What's inside?,中には何が入っていますか？,里面有什么？,안에 뭐가 들어 있나요?,Что внутри?
-4923,3,Intermediate 1,Communication Means,At the Post Office,Kia estas la valoro?,What's the value?,価値は何ですか？,值是多少？,가치는 무엇인가요?,Какая ценность?
+4923,3,Intermediate 1,Communication Means,At the Post Office,Kio estas la valoro?,What's the value?,価値は何ですか？,值是多少？,가치는 무엇인가요?,Какая ценность?
 4924,3,Intermediate 1,Communication Means,At the Post Office,Kiam ĉi tio alvenos?,When will this arrive?,これはいつ届きますか？,什么时候能到？,이것은 언제 도착하나요?,Когда она прибудет?
 4925,9,Expert 1,Communication Means,At the Post Office,Ĉu mi povas sendi fakson ĉi tie?,Can I send a fax here?,こちらでファックスを送ることはできますか？,这里可以发传真吗？,여기서 팩스를 보낼 수 있나요?,Я могу отправить здесь факс?
 4926,10,Expert 2,Communication Means,At the Post Office,Kiu estas la faksa numero?,What's the fax number?,ファックス番号を教えていただけますか。,传真号码是多少？,팩스 번호가 어떻게 되나요?,Какой номер факса?
@@ -4805,7 +4805,7 @@
 4959,9,Expert 1,Communication Means,At the Post Office,Ĉu vi bonvolus sendi ĉi tiun pakaĵon kiel eble plej rapide?,Would you please send this parcel as quickly as possible?,できるだけ早くこの荷物を発送していただけますか。,请尽快寄出这个包裹。,이 소포를 최대한 빨리 보내주시겠어요?,"Не могли бы вы, пожалуйста, отправить эту посылку как можно скорее?"
 4960,5,Intermediate 3,Communication Means,At the Post Office,Ĝi estos en Sidnejo post ĉirkaŭ kvar horoj,It will be in Sydney in about four hours.,あと約4時間でシドニーに到着します。,大约四个小时后它就会到达悉尼。,약 네 시간 후면 시드니에 도착할 거예요.,Она будет в Сиднее примерно через четыре часа.
 4961,4,Intermediate 2,Communication Means,At the Post Office,Mi venis por preni pakaĵon,I've come to collect a parcel.,荷物を受け取りに来ました。,我来取个包裹。,소포를 찾으러 왔어요.,Я пришёл забрать посылку.
-4962,9,Expert 1,Communication Means,At the Post Office,Ĉe kiu giĉeto estas la poste restante?,Which window is for poste restante?,どの窓口が局留め郵便の受付ですか？,请问哪一个窗口办理留存邮政业务？,여기서 우편물 보관 창구는 어디인가요?,В каком окне корреспонденция до востребования?
+4962,9,Expert 1,Communication Means,At the Post Office,Ĉe kiu giĉeto estas poŝtrestante?,Which window is for poste restante?,どの窓口が局留め郵便の受付ですか？,请问哪一个窗口办理留存邮政业务？,여기서 우편물 보관 창구는 어디인가요?,В каком окне корреспонденция до востребования?
 4963,3,Intermediate 1,Communication Means,Letter,"Estimata Sinjorino Banon,","Dear Mrs Banon,",バノン様,尊敬的巴农女士,"배논 여사님께,",Уважаемая миссис Бэнон!
 4964,4,Intermediate 2,Communication Means,Letter,"Sincere via,","Yours sincerely,",敬具,此致敬礼,진심을 담아 드립니다.,"Искренне ваш,"
 4965,3,Intermediate 1,Communication Means,Letter,"Kara Filipo,","Dear Filip,",フィリップ様,亲爱的Filip,"필립님께,","Уважаемый Филип,"
