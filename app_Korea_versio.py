@@ -416,7 +416,8 @@ def _resolve_overall_points(user: str, score_rows, ranked_rows=None):
     if ranked_total is not None:
         candidates.append(ranked_total)
     overall_total = max(candidates) if candidates else 0.0
-    return overall_total, vocab_total, sentence_total, log_total > 0.0
+    warning_needed = abs(log_total - overall_total) > 0.5
+    return overall_total, vocab_total, sentence_total, warning_needed
 
 
 def summarize_scores(scores):
@@ -1207,14 +1208,14 @@ def main():
             # クイズ中はネットアクセスを避け、ログ合計を優先
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
             overall_stats = None if in_quiz else load_rankings()
-            user_total_overall, user_total_vocab, user_total_sentence, has_log_total = _resolve_overall_points(
+            user_total_overall, user_total_vocab, user_total_sentence, warning_needed = _resolve_overall_points(
                 st.session_state.user_name,
                 score_rows=scores,
                 ranked_rows=overall_stats,
             )
             st.info(f"현재 누적(단어): {user_total_vocab:.1f}")
             st.info(f"현재 누적(전체): {user_total_overall:.1f}")
-            if has_log_total:
+            if warning_needed:
                 if abs((user_total_vocab + user_total_sentence) - user_total_overall) > 0.5:
                     st.warning("누적(단어+예문)과 전체 합계에 차이가 있습니다. 잠시 후 다시 불러와 주세요.")
 

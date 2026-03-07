@@ -22,8 +22,8 @@ STREAK_BONUS = 0.5
 TARGET_SENTENCE_SCORE_FACTOR = 2.0
 LEGACY_SENTENCE_SCORE_FACTOR = 1.5
 SENTENCE_SCORE_SCALE = TARGET_SENTENCE_SCORE_FACTOR / LEGACY_SENTENCE_SCORE_FACTOR
-STREAK_BONUS_SCALE = SENTENCE_SCORE_SCALE
-ACCURACY_BONUS_PER_Q = 5.0 * SENTENCE_SCORE_SCALE
+STREAK_BONUS_SCALE = TARGET_SENTENCE_SCORE_FACTOR
+ACCURACY_BONUS_PER_Q = 5.0 * TARGET_SENTENCE_SCORE_FACTOR
 SPARTAN_SCORE_MULTIPLIER = 0.7
 SCORES_SHEET = "Scores"
 USER_STATS_SHEET = "UserStatsSentence"  # 文章専用の累積
@@ -530,7 +530,8 @@ def _resolve_sentence_overall_points(user: str, sentence_scores, all_scores=None
         candidates.append(ranked_total)
     overall_points = max(candidates) if candidates else 0.0
     log_total_vocab = max(0.0, log_total_all - sentence_total)
-    return overall_points, sentence_total, log_total_vocab, log_total_all > 0.0
+    warning_needed = abs((sentence_total + log_total_vocab) - overall_points) > 0.5
+    return overall_points, sentence_total, log_total_vocab, warning_needed
 
 
 def summarize_scores(scores):
@@ -1042,6 +1043,7 @@ def main():
     st.session_state.setdefault("direction", "ja_to_eo")
     st.session_state.setdefault("score_saved", False)
     st.session_state.setdefault("pending_save_id", None)
+    st.session_state.setdefault("sentence_saved_total_projection", None)
     st.session_state.setdefault("score_refresh_needed", False)
     st.session_state.setdefault("score_load_error", None)
     st.session_state.setdefault("score_sync_warning", None)
@@ -1158,6 +1160,7 @@ def main():
                 st.session_state.last_result_msg = ""
                 st.session_state.score_saved = False
                 st.session_state.pending_save_id = None
+                st.session_state.sentence_saved_total_projection = None
                 st.session_state.score_refresh_needed = False
                 st.session_state.score_sync_warning = None
                 st.session_state.spartan_pending = []
@@ -1184,6 +1187,7 @@ def main():
             st.session_state.showing_result = False
             st.session_state.score_saved = False
             st.session_state.pending_save_id = None
+            st.session_state.sentence_saved_total_projection = None
             st.session_state.score_refresh_needed = False
             st.session_state.score_sync_warning = None
             st.session_state.spartan_pending = []
@@ -1251,7 +1255,7 @@ def main():
                 st.session_state.cached_scores_all = all_scores
             else:
                 all_scores = st.session_state.get("cached_scores_all", [])
-            overall_points, user_total_sentence, log_total_vocab, has_all_log = _resolve_sentence_overall_points(
+            overall_points, user_total_sentence, log_total_vocab, warning_needed = _resolve_sentence_overall_points(
                 st.session_state.sentence_user_name,
                 sentence_scores=scores,
                 all_scores=all_scores,
@@ -1259,7 +1263,7 @@ def main():
             )
             st.info(f"当前累计（例句）: {user_total_sentence:.1f}")
             st.info(f"当前累计（总计）: {overall_points:.1f}")
-            if has_all_log and abs((user_total_sentence + log_total_vocab) - overall_points) > 0.5:
+            if warning_needed:
                 st.warning("单词＋例句累计与总体合计存在差异。请稍后再试。")
 
     questions = st.session_state.questions
@@ -1340,7 +1344,14 @@ def main():
                 all_scores=all_scores_for_total,
                 main_rank=main_rank,
             )
-            st.metric("累计（本次加分后）", f"{overall_points + points:.1f}")
+            projected_total = overall_points + points
+            if st.session_state.score_saved:
+                saved_projection = safe_float(
+                    st.session_state.get("sentence_saved_total_projection"),
+                    projected_total,
+                )
+                projected_total = max(overall_points, saved_projection)
+            st.metric("累计（本次加分后）", f"{projected_total:.1f}")
         st.caption("可以通过音频复习。")
         st.write(f"正确 {st.session_state.correct}/{total}")
         st.write(
@@ -1398,6 +1409,7 @@ def main():
                         ok_main = update_user_stats_main(st.session_state.sentence_user_name, points, now)
                         st.session_state.score_saved = True
                         st.session_state.pending_save_id = None
+                        st.session_state.sentence_saved_total_projection = overall_points + points
                         st.session_state.score_refresh_needed = True
                         st.session_state.cached_scores_all = []
                         st.session_state.cached_main_rank = []
@@ -1495,6 +1507,7 @@ def main():
             st.session_state.showing_result = False
             st.session_state.score_saved = False
             st.session_state.pending_save_id = None
+            st.session_state.sentence_saved_total_projection = None
             st.session_state.score_refresh_needed = False
             st.session_state.score_sync_warning = None
             st.session_state.spartan_pending = []
