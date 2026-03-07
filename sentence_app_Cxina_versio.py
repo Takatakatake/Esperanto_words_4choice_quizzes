@@ -327,19 +327,44 @@ def load_scores(force_refresh: bool = False):
         return []
 
 
-def load_scores_all(force_refresh: bool = False):
+def _load_status(source: str = "unavailable", *, exact: bool = False, error: str = None):
+    return {"source": source, "exact": exact, "error": error}
+
+
+def load_scores_all(force_refresh: bool = False, *, include_status: bool = False):
     """モードに関係なくScoresを取得（全体累積のフォールバック用）"""
     conn = get_connection()
     cached_scores_all = st.session_state.get("cached_scores_all", [])
+    normalized_cached = normalize_score_rows(cached_scores_all, fallback_mode="vocab") if cached_scores_all else []
+
+    def finish(records, *, source: str, exact: bool, error: str = None):
+        status = _load_status(source, exact=exact, error=error)
+        if include_status:
+            return records, status
+        return records
+
     if conn is None:
-        return normalize_score_rows(cached_scores_all, fallback_mode="vocab") if cached_scores_all else []
+        if normalized_cached:
+            return finish(
+                normalized_cached,
+                source="cache",
+                exact=False,
+                error="无法初始化 Google Sheets 连接。",
+            )
+        return finish([], source="unavailable", exact=False, error="无法初始化 Google Sheets 连接。")
     try:
         df = _read_sheet_with_retry(conn, worksheet=SCORES_SHEET, force_refresh=force_refresh)
         if df is None or df.empty:
-            return []
-        return normalize_score_rows(df.to_dict(orient="records"), fallback_mode="vocab")
-    except Exception:
-        return normalize_score_rows(cached_scores_all, fallback_mode="vocab") if cached_scores_all else []
+            return finish([], source="live", exact=True)
+        return finish(
+            normalize_score_rows(df.to_dict(orient="records"), fallback_mode="vocab"),
+            source="live",
+            exact=True,
+        )
+    except Exception as e:
+        if normalized_cached:
+            return finish(normalized_cached, source="cache", exact=False, error=str(e))
+        return finish([], source="unavailable", exact=False, error=str(e))
 
 
 def save_score(record: dict):
@@ -401,17 +426,34 @@ def load_rankings(force_refresh: bool = False):
         return []
 
 
-def load_main_rankings(force_refresh: bool = False):
+def load_main_rankings(force_refresh: bool = False, *, include_status: bool = False):
     conn = get_connection()
+    cached_main_rank = st.session_state.get("cached_main_rank", [])
+
+    def finish(records, *, source: str, exact: bool, error: str = None):
+        status = _load_status(source, exact=exact, error=error)
+        if include_status:
+            return records, status
+        return records
+
     if conn is None:
-        return []
+        if cached_main_rank:
+            return finish(
+                cached_main_rank,
+                source="cache",
+                exact=False,
+                error="无法初始化 Google Sheets 连接。",
+            )
+        return finish([], source="unavailable", exact=False, error="无法初始化 Google Sheets 连接。")
     try:
         df = _read_sheet_with_retry(conn, worksheet=USER_STATS_MAIN, force_refresh=force_refresh)
         if df is None or df.empty:
-            return []
-        return df.to_dict(orient="records")
-    except Exception:
-        return []
+            return finish([], source="live", exact=True)
+        return finish(df.to_dict(orient="records"), source="live", exact=True)
+    except Exception as e:
+        if cached_main_rank:
+            return finish(cached_main_rank, source="cache", exact=False, error=str(e))
+        return finish([], source="unavailable", exact=False, error=str(e))
 
 
 def _get_user_total_from_rows(rows, user: str, field: str = "total_points"):
@@ -425,29 +467,57 @@ def _get_user_total_from_rows(rows, user: str, field: str = "total_points"):
     return None
 
 
-def _resolve_sentence_overall_points(user: str, sentence_scores, all_scores=None, main_rank=None):
+def _resolve_sentence_overall_points(
+    user: str,
+    sentence_scores,
+    all_scores=None,
+    main_rank=None,
+    *,
+    all_scores_status=None,
+    main_rank_status=None,
+):
     normalized_user = str(user).strip()
     if not normalized_user:
-        return 0.0, 0.0, 0.0, False
+        return None, 0.0, 0.0, False, None
 
     sentence_total = sum(
         safe_float(r.get("points", 0), 0.0)
         for r in (sentence_scores or [])
         if str(r.get("user", "")).strip() == normalized_user
     )
-    log_total_all = sum(
-        safe_float(r.get("points", 0), 0.0)
-        for r in (all_scores or [])
-        if str(r.get("user", "")).strip() == normalized_user
-    )
-    ranked_total = _get_user_total_from_rows(main_rank, normalized_user)
-    candidates = [sentence_total, log_total_all]
+    all_scores_status = all_scores_status or _load_status()
+    main_rank_status = main_rank_status or _load_status()
+
+    log_total_all = None
+    if all_scores_status.get("source") != "unavailable":
+        log_total_all = sum(
+            safe_float(r.get("points", 0), 0.0)
+            for r in (all_scores or [])
+            if str(r.get("user", "")).strip() == normalized_user
+        )
+
+    ranked_total = None
+    if main_rank_status.get("source") != "unavailable":
+        ranked_total = _get_user_total_from_rows(main_rank, normalized_user)
+
+    if log_total_all is not None:
+        overall_points = max(sentence_total, log_total_all)
+        log_total_vocab = max(0.0, log_total_all - sentence_total)
+        notice = None
+        if all_scores_status.get("source") == "cache":
+            notice = "总累计正在暂时显示上次获取的数据。请稍后重新加载。"
+        elif ranked_total is not None and abs(ranked_total - overall_points) > 0.5:
+            notice = "总累计的辅助汇总表与 Scores 存在差异。请稍后重新加载。"
+        return overall_points, sentence_total, log_total_vocab, True, notice
+
     if ranked_total is not None:
-        candidates.append(ranked_total)
-    overall_points = max(candidates) if candidates else 0.0
-    log_total_vocab = max(0.0, log_total_all - sentence_total)
-    warning_needed = abs((sentence_total + log_total_vocab) - overall_points) > 0.5
-    return overall_points, sentence_total, log_total_vocab, warning_needed
+        overall_points = max(sentence_total, ranked_total)
+        log_total_vocab = max(0.0, overall_points - sentence_total)
+        notice = "总累计正在暂时显示辅助汇总表的值。请稍后重新加载。"
+        return overall_points, sentence_total, log_total_vocab, True, notice
+
+    notice = "暂时无法取得总累计，因此目前只显示例句累计。"
+    return None, sentence_total, 0.0, False, notice
 
 
 def summarize_scores(scores):
@@ -965,7 +1035,9 @@ def main():
     st.session_state.setdefault("score_sync_warning", None)
     st.session_state.setdefault("cached_scores", [])
     st.session_state.setdefault("cached_scores_all", [])
+    st.session_state.setdefault("cached_scores_all_status", _load_status())
     st.session_state.setdefault("cached_main_rank", [])
+    st.session_state.setdefault("cached_main_rank_status", _load_status())
     st.session_state.setdefault("spartan_mode", False)
     st.session_state.setdefault("spartan_pending", [])
     st.session_state.setdefault("in_spartan_round", False)
@@ -1161,25 +1233,40 @@ def main():
             # クイズ中はネットアクセスを避け、キャッシュまたは空にする
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
             if not in_quiz:
-                main_rank = load_main_rankings(force_refresh=force_refresh_rankings)
+                main_rank, main_rank_status = load_main_rankings(
+                    force_refresh=force_refresh_rankings,
+                    include_status=True,
+                )
                 st.session_state.cached_main_rank = main_rank
+                st.session_state.cached_main_rank_status = main_rank_status
             else:
                 main_rank = st.session_state.get("cached_main_rank", [])
+                main_rank_status = st.session_state.get("cached_main_rank_status", _load_status())
             if not in_quiz:
-                all_scores = load_scores_all(force_refresh=force_refresh_rankings)
+                all_scores, all_scores_status = load_scores_all(
+                    force_refresh=force_refresh_rankings,
+                    include_status=True,
+                )
                 st.session_state.cached_scores_all = all_scores
+                st.session_state.cached_scores_all_status = all_scores_status
             else:
                 all_scores = st.session_state.get("cached_scores_all", [])
-            overall_points, user_total_sentence, log_total_vocab, warning_needed = _resolve_sentence_overall_points(
+                all_scores_status = st.session_state.get("cached_scores_all_status", _load_status())
+            overall_points, user_total_sentence, _, overall_available, overall_notice = _resolve_sentence_overall_points(
                 st.session_state.sentence_user_name,
                 sentence_scores=scores,
                 all_scores=all_scores,
                 main_rank=main_rank,
+                all_scores_status=all_scores_status,
+                main_rank_status=main_rank_status,
             )
             st.info(f"当前累计（例句）: {user_total_sentence:.1f}")
-            st.info(f"当前累计（总计）: {overall_points:.1f}")
-            if warning_needed:
-                st.warning("单词＋例句累计与总体合计存在差异。请稍后再试。")
+            if overall_available:
+                st.info(f"当前累计（总计）: {overall_points:.1f}")
+            else:
+                st.info("当前累计（总计）: 暂时无法取得")
+            if overall_notice:
+                st.warning(overall_notice)
 
     questions = st.session_state.questions
     if questions:
@@ -1248,25 +1335,47 @@ def main():
         st.metric("正确率", f"{accuracy*100:.1f}%")
         st.metric("得分", f"{points:.1f}")
         if st.session_state.sentence_user_name:
-            main_rank = load_main_rankings(force_refresh=force_refresh_rankings)
+            main_rank, main_rank_status = load_main_rankings(
+                force_refresh=force_refresh_rankings,
+                include_status=True,
+            )
+            st.session_state.cached_main_rank = main_rank
+            st.session_state.cached_main_rank_status = main_rank_status
             all_scores_for_total = st.session_state.get("cached_scores_all", [])
-            if not all_scores_for_total:
-                all_scores_for_total = load_scores_all(force_refresh=force_refresh_rankings)
+            all_scores_status_for_total = st.session_state.get("cached_scores_all_status", _load_status())
+            if (
+                not all_scores_for_total
+                and all_scores_status_for_total.get("source") == "unavailable"
+            ):
+                all_scores_for_total, all_scores_status_for_total = load_scores_all(
+                    force_refresh=force_refresh_rankings,
+                    include_status=True,
+                )
                 st.session_state.cached_scores_all = all_scores_for_total
-            overall_points, _, _, _ = _resolve_sentence_overall_points(
+                st.session_state.cached_scores_all_status = all_scores_status_for_total
+            overall_points, user_total_sentence, _, overall_available, overall_notice = _resolve_sentence_overall_points(
                 st.session_state.sentence_user_name,
                 sentence_scores=scores,
                 all_scores=all_scores_for_total,
                 main_rank=main_rank,
+                all_scores_status=all_scores_status_for_total,
+                main_rank_status=main_rank_status,
             )
-            projected_total = overall_points + points
-            if st.session_state.score_saved:
-                saved_projection = safe_float(
-                    st.session_state.get("sentence_saved_total_projection"),
-                    projected_total,
-                )
-                projected_total = max(overall_points, saved_projection)
-            st.metric("累计（本次加分后）", f"{projected_total:.1f}")
+            saved_projection_raw = st.session_state.get("sentence_saved_total_projection")
+            if overall_available:
+                projected_total = overall_points + points
+                if st.session_state.score_saved and saved_projection_raw is not None:
+                    saved_projection = safe_float(saved_projection_raw, projected_total)
+                    projected_total = max(overall_points, saved_projection)
+                st.metric("累计（本次加分后·总计）", f"{projected_total:.1f}")
+            elif st.session_state.score_saved and saved_projection_raw is not None:
+                projected_total = safe_float(saved_projection_raw, user_total_sentence + points)
+                st.metric("累计（本次加分后·总计）", f"{projected_total:.1f}")
+                overall_notice = "由于未能重新取得总累计，当前显示的是保存时点的数值。"
+            else:
+                st.metric("累计（本次加分后·例句）", f"{user_total_sentence + points:.1f}")
+            if overall_notice:
+                st.warning(overall_notice)
         st.caption("可以通过音频复习。")
         st.write(f"正确 {st.session_state.correct}/{total}")
         st.write(
@@ -1335,16 +1444,21 @@ def main():
                         )
                         st.session_state.score_saved = True
                         st.session_state.pending_save_id = None
+                        optimistic_projection = (
+                            overall_points + points if overall_available else user_total_sentence + points
+                        )
                         if totals is not None:
                             st.session_state.sentence_saved_total_projection = max(
-                                overall_points + points,
+                                optimistic_projection,
                                 safe_float(totals.get("overall"), 0.0),
                             )
                         else:
-                            st.session_state.sentence_saved_total_projection = overall_points + points
+                            st.session_state.sentence_saved_total_projection = optimistic_projection
                         st.session_state.score_refresh_needed = True
                         st.session_state.cached_scores_all = []
+                        st.session_state.cached_scores_all_status = _load_status()
                         st.session_state.cached_main_rank = []
+                        st.session_state.cached_main_rank_status = _load_status()
                         st.session_state.score_sync_warning = None if (ok_sentence and ok_main) else "分数日志已保存，但累计分数同步暂时失败。请稍后重试。"
                         st.rerun()
         recent = scores  # 既に読み込んだデータを再利用
@@ -1382,10 +1496,19 @@ def main():
         if ranking:
             st.subheader("排行榜（例句）")
             show_rankings(ranking, key_suffix="_sentence", score_rows=scores)
-        main_rank = load_main_rankings(force_refresh=force_refresh_rankings)
+        main_rank, main_rank_status = load_main_rankings(
+            force_refresh=force_refresh_rankings,
+            include_status=True,
+        )
+        st.session_state.cached_main_rank = main_rank
+        st.session_state.cached_main_rank_status = main_rank_status
         if main_rank:
-            all_scores = load_scores_all(force_refresh=force_refresh_rankings)
+            all_scores, all_scores_status = load_scores_all(
+                force_refresh=force_refresh_rankings,
+                include_status=True,
+            )
             st.session_state.cached_scores_all = all_scores
+            st.session_state.cached_scores_all_status = all_scores_status
             st.subheader("排行榜（总计：单词+例句）")
             show_rankings(main_rank, key_suffix="_main", score_rows=all_scores)
         st.subheader("复习")
