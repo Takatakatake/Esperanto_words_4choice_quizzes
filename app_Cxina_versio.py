@@ -384,6 +384,41 @@ def safe_float(value, default: float = 0.0) -> float:
         return default
 
 
+def _get_user_total_from_rows(rows, user: str, field: str = "total_points"):
+    normalized_user = str(user).strip()
+    if not normalized_user or not rows:
+        return None
+    for row in rows:
+        if str(row.get("user", "")).strip() != normalized_user:
+            continue
+        return safe_float(row.get(field, 0), 0.0)
+    return None
+
+
+def _resolve_overall_points(user: str, score_rows, ranked_rows=None):
+    normalized_user = str(user).strip()
+    if not normalized_user:
+        return 0.0, 0.0, 0.0, False
+
+    vocab_total = sum(
+        safe_float(r.get("points", 0), 0.0)
+        for r in (score_rows or [])
+        if str(r.get("user", "")).strip() == normalized_user and r.get("mode") != "sentence"
+    )
+    sentence_total = sum(
+        safe_float(r.get("points", 0), 0.0)
+        for r in (score_rows or [])
+        if str(r.get("user", "")).strip() == normalized_user and r.get("mode") == "sentence"
+    )
+    log_total = vocab_total + sentence_total
+    ranked_total = _get_user_total_from_rows(ranked_rows, normalized_user)
+    candidates = [vocab_total, sentence_total, log_total]
+    if ranked_total is not None:
+        candidates.append(ranked_total)
+    overall_total = max(candidates) if candidates else 0.0
+    return overall_total, vocab_total, sentence_total, log_total > 0.0
+
+
 def summarize_scores(scores):
     # JSTタイムゾーン设置 (UTC+9)
     jst = datetime.timezone(datetime.timedelta(hours=9))
@@ -1169,43 +1204,17 @@ def main():
     if st.session_state.user_name and scores:
         with st.sidebar:
             st.markdown("---")
-            user_total_vocab = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in scores
-                if r.get("user") == st.session_state.user_name and r.get("mode") != "sentence"
-            )
-            st.info(f"当前累计（单词）: {user_total_vocab:.1f}")
-            user_total_sentence = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in scores
-                if r.get("user") == st.session_state.user_name and r.get("mode") == "sentence"
-            )
-            # 全体累積（UserStats優先、なければログから集計）
-            user_total_overall = None
             # クイズ中はネットアクセスを避け、ログ合計を優先
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
             overall_stats = None if in_quiz else load_rankings()
-            if overall_stats:
-                for row in overall_stats:
-                    if row.get("user") == st.session_state.user_name:
-                        try:
-                            user_total_overall = float(row.get("total_points", 0))
-                        except (ValueError, TypeError):
-                            user_total_overall = 0.0
-                        break
-            # ログからの最新合計（語彙+文章）
-            log_total = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in scores
-                if r.get("user") == st.session_state.user_name
+            user_total_overall, user_total_vocab, user_total_sentence, has_log_total = _resolve_overall_points(
+                st.session_state.user_name,
+                score_rows=scores,
+                ranked_rows=overall_stats,
             )
-            if user_total_overall is None:
-                user_total_overall = log_total
-            else:
-                # UserStatsが古い場合はログ合計を優先
-                user_total_overall = max(user_total_overall, log_total)
+            st.info(f"当前累计（单词）: {user_total_vocab:.1f}")
             st.info(f"当前累计（总计）: {user_total_overall:.1f}")
-            if user_total_sentence is not None:
+            if has_log_total:
                 if abs((user_total_vocab + user_total_sentence) - user_total_overall) > 0.5:
                     st.warning("单词＋例句累计与总体合计存在差异。请稍后再试。")
 

@@ -19,8 +19,11 @@ PHRASE_AUDIO_DIR = BASE_DIR / "Esperanto例文5000文_収録音声"
 
 # スコア設定
 STREAK_BONUS = 0.5
-STREAK_BONUS_SCALE = 1.5
-ACCURACY_BONUS_PER_Q = 5.0 * 1.5  # 文章は精度ボーナスも1.5倍
+TARGET_SENTENCE_SCORE_FACTOR = 2.0
+LEGACY_SENTENCE_SCORE_FACTOR = 1.5
+SENTENCE_SCORE_SCALE = TARGET_SENTENCE_SCORE_FACTOR / LEGACY_SENTENCE_SCORE_FACTOR
+STREAK_BONUS_SCALE = SENTENCE_SCORE_SCALE
+ACCURACY_BONUS_PER_Q = 5.0 * SENTENCE_SCORE_SCALE
 SPARTAN_SCORE_MULTIPLIER = 0.7
 SCORES_SHEET = "Scores"
 USER_STATS_SHEET = "UserStatsSentence"  # 文章専用の累積
@@ -108,7 +111,7 @@ def get_connection():
 
 
 def base_points_for_level(level: int) -> float:
-    return level + 11.5
+    return (level + 11.5) * SENTENCE_SCORE_SCALE
 
 
 def safe_float(value, default: float = 0.0) -> float:
@@ -493,6 +496,41 @@ def load_main_rankings(force_refresh: bool = False):
         return df.to_dict(orient="records")
     except Exception:
         return []
+
+
+def _get_user_total_from_rows(rows, user: str, field: str = "total_points"):
+    normalized_user = str(user).strip()
+    if not normalized_user or not rows:
+        return None
+    for row in rows:
+        if str(row.get("user", "")).strip() != normalized_user:
+            continue
+        return safe_float(row.get(field, 0), 0.0)
+    return None
+
+
+def _resolve_sentence_overall_points(user: str, sentence_scores, all_scores=None, main_rank=None):
+    normalized_user = str(user).strip()
+    if not normalized_user:
+        return 0.0, 0.0, 0.0, False
+
+    sentence_total = sum(
+        safe_float(r.get("points", 0), 0.0)
+        for r in (sentence_scores or [])
+        if str(r.get("user", "")).strip() == normalized_user
+    )
+    log_total_all = sum(
+        safe_float(r.get("points", 0), 0.0)
+        for r in (all_scores or [])
+        if str(r.get("user", "")).strip() == normalized_user
+    )
+    ranked_total = _get_user_total_from_rows(main_rank, normalized_user)
+    candidates = [sentence_total, log_total_all]
+    if ranked_total is not None:
+        candidates.append(ranked_total)
+    overall_points = max(candidates) if candidates else 0.0
+    log_total_vocab = max(0.0, log_total_all - sentence_total)
+    return overall_points, sentence_total, log_total_vocab, log_total_all > 0.0
 
 
 def summarize_scores(scores):
@@ -978,16 +1016,16 @@ def main():
 
     show_intro_block = not (compact_ui and bool(st.session_state.get("questions")))
     if show_intro_block:
-        st.write("トピック別の例文から4択で出題します。単語版よりも得点係数を約1.5倍に調整しています。")
+        st.write("トピック別の例文から4択で出題します。単語版よりも得点係数を約2.0倍に調整しています。")
         with st.expander("スコア計算ルール"):
             st.markdown(
                 "\n".join(
                     [
-                        f"- 基礎点: レベル + 11.5（例: Lv5→16.5点）",
-                        f"- 連続正解ボーナス: 2問目以降の連続正解1回につき +{STREAK_BONUS * STREAK_BONUS_SCALE}",
-                        f"- 精度ボーナス: 最終正答率 × 問題数 × {ACCURACY_BONUS_PER_Q}",
+                        f"- 基礎点: (レベル + 11.5) × {SENTENCE_SCORE_SCALE:.4g}（例: Lv5→{base_points_for_level(5):.1f}点）",
+                        f"- 連続正解ボーナス: 2問目以降の連続正解1回につき +{STREAK_BONUS * STREAK_BONUS_SCALE:.1f}",
+                        f"- 精度ボーナス: 最終正答率 × 問題数 × {ACCURACY_BONUS_PER_Q:.1f}",
                         "- スパルタモード: 復習分は0.7倍で加算（精度ボーナスなし）",
-                        "- 同じ問題数なら単語版よりおおむね1.5倍スコアが伸びる想定です。",
+                        "- 同じ問題数なら単語版よりおおむね2.0倍スコアが伸びる想定です。",
                     ]
                 )
             )
@@ -1203,14 +1241,6 @@ def main():
     if st.session_state.sentence_user_name and scores:
         with st.sidebar:
             st.markdown("---")
-            user_total_sentence = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in scores
-                if r.get("user") == st.session_state.sentence_user_name
-            )
-            st.info(f"現在の累積（文章）: {user_total_sentence:.1f}")
-            # 全体累積（UserStats優先、なければ全モードのログから集計）
-            overall_points = None
             # クイズ中はネットアクセスを避け、キャッシュまたは空にする
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
             if not in_quiz:
@@ -1218,36 +1248,20 @@ def main():
                 st.session_state.cached_main_rank = main_rank
             else:
                 main_rank = st.session_state.get("cached_main_rank", [])
-            if main_rank:
-                for row in main_rank:
-                    if row.get("user") == st.session_state.sentence_user_name:
-                        try:
-                            overall_points = float(row.get("total_points", 0))
-                        except (ValueError, TypeError):
-                            overall_points = 0.0
-                        break
             if not in_quiz:
                 all_scores = load_scores_all(force_refresh=force_refresh_rankings)
                 st.session_state.cached_scores_all = all_scores
             else:
                 all_scores = st.session_state.get("cached_scores_all", [])
-            log_total_all = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in all_scores
-                if r.get("user") == st.session_state.sentence_user_name
+            overall_points, user_total_sentence, log_total_vocab, has_all_log = _resolve_sentence_overall_points(
+                st.session_state.sentence_user_name,
+                sentence_scores=scores,
+                all_scores=all_scores,
+                main_rank=main_rank,
             )
-            log_total_sentence = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in scores
-                if r.get("user") == st.session_state.sentence_user_name
-            )
-            log_total_vocab = log_total_all - log_total_sentence
-            if overall_points is None:
-                overall_points = log_total_all
-            else:
-                overall_points = max(overall_points, log_total_all)
+            st.info(f"現在の累積（文章）: {user_total_sentence:.1f}")
             st.info(f"現在の累積（全体）: {overall_points:.1f}")
-            if abs((log_total_sentence + log_total_vocab) - overall_points) > 0.5:
+            if has_all_log and abs((user_total_sentence + log_total_vocab) - overall_points) > 0.5:
                 st.warning("累積（単語＋文章）と全体の合計に差分があります。少し時間をおいて再読み込みしてください。")
 
     questions = st.session_state.questions
@@ -1317,30 +1331,17 @@ def main():
         st.metric("正答率", f"{accuracy*100:.1f}%")
         st.metric("得点", f"{points:.1f}")
         if st.session_state.sentence_user_name:
-            # 全体累積はUserStats優先、ログ合計を優先度2で使用
-            overall_points = None
             main_rank = load_main_rankings(force_refresh=force_refresh_rankings)
-            if main_rank:
-                for row in main_rank:
-                    if row.get("user") == st.session_state.sentence_user_name:
-                        try:
-                            overall_points = float(row.get("total_points", 0))
-                        except (ValueError, TypeError):
-                            overall_points = 0.0
-                        break
             all_scores_for_total = st.session_state.get("cached_scores_all", [])
             if not all_scores_for_total:
                 all_scores_for_total = load_scores_all(force_refresh=force_refresh_rankings)
                 st.session_state.cached_scores_all = all_scores_for_total
-            log_total_all = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in all_scores_for_total
-                if r.get("user") == st.session_state.sentence_user_name
+            overall_points, _, _, _ = _resolve_sentence_overall_points(
+                st.session_state.sentence_user_name,
+                sentence_scores=scores,
+                all_scores=all_scores_for_total,
+                main_rank=main_rank,
             )
-            if overall_points is None:
-                overall_points = log_total_all
-            else:
-                overall_points = max(overall_points, log_total_all)
             st.metric("累積（今回加算後）", f"{overall_points + points:.1f}")
         st.caption("音声で再確認できます。")
         st.write(f"正解 {st.session_state.correct}/{total}")

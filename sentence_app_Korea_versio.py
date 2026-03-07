@@ -19,8 +19,11 @@ PHRASE_AUDIO_DIR = BASE_DIR / "Esperanto例文5000文_収録音声"
 
 # スコア설정
 STREAK_BONUS = 0.5
-STREAK_BONUS_SCALE = 1.5
-ACCURACY_BONUS_PER_Q = 5.0 * 1.5  # 文章は精度ボーナスも1.5倍
+TARGET_SENTENCE_SCORE_FACTOR = 2.0
+LEGACY_SENTENCE_SCORE_FACTOR = 1.5
+SENTENCE_SCORE_SCALE = TARGET_SENTENCE_SCORE_FACTOR / LEGACY_SENTENCE_SCORE_FACTOR
+STREAK_BONUS_SCALE = SENTENCE_SCORE_SCALE
+ACCURACY_BONUS_PER_Q = 5.0 * SENTENCE_SCORE_SCALE
 SPARTAN_SCORE_MULTIPLIER = 0.7
 SCORES_SHEET = "Scores"
 USER_STATS_SHEET = "UserStatsSentence"  # 文章専用の累積
@@ -108,7 +111,7 @@ def get_connection():
 
 
 def base_points_for_level(level: int) -> float:
-    return level + 11.5
+    return (level + 11.5) * SENTENCE_SCORE_SCALE
 
 
 def safe_float(value, default: float = 0.0) -> float:
@@ -493,6 +496,41 @@ def load_main_rankings(force_refresh: bool = False):
         return df.to_dict(orient="records")
     except Exception:
         return []
+
+
+def _get_user_total_from_rows(rows, user: str, field: str = "total_points"):
+    normalized_user = str(user).strip()
+    if not normalized_user or not rows:
+        return None
+    for row in rows:
+        if str(row.get("user", "")).strip() != normalized_user:
+            continue
+        return safe_float(row.get(field, 0), 0.0)
+    return None
+
+
+def _resolve_sentence_overall_points(user: str, sentence_scores, all_scores=None, main_rank=None):
+    normalized_user = str(user).strip()
+    if not normalized_user:
+        return 0.0, 0.0, 0.0, False
+
+    sentence_total = sum(
+        safe_float(r.get("points", 0), 0.0)
+        for r in (sentence_scores or [])
+        if str(r.get("user", "")).strip() == normalized_user
+    )
+    log_total_all = sum(
+        safe_float(r.get("points", 0), 0.0)
+        for r in (all_scores or [])
+        if str(r.get("user", "")).strip() == normalized_user
+    )
+    ranked_total = _get_user_total_from_rows(main_rank, normalized_user)
+    candidates = [sentence_total, log_total_all]
+    if ranked_total is not None:
+        candidates.append(ranked_total)
+    overall_points = max(candidates) if candidates else 0.0
+    log_total_vocab = max(0.0, log_total_all - sentence_total)
+    return overall_points, sentence_total, log_total_vocab, log_total_all > 0.0
 
 
 def summarize_scores(scores):
@@ -976,16 +1014,16 @@ def main():
 
     show_intro_block = not (compact_ui and bool(st.session_state.get("questions")))
     if show_intro_block:
-        st.write("주제별 예문에서 4지선다로 출제합니다. 단어 버전보다 점수 계수를 약 1.5배로 조정했습니다.")
+        st.write("주제별 예문에서 4지선다로 출제합니다. 단어 버전보다 점수 계수를 약 2.0배로 조정했습니다.")
         with st.expander("점수 계산 규칙"):
             st.markdown(
                 "\n".join(
                     [
-                        f"- 기본점: 레벨 + 11.5(예: Lv5→16.5점)",
-                        f"- 연속 정답 보너스: 2문제째부터 연속 정답 1회당 +{STREAK_BONUS * STREAK_BONUS_SCALE}",
-                        f"- 정확도 보너스: 최종 정답률 × 문제수 × {ACCURACY_BONUS_PER_Q}",
+                        f"- 기본점: (레벨 + 11.5) × {SENTENCE_SCORE_SCALE:.4g}(예: Lv5→{base_points_for_level(5):.1f}점)",
+                        f"- 연속 정답 보너스: 2문제째부터 연속 정답 1회당 +{STREAK_BONUS * STREAK_BONUS_SCALE:.1f}",
+                        f"- 정확도 보너스: 최종 정답률 × 문제수 × {ACCURACY_BONUS_PER_Q:.1f}",
                         "- 스파르타 모드: 복습 분량은 0.7배로 합산(정확도 보너스 없음)",
-                        "- 같은 문제수라면 단어 버전보다 약 1.5배 점수가 오르는 설정입니다.",
+                        "- 같은 문제수라면 단어 버전보다 약 2.0배 점수가 오르는 설정입니다.",
                     ]
                 )
             )
@@ -1201,14 +1239,6 @@ def main():
     if st.session_state.sentence_user_name and scores:
         with st.sidebar:
             st.markdown("---")
-            user_total_sentence = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in scores
-                if r.get("user") == st.session_state.sentence_user_name
-            )
-            st.info(f"현재 누적(예문): {user_total_sentence:.1f}")
-            # 全体累積（UserStats優先、なければ全モードのログから集計）
-            overall_points = None
             # クイズ中はネットアクセスを避け、キャッシュまたは空にする
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
             if not in_quiz:
@@ -1216,36 +1246,20 @@ def main():
                 st.session_state.cached_main_rank = main_rank
             else:
                 main_rank = st.session_state.get("cached_main_rank", [])
-            if main_rank:
-                for row in main_rank:
-                    if row.get("user") == st.session_state.sentence_user_name:
-                        try:
-                            overall_points = float(row.get("total_points", 0))
-                        except (ValueError, TypeError):
-                            overall_points = 0.0
-                        break
             if not in_quiz:
                 all_scores = load_scores_all(force_refresh=force_refresh_rankings)
                 st.session_state.cached_scores_all = all_scores
             else:
                 all_scores = st.session_state.get("cached_scores_all", [])
-            log_total_all = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in all_scores
-                if r.get("user") == st.session_state.sentence_user_name
+            overall_points, user_total_sentence, log_total_vocab, has_all_log = _resolve_sentence_overall_points(
+                st.session_state.sentence_user_name,
+                sentence_scores=scores,
+                all_scores=all_scores,
+                main_rank=main_rank,
             )
-            log_total_sentence = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in scores
-                if r.get("user") == st.session_state.sentence_user_name
-            )
-            log_total_vocab = log_total_all - log_total_sentence
-            if overall_points is None:
-                overall_points = log_total_all
-            else:
-                overall_points = max(overall_points, log_total_all)
+            st.info(f"현재 누적(예문): {user_total_sentence:.1f}")
             st.info(f"현재 누적(전체): {overall_points:.1f}")
-            if abs((log_total_sentence + log_total_vocab) - overall_points) > 0.5:
+            if has_all_log and abs((user_total_sentence + log_total_vocab) - overall_points) > 0.5:
                 st.warning("누적(단어+예문)과 전체 합계에 차이가 있습니다. 잠시 후 다시 불러와 주세요.")
 
     questions = st.session_state.questions
@@ -1315,30 +1329,17 @@ def main():
         st.metric("정답률", f"{accuracy*100:.1f}%")
         st.metric("점수", f"{points:.1f}")
         if st.session_state.sentence_user_name:
-            # 全体累積はUserStats優先、ログ合計を優先度2で使用
-            overall_points = None
             main_rank = load_main_rankings(force_refresh=force_refresh_rankings)
-            if main_rank:
-                for row in main_rank:
-                    if row.get("user") == st.session_state.sentence_user_name:
-                        try:
-                            overall_points = float(row.get("total_points", 0))
-                        except (ValueError, TypeError):
-                            overall_points = 0.0
-                        break
             all_scores_for_total = st.session_state.get("cached_scores_all", [])
             if not all_scores_for_total:
                 all_scores_for_total = load_scores_all(force_refresh=force_refresh_rankings)
                 st.session_state.cached_scores_all = all_scores_for_total
-            log_total_all = sum(
-                safe_float(r.get("points", 0), 0.0)
-                for r in all_scores_for_total
-                if r.get("user") == st.session_state.sentence_user_name
+            overall_points, _, _, _ = _resolve_sentence_overall_points(
+                st.session_state.sentence_user_name,
+                sentence_scores=scores,
+                all_scores=all_scores_for_total,
+                main_rank=main_rank,
             )
-            if overall_points is None:
-                overall_points = log_total_all
-            else:
-                overall_points = max(overall_points, log_total_all)
             st.metric("누적(이번 반영 후)", f"{overall_points + points:.1f}")
         st.caption("음성으로 다시 확인할 수 있습니다.")
         st.write(f"정답 {st.session_state.correct}/{total}")
