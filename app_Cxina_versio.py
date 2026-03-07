@@ -307,11 +307,14 @@ def _get_user_total_from_rows(rows, user: str, field: str = "total_points"):
     normalized_user = str(user).strip()
     if not normalized_user or not rows:
         return None
+    matched_total = None
     for row in rows:
         if str(row.get("user", "")).strip() != normalized_user:
             continue
-        return safe_float(row.get(field, 0), 0.0)
-    return None
+        candidate = safe_float(row.get(field, 0), 0.0)
+        if matched_total is None or candidate > matched_total:
+            matched_total = candidate
+    return matched_total
 
 
 def _resolve_overall_points(user: str, score_rows, ranked_rows=None):
@@ -406,7 +409,7 @@ def summarize_rankings_from_stats(stats_data, score_rows=None):
                     if "total_points" in k:
                         val = r[k]
                         break
-            totals[user] = safe_float(val, 0.0)
+            totals[user] = max(safe_float(totals.get(user, 0.0), 0.0), safe_float(val, 0.0))
 
     scores = score_rows if score_rows is not None else load_scores()
     score_totals, totals_today, totals_month, _ = summarize_scores(scores)
@@ -982,6 +985,8 @@ def main():
         st.header("设置")
         # keyを指定することでステート管理をStreamlitに任せる
         user_name = st.text_input("用户名（用于保存分数）", key="user_name")
+        if user_name and not str(user_name).strip():
+            st.warning("全空格用户名不能用于保存分数。")
         seed = st.number_input("随机种子 (1-8192)", min_value=1, max_value=8192, step=1, key="seed")
         # st.session_state.seed = seed # key="seed"にしたので不要
         # st.session_state.shuffle_every_time = st.checkbox("毎回ランダムに並べる（シード無視）", value=st.session_state.shuffle_every_time)
@@ -1086,6 +1091,8 @@ def main():
             "[📘 例句测验在此](https://esperantowords4choicequizzes-fwvq3dnm2jq85gbaztjlyy.streamlit.app/)"
         )
 
+    normalized_user_name = str(st.session_state.get("user_name", "")).strip()
+
     # スコア読み込み戦略:
     # 1. クイズ中（questionsがあり、结果画面でない）はAPIを呼ばない（キャッシュ使用）
     # 2. ホーム画面、结果画面、スコア保存直後はAPIを呼ぶ
@@ -1121,14 +1128,14 @@ def main():
     user_total_vocab = None
     user_total_overall = None
     user_total_sentence = None
-    if st.session_state.user_name and scores:
+    if normalized_user_name and scores:
         with st.sidebar:
             st.markdown("---")
             # クイズ中はネットアクセスを避け、ログ合計を優先
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
             overall_stats = None if in_quiz else load_rankings()
             user_total_overall, user_total_vocab, user_total_sentence, warning_needed = _resolve_overall_points(
-                st.session_state.user_name,
+                normalized_user_name,
                 score_rows=scores,
                 ranked_rows=overall_stats,
             )
@@ -1228,9 +1235,9 @@ def main():
             f" → 计入 {spartan_scaled:.1f}（{SPARTAN_SCORE_MULTIPLIER*100:.0f}%）"
         )
         st.caption("可以通过音频复习。")
-        if st.session_state.user_name:
-            existing_users = {r.get("user") for r in scores} if scores else set()
-            if st.session_state.user_name in existing_users:
+        if normalized_user_name:
+            existing_users = {str(r.get("user", "")).strip() for r in scores} if scores else set()
+            if normalized_user_name in existing_users:
                 st.info("该用户名已有分数，将累加。")
             if st.session_state.score_saved:
                 st.success("分数已保存！")
@@ -1245,7 +1252,7 @@ def main():
                         save_id = str(uuid.uuid4())
                         st.session_state.pending_save_id = save_id
                     record = {
-                        "user": st.session_state.user_name,
+                        "user": normalized_user_name,
                         "group_id": st.session_state.group_id,
                         "seed": st.session_state.seed,
                         "correct": correct,
@@ -1270,7 +1277,7 @@ def main():
                     # Scores更新（ログ）を正本として先に保存する
                     if save_score(record):
                         # UserStats更新（累積）はベストエフォート
-                        stats_ok = update_user_stats(st.session_state.user_name, points, now)
+                        stats_ok = update_user_stats(normalized_user_name, points, now)
                         st.session_state.score_saved = True
                         st.session_state.pending_save_id = None
                         st.session_state.score_refresh_needed = True

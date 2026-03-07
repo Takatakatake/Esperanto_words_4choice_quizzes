@@ -460,11 +460,14 @@ def _get_user_total_from_rows(rows, user: str, field: str = "total_points"):
     normalized_user = str(user).strip()
     if not normalized_user or not rows:
         return None
+    matched_total = None
     for row in rows:
         if str(row.get("user", "")).strip() != normalized_user:
             continue
-        return safe_float(row.get(field, 0), 0.0)
-    return None
+        candidate = safe_float(row.get(field, 0), 0.0)
+        if matched_total is None or candidate > matched_total:
+            matched_total = candidate
+    return matched_total
 
 
 def _resolve_sentence_overall_points(
@@ -518,6 +521,42 @@ def _resolve_sentence_overall_points(
 
     notice = "暂时无法取得总累计，因此目前只显示例句累计。"
     return None, sentence_total, 0.0, False, notice
+
+
+def _resolve_overall_ranking_table(
+    main_rank,
+    all_scores,
+    *,
+    main_rank_status=None,
+    all_scores_status=None,
+):
+    main_rank_status = main_rank_status or _load_status()
+    all_scores_status = all_scores_status or _load_status()
+
+    if all_scores_status.get("source") != "unavailable":
+        if main_rank:
+            notice = None
+            if all_scores_status.get("source") == "cache":
+                notice = "总排行榜正在暂时显示上次获取的 Scores。请稍后重新加载。"
+            elif main_rank_status.get("source") == "cache":
+                notice = "总排行榜的累计正在暂时显示上次获取的辅助汇总表。请稍后重新加载。"
+            return main_rank, all_scores, notice
+        if all_scores:
+            notice = None
+            if all_scores_status.get("source") == "cache":
+                notice = "总排行榜正在暂时显示上次获取的 Scores。请稍后重新加载。"
+            else:
+                notice = "总排行榜正在直接根据 Scores 进行汇总。"
+            return all_scores, all_scores, notice
+        return None, None, None
+
+    if main_rank_status.get("source") != "unavailable" and main_rank:
+        notice = "总排行榜正在暂时显示辅助汇总表累计。今日/本月页签可能会为空。"
+        if main_rank_status.get("source") == "cache":
+            notice = "总排行榜正在暂时显示上次获取的辅助汇总表累计。今日/本月页签可能会为空。"
+        return main_rank, [], notice
+
+    return None, None, "暂时无法取得总排行榜。请稍后重新加载。"
 
 
 def summarize_scores(scores):
@@ -579,7 +618,7 @@ def summarize_rankings_from_stats(stats_data, score_rows=None):
                     if "total_points" in k:
                         val = r[k]
                         break
-            totals[user] = safe_float(val, 0.0)
+            totals[user] = max(safe_float(totals.get(user, 0.0), 0.0), safe_float(val, 0.0))
 
     scores = score_rows if score_rows is not None else load_scores()
     score_totals, totals_today, totals_month, _ = summarize_scores(scores)
@@ -1063,7 +1102,9 @@ def main():
 
     with st.sidebar:
         st.header("设置")
-        st.text_input("用户名（显示用）", key="sentence_user_name")
+        sentence_user_name = st.text_input("用户名（显示用）", key="sentence_user_name")
+        if sentence_user_name and not str(sentence_user_name).strip():
+            st.warning("全空格用户名不能用于保存分数。")
         topic_options = sorted(set(k[0] for k in groups.keys()))
         topic = st.selectbox("Topic", topic_options)
         subtopics = sorted([k[1] for k in groups.keys() if k[0] == topic])
@@ -1193,6 +1234,8 @@ def main():
             "[💚 单词测验在此](https://esperantowords4choicequizzes-cxina-versio.streamlit.app/)"
         )
 
+    normalized_sentence_user_name = str(st.session_state.get("sentence_user_name", "")).strip()
+
     # スコア読み込み
     should_load = (
         not st.session_state.questions
@@ -1227,7 +1270,7 @@ def main():
             st.rerun()
 
     # サイドバーでユーザー名が入力されていれば累積を案内（scores読み込み後）
-    if st.session_state.sentence_user_name and scores:
+    if normalized_sentence_user_name and scores:
         with st.sidebar:
             st.markdown("---")
             # クイズ中はネットアクセスを避け、キャッシュまたは空にする
@@ -1253,7 +1296,7 @@ def main():
                 all_scores = st.session_state.get("cached_scores_all", [])
                 all_scores_status = st.session_state.get("cached_scores_all_status", _load_status())
             overall_points, user_total_sentence, _, overall_available, overall_notice = _resolve_sentence_overall_points(
-                st.session_state.sentence_user_name,
+                normalized_sentence_user_name,
                 sentence_scores=scores,
                 all_scores=all_scores,
                 main_rank=main_rank,
@@ -1297,12 +1340,31 @@ def main():
         if sentence_rank:
             st.subheader("排行榜（例句）")
             show_rankings(sentence_rank, key_suffix="_sentence", score_rows=scores)
-        main_rank = load_main_rankings(force_refresh=force_refresh_rankings)
-        if main_rank:
-            all_scores = load_scores_all(force_refresh=force_refresh_rankings)
-            st.session_state.cached_scores_all = all_scores
+        main_rank, main_rank_status = load_main_rankings(
+            force_refresh=force_refresh_rankings,
+            include_status=True,
+        )
+        st.session_state.cached_main_rank = main_rank
+        st.session_state.cached_main_rank_status = main_rank_status
+        all_scores, all_scores_status = load_scores_all(
+            force_refresh=force_refresh_rankings,
+            include_status=True,
+        )
+        st.session_state.cached_scores_all = all_scores
+        st.session_state.cached_scores_all_status = all_scores_status
+        overall_rank_rows, overall_rank_scores, overall_rank_notice = _resolve_overall_ranking_table(
+            main_rank,
+            all_scores,
+            main_rank_status=main_rank_status,
+            all_scores_status=all_scores_status,
+        )
+        if overall_rank_rows:
             st.subheader("排行榜（总计：单词+例句）")
-            show_rankings(main_rank, key_suffix="_main", score_rows=all_scores)
+            if overall_rank_notice:
+                st.warning(overall_rank_notice)
+            show_rankings(overall_rank_rows, key_suffix="_main", score_rows=overall_rank_scores)
+        elif overall_rank_notice:
+            st.warning(overall_rank_notice)
         render_cross_language_footer("sentence_zh")
         return
 
@@ -1334,7 +1396,7 @@ def main():
         st.subheader("结果")
         st.metric("正确率", f"{accuracy*100:.1f}%")
         st.metric("得分", f"{points:.1f}")
-        if st.session_state.sentence_user_name:
+        if normalized_sentence_user_name:
             main_rank, main_rank_status = load_main_rankings(
                 force_refresh=force_refresh_rankings,
                 include_status=True,
@@ -1354,7 +1416,7 @@ def main():
                 st.session_state.cached_scores_all = all_scores_for_total
                 st.session_state.cached_scores_all_status = all_scores_status_for_total
             overall_points, user_total_sentence, _, overall_available, overall_notice = _resolve_sentence_overall_points(
-                st.session_state.sentence_user_name,
+                normalized_sentence_user_name,
                 sentence_scores=scores,
                 all_scores=all_scores_for_total,
                 main_rank=main_rank,
@@ -1384,7 +1446,7 @@ def main():
         if st.session_state.spartan_mode and sp_attempts:
             st.caption(f"斯巴达模式：复习部分按通常的{SPARTAN_SCORE_MULTIPLIER*100:.0f}%计分（无准确率加成）")
             st.caption(f"斯巴达正确率：{sp_accuracy*100:.1f}% ({sp_correct}/{sp_attempts})")
-        if st.session_state.sentence_user_name:
+        if normalized_sentence_user_name:
             st.caption("若已有同名用户的分数，将累加。")
             if st.session_state.score_saved:
                 st.success("分数已保存！")
@@ -1402,7 +1464,7 @@ def main():
                     saved_subtopic = st.session_state.get("quiz_subtopic") or subtopic
                     saved_levels = st.session_state.get("quiz_levels") or selected_levels
                     record = {
-                        "user": st.session_state.sentence_user_name,
+                        "user": normalized_sentence_user_name,
                         "mode": "sentence",
                         "topic": saved_topic,
                         "subtopic": saved_subtopic,
@@ -1429,15 +1491,15 @@ def main():
                     if not log_saved:
                         st.error("保存失败。请检查 secrets。")
                     else:
-                        totals = _load_score_totals_for_user(st.session_state.sentence_user_name)
+                        totals = _load_score_totals_for_user(normalized_sentence_user_name)
                         ok_sentence = update_user_stats(
-                            st.session_state.sentence_user_name,
+                            normalized_sentence_user_name,
                             points,
                             now,
                             totals=totals,
                         )
                         ok_main = update_user_stats_main(
-                            st.session_state.sentence_user_name,
+                            normalized_sentence_user_name,
                             points,
                             now,
                             totals=totals,
@@ -1502,15 +1564,25 @@ def main():
         )
         st.session_state.cached_main_rank = main_rank
         st.session_state.cached_main_rank_status = main_rank_status
-        if main_rank:
-            all_scores, all_scores_status = load_scores_all(
-                force_refresh=force_refresh_rankings,
-                include_status=True,
-            )
-            st.session_state.cached_scores_all = all_scores
-            st.session_state.cached_scores_all_status = all_scores_status
+        all_scores, all_scores_status = load_scores_all(
+            force_refresh=force_refresh_rankings,
+            include_status=True,
+        )
+        st.session_state.cached_scores_all = all_scores
+        st.session_state.cached_scores_all_status = all_scores_status
+        overall_rank_rows, overall_rank_scores, overall_rank_notice = _resolve_overall_ranking_table(
+            main_rank,
+            all_scores,
+            main_rank_status=main_rank_status,
+            all_scores_status=all_scores_status,
+        )
+        if overall_rank_rows:
             st.subheader("排行榜（总计：单词+例句）")
-            show_rankings(main_rank, key_suffix="_main", score_rows=all_scores)
+            if overall_rank_notice:
+                st.warning(overall_rank_notice)
+            show_rankings(overall_rank_rows, key_suffix="_main", score_rows=overall_rank_scores)
+        elif overall_rank_notice:
+            st.warning(overall_rank_notice)
         st.subheader("复习")
         wrong = []
         correct_list = []
