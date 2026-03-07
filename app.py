@@ -171,7 +171,8 @@ def get_connection():
     try:
         return st.connection("gsheets", type=GSheetsConnection)
     except Exception as e:
-        st.error(f"Google Sheets 接続の初期化に失敗しました: {e}")
+        # User-facing warnings are handled by loader state to avoid duplicate error boxes.
+        print(f"Google Sheets connection init failed: {e}")
         return None
 
 
