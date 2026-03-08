@@ -205,6 +205,7 @@ def build_groups(df: pd.DataFrame):
     col_id = _get_col(df, ["PhraseID", "ID"])
 
     groups = {}
+    seen_pairs_by_group = {}
     for _, row in df.iterrows():
         topic_raw = row.get(col_topic)
         subtopic_raw = row.get(col_subtopic)
@@ -230,6 +231,11 @@ def build_groups(df: pd.DataFrame):
             continue
 
         key = (topic, subtopic)
+        seen_pairs = seen_pairs_by_group.setdefault(key, set())
+        display_pair = (phrase, japanese)
+        if display_pair in seen_pairs:
+            continue
+        seen_pairs.add(display_pair)
         groups.setdefault(key, []).append(
             {
                 "phrase_id": phrase_id,
@@ -245,17 +251,45 @@ def filter_by_levels(entries, levels):
     return [e for e in entries if e["level"] in levels]
 
 
-def build_questions(entries, levels, rng: random.Random):
-    eligible = filter_by_levels(entries, levels)
+def build_questions(entries, levels, rng: random.Random, direction: str):
+    eligible = list(filter_by_levels(entries, levels))
     if len(eligible) < 4:
         return []
+    prompt_key = "japanese" if direction == "ja_to_eo" else "phrase"
+    option_key = "phrase" if direction == "ja_to_eo" else "japanese"
     rng.shuffle(eligible)
-    questions = []
-    for correct in eligible:
-        others = [e for e in eligible if e is not correct]
-        if len(others) < 3:
+
+    deduped = []
+    seen_prompts = set()
+    for entry in eligible:
+        prompt_value = str(entry.get(prompt_key, "")).strip()
+        if not prompt_value or prompt_value in seen_prompts:
             continue
-        options = rng.sample(others, 3) + [correct]
+        seen_prompts.add(prompt_value)
+        deduped.append(entry)
+    if len(deduped) < 4:
+        return []
+
+    questions = []
+    for correct in deduped:
+        correct_option = str(correct.get(option_key, "")).strip()
+        others = [e for e in deduped if e is not correct]
+        if len(others) < 3 or not correct_option:
+            continue
+        rng.shuffle(others)
+        unique_others = []
+        seen_options = {correct_option}
+        for other in others:
+            option_value = str(other.get(option_key, "")).strip()
+            if not option_value or option_value in seen_options:
+                continue
+            seen_options.add(option_value)
+            unique_others.append(other)
+            if len(unique_others) == 3:
+                break
+        if len(unique_others) < 3:
+            continue
+        options = unique_others + [correct]
         rng.shuffle(options)
         answer_idx = options.index(correct)
         questions.append(
@@ -297,14 +331,14 @@ def load_scores(force_refresh: bool = False):
     cached_scores = st.session_state.get("cached_scores", [])
     if conn is None:
         if cached_scores:
+            st.session_state.score_refresh_needed = False
             if force_refresh:
                 st.session_state.score_load_error = "최신 랭킹을 다시 가져오지 못해 이전 캐시 데이터를 표시합니다."
-                st.session_state.score_refresh_needed = True
             else:
                 st.session_state.score_load_error = "최신 랭킹을 가져오지 못해 이전 캐시 데이터를 표시합니다."
-                st.session_state.score_refresh_needed = False
             return normalize_score_rows(cached_scores, fallback_mode="vocab")
         st.session_state.score_load_error = "Google Sheets 연결을 초기화할 수 없습니다."
+        st.session_state.score_refresh_needed = False
         return []
     try:
         df = _read_sheet_with_retry(conn, worksheet=SCORES_SHEET, force_refresh=force_refresh)
@@ -316,15 +350,15 @@ def load_scores(force_refresh: bool = False):
         return [r for r in records if r.get("mode") == "sentence"] or []
     except Exception as e:
         if cached_scores:
+            st.session_state.score_refresh_needed = False
             if force_refresh:
                 st.session_state.score_load_error = f"최신 랭킹을 다시 가져오지 못해 이전 캐시 데이터를 표시합니다: {e}"
-                st.session_state.score_refresh_needed = True
             else:
                 st.session_state.score_load_error = f"최신 랭킹을 가져오지 못해 이전 캐시 데이터를 표시합니다: {e}"
-                st.session_state.score_refresh_needed = False
             normalized_cached = normalize_score_rows(cached_scores, fallback_mode="vocab")
             return [r for r in normalized_cached if r.get("mode") == "sentence"] or []
         st.session_state.score_load_error = f"랭킹을 불러오지 못했습니다: {e}"
+        st.session_state.score_refresh_needed = False
         return []
 
 
@@ -923,15 +957,16 @@ def main():
         (function() {
             try {
                 const isNarrow = window.innerWidth <= 768;
+                const looksMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                 const params = new URLSearchParams(window.location.search);
                 const hasMobileParam = params.get("mobile") === "1";
-                if (isNarrow && !hasMobileParam) {
+                if (isNarrow && looksMobileUA && !hasMobileParam) {
                     params.set("mobile", "1");
                     const target = window.location.pathname + "?" + params.toString() + window.location.hash;
                     window.location.replace(target);
                     return;
                 }
-                if (!isNarrow && hasMobileParam) {
+                if ((!isNarrow || !looksMobileUA) && hasMobileParam) {
                     params.delete("mobile");
                     const query = params.toString();
                     const target = window.location.pathname + (query ? "?" + query : "") + window.location.hash;
@@ -1066,6 +1101,8 @@ def main():
     st.session_state.setdefault("streak", 0)
     st.session_state.setdefault("answers", [])
     st.session_state.setdefault("showing_result", False)
+    st.session_state.setdefault("last_result_msg", "")
+    st.session_state.setdefault("last_is_correct", False)
     st.session_state.setdefault("direction", "ja_to_eo")
     st.session_state.setdefault("score_saved", False)
     st.session_state.setdefault("pending_save_id", None)
@@ -1171,7 +1208,7 @@ def main():
         if st.button("퀴즈 시작", use_container_width=True):
             rng = random.Random()
             entries = groups.get((topic, subtopic), [])
-            qs = build_questions(entries, selected_levels, rng)
+            qs = build_questions(entries, selected_levels, rng, direction)
             if len(qs) < 4:
                 st.warning("4문제 이상이 되도록 레벨을 늘려주세요.")
             else:
@@ -1265,10 +1302,40 @@ def main():
         col_warn.warning(st.session_state.score_load_error)
         col_warn.caption("인증·통신 오류일 때만 다시 시도하세요.")
         if col_btn.button("다시 불러오기", key="retry_scores_sentence"):
-            st.cache_data.clear()
             st.session_state.cached_scores = load_scores(force_refresh=True)
             st.session_state.score_load_error = None
             st.rerun()
+
+    main_rank = st.session_state.get("cached_main_rank", [])
+    main_rank_status = st.session_state.get("cached_main_rank_status", _load_status())
+    main_rank_loaded = False
+    all_scores = st.session_state.get("cached_scores_all", [])
+    all_scores_status = st.session_state.get("cached_scores_all_status", _load_status())
+    all_scores_loaded = False
+
+    def get_main_rankings():
+        nonlocal main_rank, main_rank_status, main_rank_loaded
+        if not main_rank_loaded:
+            main_rank, main_rank_status = load_main_rankings(
+                force_refresh=force_refresh_rankings,
+                include_status=True,
+            )
+            st.session_state.cached_main_rank = main_rank
+            st.session_state.cached_main_rank_status = main_rank_status
+            main_rank_loaded = True
+        return main_rank, main_rank_status
+
+    def get_all_scores():
+        nonlocal all_scores, all_scores_status, all_scores_loaded
+        if not all_scores_loaded:
+            all_scores, all_scores_status = load_scores_all(
+                force_refresh=force_refresh_rankings,
+                include_status=True,
+            )
+            st.session_state.cached_scores_all = all_scores
+            st.session_state.cached_scores_all_status = all_scores_status
+            all_scores_loaded = True
+        return all_scores, all_scores_status
 
     # サイドバーでユーザー名が入力されていれば累積を案内（scores読み込み後）
     if normalized_sentence_user_name and scores:
@@ -1277,22 +1344,12 @@ def main():
             # クイズ中はネットアクセスを避け、キャッシュまたは空にする
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
             if not in_quiz:
-                main_rank, main_rank_status = load_main_rankings(
-                    force_refresh=force_refresh_rankings,
-                    include_status=True,
-                )
-                st.session_state.cached_main_rank = main_rank
-                st.session_state.cached_main_rank_status = main_rank_status
+                main_rank, main_rank_status = get_main_rankings()
             else:
                 main_rank = st.session_state.get("cached_main_rank", [])
                 main_rank_status = st.session_state.get("cached_main_rank_status", _load_status())
             if not in_quiz:
-                all_scores, all_scores_status = load_scores_all(
-                    force_refresh=force_refresh_rankings,
-                    include_status=True,
-                )
-                st.session_state.cached_scores_all = all_scores
-                st.session_state.cached_scores_all_status = all_scores_status
+                all_scores, all_scores_status = get_all_scores()
             else:
                 all_scores = st.session_state.get("cached_scores_all", [])
                 all_scores_status = st.session_state.get("cached_scores_all_status", _load_status())
@@ -1341,18 +1398,8 @@ def main():
         if sentence_rank:
             st.subheader("랭킹(예문 전용)")
             show_rankings(sentence_rank, key_suffix="_sentence", score_rows=scores)
-        main_rank, main_rank_status = load_main_rankings(
-            force_refresh=force_refresh_rankings,
-            include_status=True,
-        )
-        st.session_state.cached_main_rank = main_rank
-        st.session_state.cached_main_rank_status = main_rank_status
-        all_scores, all_scores_status = load_scores_all(
-            force_refresh=force_refresh_rankings,
-            include_status=True,
-        )
-        st.session_state.cached_scores_all = all_scores
-        st.session_state.cached_scores_all_status = all_scores_status
+        main_rank, main_rank_status = get_main_rankings()
+        all_scores, all_scores_status = get_all_scores()
         overall_rank_rows, overall_rank_scores, overall_rank_notice = _resolve_overall_ranking_table(
             main_rank,
             all_scores,
@@ -1398,24 +1445,8 @@ def main():
         st.metric("정답률", f"{accuracy*100:.1f}%")
         st.metric("점수", f"{points:.1f}")
         if normalized_sentence_user_name:
-            main_rank, main_rank_status = load_main_rankings(
-                force_refresh=force_refresh_rankings,
-                include_status=True,
-            )
-            st.session_state.cached_main_rank = main_rank
-            st.session_state.cached_main_rank_status = main_rank_status
-            all_scores_for_total = st.session_state.get("cached_scores_all", [])
-            all_scores_status_for_total = st.session_state.get("cached_scores_all_status", _load_status())
-            if (
-                not all_scores_for_total
-                and all_scores_status_for_total.get("source") == "unavailable"
-            ):
-                all_scores_for_total, all_scores_status_for_total = load_scores_all(
-                    force_refresh=force_refresh_rankings,
-                    include_status=True,
-                )
-                st.session_state.cached_scores_all = all_scores_for_total
-                st.session_state.cached_scores_all_status = all_scores_status_for_total
+            main_rank, main_rank_status = get_main_rankings()
+            all_scores_for_total, all_scores_status_for_total = get_all_scores()
             overall_points, user_total_sentence, _, overall_available, overall_notice = _resolve_sentence_overall_points(
                 normalized_sentence_user_name,
                 sentence_scores=scores,
@@ -1559,18 +1590,8 @@ def main():
         if ranking:
             st.subheader("랭킹(예문 전용)")
             show_rankings(ranking, key_suffix="_sentence", score_rows=scores)
-        main_rank, main_rank_status = load_main_rankings(
-            force_refresh=force_refresh_rankings,
-            include_status=True,
-        )
-        st.session_state.cached_main_rank = main_rank
-        st.session_state.cached_main_rank_status = main_rank_status
-        all_scores, all_scores_status = load_scores_all(
-            force_refresh=force_refresh_rankings,
-            include_status=True,
-        )
-        st.session_state.cached_scores_all = all_scores
-        st.session_state.cached_scores_all_status = all_scores_status
+        main_rank, main_rank_status = get_main_rankings()
+        all_scores, all_scores_status = get_all_scores()
         overall_rank_rows, overall_rank_scores, overall_rank_notice = _resolve_overall_ranking_table(
             main_rank,
             all_scores,
@@ -1592,10 +1613,13 @@ def main():
             if idx < 0 or idx >= len(st.session_state.questions):
                 continue
             q = st.session_state.questions[idx]
-            selected = ans["selected"]
-            correct_idx = ans["correct"]
-            opt_sel = q["options"][selected] if selected is not None else None
-            opt_cor = q["options"][correct_idx]
+            options = q.get("options") or []
+            correct_idx = ans.get("correct", -1)
+            if correct_idx < 0 or correct_idx >= len(options):
+                continue
+            selected = ans.get("selected")
+            opt_sel = options[selected] if isinstance(selected, int) and 0 <= selected < len(options) else None
+            opt_cor = options[correct_idx]
             entry = {
                 "prompt_eo": q["prompt_eo"],
                 "prompt_ja": q["prompt_ja"],

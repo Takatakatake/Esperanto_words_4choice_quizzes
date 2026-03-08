@@ -197,14 +197,14 @@ def load_scores(force_refresh: bool = False):
     cached_scores = st.session_state.get("cached_scores", [])
     if conn is None:
         if cached_scores:
+            st.session_state.score_refresh_needed = False
             if force_refresh:
                 st.session_state.score_load_error = "최신 랭킹을 다시 가져오지 못해 이전 캐시 데이터를 표시합니다."
-                st.session_state.score_refresh_needed = True
             else:
                 st.session_state.score_load_error = "최신 랭킹을 가져오지 못해 이전 캐시 데이터를 표시합니다."
-                st.session_state.score_refresh_needed = False
             return normalize_score_rows(cached_scores, fallback_mode="vocab")
         st.session_state.score_load_error = "Google Sheets 연결을 초기화할 수 없습니다."
+        st.session_state.score_refresh_needed = False
         return []
     try:
         # 일시적인 네트워크 흔들림에 대비해 짧게 재시도
@@ -218,15 +218,31 @@ def load_scores(force_refresh: bool = False):
     except Exception as e:
         print(f"Ranking load error: {e}")
         if cached_scores:
+            st.session_state.score_refresh_needed = False
             if force_refresh:
                 st.session_state.score_load_error = f"최신 랭킹을 다시 가져오지 못해 이전 캐시 데이터를 표시합니다: {e}"
-                st.session_state.score_refresh_needed = True
             else:
                 st.session_state.score_load_error = f"최신 랭킹을 가져오지 못해 이전 캐시 데이터를 표시합니다: {e}"
-                st.session_state.score_refresh_needed = False
             return normalize_score_rows(cached_scores, fallback_mode="vocab")
         st.session_state.score_load_error = f"랭킹을 불러오지 못했습니다: {e}"
+        st.session_state.score_refresh_needed = False
         return []
+
+
+def _load_status(source: str = "unavailable", *, exact: bool = False, error: str = None):
+    return {"source": source, "exact": exact, "error": error}
+
+
+def _ranking_status_notice(status):
+    if not status:
+        return None, None
+    source = status.get("source")
+    if source == "cache":
+        return "info", "전체 랭킹 보조 집계는 이전에 가져온 데이터를 임시로 표시하고 있습니다."
+    if source == "unavailable":
+        return "warning", "전체 랭킹 보조 집계를 가져오지 못해 현재 Scores 로그 집계 기준으로 표시하고 있습니다."
+    return None, None
+
 
 def save_score(record: dict):
     """Google Sheetsにスコアを追記する"""
@@ -265,18 +281,35 @@ def update_user_stats(user: str, points: float, ts: str):
     return ok
 
 
-def load_rankings():
+def load_rankings(force_refresh: bool = False, *, include_status: bool = False):
     """ランキング用データをUserStatsから読み込む"""
     conn = get_connection()
+    cached_rankings = st.session_state.get("cached_rankings", [])
+
+    def finish(rows, *, source: str, exact: bool, error: str = None):
+        status = _load_status(source, exact=exact, error=error)
+        if include_status:
+            return rows, status
+        return rows
+
     if conn is None:
-        return []
+        if cached_rankings:
+            return finish(
+                cached_rankings,
+                source="cache",
+                exact=False,
+                error="Google Sheets 연결을 초기화할 수 없습니다.",
+            )
+        return finish([], source="unavailable", exact=False, error="Google Sheets 연결을 초기화할 수 없습니다.")
     try:
-        df = _read_sheet_with_retry(conn, worksheet=USER_STATS_SHEET, force_refresh=False)
+        df = _read_sheet_with_retry(conn, worksheet=USER_STATS_SHEET, force_refresh=force_refresh)
         if df is None or df.empty:
-            return []
-        return df.to_dict(orient="records")
-    except Exception:
-        return []
+            return finish([], source="live", exact=True)
+        return finish(df.to_dict(orient="records"), source="live", exact=True)
+    except Exception as e:
+        if cached_rankings:
+            return finish(cached_rankings, source="cache", exact=False, error=str(e))
+        return finish([], source="unavailable", exact=False, error=str(e))
 
 
 def get_stage_factor(stages):
@@ -429,13 +462,17 @@ def rank_dict(d, top_n=None):
     return items[:top_n] if top_n else items
 
 
-def show_rankings(stats_data, score_rows=None):
+def show_rankings(stats_data, score_rows=None, status=None):
     if is_debug_mode():
         with st.expander("Debug: Raw UserStats Data"):
             st.write("Raw Data:", stats_data)
             if st.button("Clear Cache & Rerun", key="clear_cache_vocab_debug_ko"):
                 st.cache_data.clear()
                 st.rerun()
+
+    notice_level, notice_text = _ranking_status_notice(status)
+    if notice_text:
+        getattr(st, notice_level)(notice_text)
 
     totals, totals_today, totals_month, hof = summarize_rankings_from_stats(stats_data, score_rows=score_rows)
     tabs = st.tabs(["누적", "오늘", "이번 달", f"명예의 전당({HOF_THRESHOLD}점 이상)"])
@@ -574,6 +611,8 @@ def init_state():
     st.session_state.setdefault("last_is_correct", False)
     st.session_state.setdefault("last_correct_answer", "")
     st.session_state.setdefault("cached_scores", [])
+    st.session_state.setdefault("cached_rankings", [])
+    st.session_state.setdefault("cached_rankings_status", _load_status())
     st.session_state.setdefault("show_option_audio", True)
 
 
@@ -600,14 +639,13 @@ def start_quiz(group, rng):
 
 
 def main():
-    init_state()
-
     st.set_page_config(
         page_title="에스페란토 단어 퀴즈",
         page_icon="💚",
         layout="centered",
         initial_sidebar_state="expanded",
     )
+    init_state()
 
     is_mobile = is_mobile_client()
     if "mobile_compact_ui" not in st.session_state:
@@ -704,7 +742,7 @@ def main():
         div.stButton > button[kind="secondary"] {{
             border-color: #009900 !important;
         }}
-        .stButton button {{
+        [data-testid="stMain"] .stButton button {{
             height: 120px;
             min-height: 120px;
             max-height: 120px;
@@ -721,13 +759,13 @@ def main():
             text-align: center;
             padding: 12px;
         }}
-        .stButton button p, .stButton button div, .stButton button span {{
+        [data-testid="stMain"] .stButton button p, [data-testid="stMain"] .stButton button div, [data-testid="stMain"] .stButton button span {{
             font-size: {base_font} !important;
             font-weight: 700 !important;
             line-height: 1.35 !important;
         }}
         @media (max-width: 768px) {{
-            .stButton button {{
+            [data-testid="stMain"] .stButton button {{
                 height: auto;
                 min-height: {mobile_button_height};
                 max-height: none;
@@ -741,12 +779,12 @@ def main():
                 line-height: 1.35 !important;
                 padding: {mobile_button_padding};
             }}
-            .stButton button p, .stButton button div, .stButton button span {{
+            [data-testid="stMain"] .stButton button p, [data-testid="stMain"] .stButton button div, [data-testid="stMain"] .stButton button span {{
                 font-size: {mobile_option_font} !important;
                 font-weight: 700 !important;
                 line-height: 1.35 !important;
             }}
-            .stButton {{
+            [data-testid="stMain"] .stButton {{
                 margin-bottom: 0.2rem !important;
             }}
             p {{
@@ -807,7 +845,7 @@ def main():
             .question-box.tight {{
                 max-height: none;
             }}
-            .stButton button {{
+            [data-testid="stMain"] .stButton button {{
                 height: auto !important;
                 min-height: 124px !important;
                 max-height: none !important;
@@ -819,7 +857,7 @@ def main():
                 padding: 8px !important;
                 font-size: 45px !important;
             }}
-            .stButton button p, .stButton button div, .stButton button span, .stButton button * {{
+            [data-testid="stMain"] .stButton button p, [data-testid="stMain"] .stButton button div, [data-testid="stMain"] .stButton button span, [data-testid="stMain"] .stButton button * {{
                 font-size: 45px !important;
                 line-height: 1.3 !important;
             }}
@@ -839,15 +877,16 @@ def main():
         (function() {
             try {
                 const isNarrow = window.innerWidth <= 768;
+                const looksMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
                 const params = new URLSearchParams(window.location.search);
                 const hasMobileParam = params.get("mobile") === "1";
-                if (isNarrow && !hasMobileParam) {
+                if (isNarrow && looksMobileUA && !hasMobileParam) {
                     params.set("mobile", "1");
                     const target = window.location.pathname + "?" + params.toString() + window.location.hash;
                     window.location.replace(target);
                     return;
                 }
-                if (!isNarrow && hasMobileParam) {
+                if ((!isNarrow || !looksMobileUA) && hasMobileParam) {
                     params.delete("mobile");
                     const query = params.toString();
                     const target = window.location.pathname + (query ? "?" + query : "") + window.location.hash;
@@ -1116,12 +1155,27 @@ def main():
     else:
         scores = st.session_state.cached_scores
 
+    rankings = st.session_state.get("cached_rankings", [])
+    rankings_status = st.session_state.get("cached_rankings_status", _load_status())
+    rankings_loaded = False
+
+    def get_overall_rankings():
+        nonlocal rankings, rankings_status, rankings_loaded
+        if not rankings_loaded:
+            rankings, rankings_status = load_rankings(
+                force_refresh=force_refresh_scores,
+                include_status=True,
+            )
+            st.session_state.cached_rankings = rankings
+            st.session_state.cached_rankings_status = rankings_status
+            rankings_loaded = True
+        return rankings, rankings_status
+
     if st.session_state.get("score_load_error"):
         col_warn, col_btn = st.columns([4, 1])
         col_warn.warning(st.session_state.score_load_error)
         col_warn.caption("인증·통신 오류일 때만 다시 시도하세요.")
         if col_btn.button("다시 불러오기", key="retry_scores_vocab"):
-            st.cache_data.clear()
             st.session_state.cached_scores = load_scores(force_refresh=True)
             st.session_state.score_load_error = None
             st.rerun()
@@ -1134,7 +1188,10 @@ def main():
             st.markdown("---")
             # クイズ中はネットアクセスを避け、ログ合計を優先
             in_quiz = bool(st.session_state.questions) and not st.session_state.showing_result
-            overall_stats = None if in_quiz else load_rankings()
+            overall_stats = None
+            overall_stats_status = _load_status(source="live", exact=True)
+            if not in_quiz:
+                overall_stats, overall_stats_status = get_overall_rankings()
             user_total_overall, user_total_vocab, user_total_sentence, warning_needed = _resolve_overall_points(
                 normalized_user_name,
                 score_rows=scores,
@@ -1142,6 +1199,9 @@ def main():
             )
             st.info(f"현재 누적(단어): {user_total_vocab:.1f}")
             st.info(f"현재 누적(전체): {user_total_overall:.1f}")
+            notice_level, notice_text = _ranking_status_notice(overall_stats_status)
+            if notice_text:
+                st.caption(notice_text)
             if warning_needed:
                 if abs((user_total_vocab + user_total_sentence) - user_total_overall) > 0.5:
                     st.warning("누적(단어+예문)과 전체 합계에 차이가 있습니다. 잠시 후 다시 불러와 주세요.")
@@ -1188,7 +1248,8 @@ def main():
             tabs_log[3].dataframe(to_df_log(vocab_hof), use_container_width=True, hide_index=True)
 
             st.subheader("랭킹(전체: 단어+예문)")
-            show_rankings(load_rankings(), score_rows=scores)
+            ranking_rows, ranking_rows_status = get_overall_rankings()
+            show_rankings(ranking_rows, score_rows=scores, status=ranking_rows_status)
         render_cross_language_footer("vocab_ko")
         return
 
@@ -1333,7 +1394,8 @@ def main():
                 return pd.DataFrame(data)
             st.dataframe(to_df_log(totals_vocab), use_container_width=True, hide_index=True)
             st.subheader("랭킹(전체: 단어+예문)")
-            show_rankings(load_rankings(), score_rows=scores)
+            ranking_rows, ranking_rows_status = get_overall_rankings()
+            show_rankings(ranking_rows, score_rows=scores, status=ranking_rows_status)
 
         # 복습セクション
         st.subheader("복습")
@@ -1341,21 +1403,27 @@ def main():
         correct_list = []
         direction_review = st.session_state.quiz_direction
         for ans in st.session_state.answers:
-            q = st.session_state.questions[ans["q_idx"]]
-            selected = ans["selected"]
-            correct_idx = ans["correct"]
+            idx = ans.get("q_idx", -1)
+            if idx < 0 or idx >= len(st.session_state.questions):
+                continue
+            q = st.session_state.questions[idx]
+            options = q.get("options") or []
+            correct_idx = ans.get("correct", -1)
+            if correct_idx < 0 or correct_idx >= len(options):
+                continue
+            selected = ans.get("selected")
             selected_text = ""
-            if selected is not None:
-                selected_text = q["options"][selected]["japanese"] if direction_review == "eo_to_ja" else q["options"][selected]["esperanto"]
-            answer_text = q["options"][correct_idx]["japanese"]
-            answer_eo = q["options"][correct_idx]["esperanto"]
+            if isinstance(selected, int) and 0 <= selected < len(options):
+                selected_text = options[selected]["japanese"] if direction_review == "eo_to_ja" else options[selected]["esperanto"]
+            answer_text = options[correct_idx]["japanese"]
+            answer_eo = options[correct_idx]["esperanto"]
             entry = {
                 "prompt": q["prompt"],
                 "selected": selected_text,
                 "answer": answer_text,
                 "answer_eo": answer_eo,
                 "phase": ans.get("phase", "main"),
-                "audio_key": q["options"][correct_idx]["audio_key"],
+                "audio_key": options[correct_idx]["audio_key"],
             }
             if selected == correct_idx:
                 correct_list.append(entry)
