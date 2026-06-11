@@ -12,15 +12,45 @@ from data_sources import VOCAB_CSV
 
 
 # -------- パラメータ --------
-# ランダムシードは 1〜8192 を想定（それ以外も受け付けるが再現性のため範囲を推奨）
+# ランダムシードは 1〜8192 に丸める。PC版とスマホ版で同じグループ内容にするため、
+# グループ分割にはPython標準乱数ではなくJS版と同じmulberry32を使う。
 DEFAULT_SEED = 1
+SEED_MIN = 1
+SEED_MAX = 8192
+UINT32_MASK = 0xFFFFFFFF
+UINT32_SIZE = 4294967296
+
+
+def clamp_seed(seed: int, fallback: int = DEFAULT_SEED) -> int:
+    try:
+        parsed = int(seed)
+    except (TypeError, ValueError):
+        parsed = fallback
+    return max(SEED_MIN, min(SEED_MAX, parsed))
+
+
+class Mulberry32:
+    def __init__(self, seed: int):
+        self.state = clamp_seed(seed) & UINT32_MASK
+
+    def random(self) -> float:
+        self.state = (self.state + 0x6D2B79F5) & UINT32_MASK
+        t = self.state
+        t = ((t ^ (t >> 15)) * (t | 1)) & UINT32_MASK
+        t ^= (t + (((t ^ (t >> 7)) * (t | 61)) & UINT32_MASK)) & UINT32_MASK
+        return ((t ^ (t >> 14)) & UINT32_MASK) / UINT32_SIZE
+
+    def shuffle(self, items: List) -> None:
+        for index in range(len(items) - 1, 0, -1):
+            swap_index = int(self.random() * (index + 1))
+            items[index], items[swap_index] = items[swap_index], items[index]
 
 
 # -------- 品詞判定ロジック --------
 # エスペラントの語尾規則＋例外リストで分類する。
 PERSONAL_PRONOUNS = {"mi", "vi", "li", "ŝi", "ĝi", "ni", "ili", "oni", "ci"}
 PRONOUNS = {"oni", "si", "mem"}
-CORRELATIVE_PREFIXES = ["ki", "ti", "i", "neni", "ĉi", "ĉ"]
+CORRELATIVE_PREFIXES = ["ki", "ti", "i", "neni", "ĉi"]
 CORRELATIVE_SUFFIXES = ["u", "o", "a", "e", "al", "am", "el", "om", "es"]
 CORRELATIVE_SPECIAL = {"ĉi", "ĉiuj", "ĉiu"}
 PREPOSITIONS = {
@@ -186,7 +216,10 @@ def classify_pos(word: str) -> str:
     if w in PRONOUNS:
         return "pronoun"
     if w.isdigit() or w in NUMERALS or re.match(
-        r"^(unu|du|tri|kvar|kvin|ses|sep|ok|naŭ|dek|cent|mil)[a-zĉĝĥĵŝŭ]*$",
+        # 数詞の語根（および合成）に文法語尾が付いた形だけを数詞とみなす。
+        # 旧パターン [a-zĉĝĥĵŝŭ]* は語根で始まる任意の語（okulo, trinki,
+        # oktobro, centro など）を数詞へ誤分類していたため、語尾を限定して厳格化する。
+        r"^(?:unu|du|tri|kvar|kvin|ses|sep|ok|naŭ|dek|cent|mil)+(?:a|o|aj|oj|an|on|ajn|ojn)?$",
         w,
     ):
         return "numeral"
@@ -331,7 +364,7 @@ def load_vocab(
 def split_by_level(entries: List[VocabEntry]) -> Dict[str, List[VocabEntry]]:
     """
     品詞ごとの語彙を Unified_Level 昇順に並べ、
-    55/240/120 の比率で 初級/中級/上級 に分ける。
+    55:65:120 の比率で 初級/中級/上級 に分ける。
     """
     sorted_entries = sorted(entries, key=lambda e: e.unified_level)
     counts = allocate_by_ratio(len(entries), [55, 65, 120])
@@ -394,9 +427,7 @@ def merge_small_sublevels(
     return merged
 
 
-def split_into_groups(
-    labels: List[str], words: List[VocabEntry], pos: str, rng: random.Random
-) -> List[Group]:
+def split_into_groups(labels: List[str], words: List[VocabEntry], pos: str, rng) -> List[Group]:
     rng.shuffle(words)
     total = len(words)
     groups: List[Group] = []
@@ -439,7 +470,7 @@ def build_groups(
     # personal_pronoun と pronoun は統合して 1 品詞として扱う
     COMBINED_POS = {"personal_pronoun": "pronoun", "pronoun": "pronoun"}
 
-    rng = random.Random(seed)
+    rng = Mulberry32(seed)
     entries = load_vocab(
         csv_path,
         audio_key_fn=audio_key_fn,
@@ -570,7 +601,22 @@ def build_questions_for_group(
     entries = list(group.entries)
     rng.shuffle(entries)
     for correct in entries:
-        pool = [e for e in group.entries if e is not correct]
+        # 誤答候補を表示テキスト(日本語・エスペラント)で一意化し、同一表示の選択肢が
+        # 4択に並ばないようにする（例文版 build_questions・モバイル quiz_core.mjs と同方針、
+        # README「対象言語で同一表示の選択肢を避ける」に整合）。
+        # 各グループの表示が全て一意な現データでは何も除外されず、pool は従来と同一順序・
+        # 同一要素になり誤答抽選も結果も完全に不変（173,400問でバイト一致を実測）。
+        seen_ja = {correct.japanese}
+        seen_eo = {correct.esperanto}
+        pool = []
+        for entry in group.entries:
+            if entry is correct:
+                continue
+            if entry.japanese in seen_ja or entry.esperanto in seen_eo:
+                continue
+            seen_ja.add(entry.japanese)
+            seen_eo.add(entry.esperanto)
+            pool.append(entry)
         option_size = min(max_options - 1, len(pool))
         wrong = rng.sample(pool, option_size)
         options = wrong + [correct]

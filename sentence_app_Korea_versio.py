@@ -8,29 +8,41 @@ import pandas as pd
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 
-from data_sources import PHRASE_CSV
-from score_append_utils import (
-    append_score_row_fast,
-    append_score_row_safe,
-    compute_user_score_totals,
-    load_sheet_records,
-    upsert_user_total,
+from data_sources import PHRASE_CSV, PHRASE_ID_OFFSET
+from quiz_scoring import (
+    SENTENCE_ACCURACY_BONUS as ACCURACY_BONUS_PER_Q,
+    SENTENCE_SCORE_SCALE,
+    SENTENCE_STREAK_SCALE as STREAK_BONUS_SCALE,
+    SPARTAN_SCORE_MULTIPLIER,
+    STREAK_BONUS,
+    compute_result_summary,
+    scale_spartan_points,
+    score_for_correct,
+    sentence_base_points_for_level as base_points_for_level,
 )
-from score_row_utils import infer_mode, normalize_score_row, normalize_score_rows
+from ranking_utils import rank_dict as shared_rank_dict
+from ranking_utils import summarize_rankings_from_stats as shared_summarize_rankings_from_stats
+from score_sync_service import (
+    append_score_record,
+    load_score_totals_for_user,
+    update_overall_user_stats,
+    update_sentence_user_stats,
+)
+from score_row_utils import normalize_score_rows
+from mobile_streamlit_bridge import render_mobile_app_entry
+from classic_navigation import get_classic_quiz_mode, render_classic_mode_switch
+from classic_session_persistence import (
+    render_classic_session_loader,
+    render_classic_session_restore_prompt,
+    render_classic_session_writer,
+    request_classic_session_clear,
+)
 import vocab_grouping as vg
 
 # パス설정（単独アプリとして実行）
 BASE_DIR = Path(__file__).resolve().parent
 PHRASE_AUDIO_DIR = BASE_DIR / "Esperanto例文5000文_収録音声"
 
-# スコア설정
-STREAK_BONUS = 0.5
-TARGET_SENTENCE_SCORE_FACTOR = 2.0
-LEGACY_SENTENCE_SCORE_FACTOR = 1.5
-SENTENCE_SCORE_SCALE = TARGET_SENTENCE_SCORE_FACTOR / LEGACY_SENTENCE_SCORE_FACTOR
-STREAK_BONUS_SCALE = TARGET_SENTENCE_SCORE_FACTOR
-ACCURACY_BONUS_PER_Q = 5.0 * TARGET_SENTENCE_SCORE_FACTOR
-SPARTAN_SCORE_MULTIPLIER = 0.7
 SCORES_SHEET = "Scores"
 USER_STATS_SHEET = "UserStatsSentence"  # 文章専用の累積
 USER_STATS_MAIN = "UserStats"  # 単語と共通累積（全体）
@@ -50,8 +62,6 @@ DESKTOP_UA_TOKENS = (
 )
 SCORE_READ_RETRIES = 3
 SCORE_READ_RETRY_BASE_SEC = 0.35
-SCORE_WRITE_RETRIES = 3
-SCORE_WRITE_RETRY_BASE_SEC = 0.4
 DEBUG_QUERY_VALUES = {"1", "true", "yes", "on"}
 RECENT_SCORES_LIMIT = 200
 AUDIO_CACHE_MAX_ENTRIES = 256
@@ -124,10 +134,6 @@ def get_connection():
         return None
 
 
-def base_points_for_level(level: int) -> float:
-    return (level + 11.5) * SENTENCE_SCORE_SCALE
-
-
 def safe_float(value, default: float = 0.0) -> float:
     try:
         if value is None:
@@ -143,7 +149,7 @@ def safe_float(value, default: float = 0.0) -> float:
 
 
 def _phrase_audio_key(phrase_id: int, phrase: str) -> str:
-    prefix = f"{int(phrase_id) - 155:04d}"
+    prefix = f"{int(phrase_id) - PHRASE_ID_OFFSET:04d}"
     suffix = vg._default_audio_key(phrase)
     return f"{prefix}_{suffix}"
 
@@ -162,7 +168,7 @@ def find_phrase_audio(phrase_id: int, phrase: str):
         if fp.exists():
             return fp.read_bytes(), mime, legacy_key
     # 어순/표기가 갱신되어도 같은 PhraseID 기존 음성을 재사용한다
-    prefix = f"{int(phrase_id) - 155:04d}_"
+    prefix = f"{int(phrase_id) - PHRASE_ID_OFFSET:04d}_"
     for ext, mime in audio_formats:
         matches = sorted(PHRASE_AUDIO_DIR.glob(f"{prefix}*{ext}"))
         if matches:
@@ -415,49 +421,21 @@ def load_scores_all(force_refresh: bool = False, *, include_status: bool = False
 
 
 def save_score(record: dict):
-    record_to_save = normalize_score_row(record, fallback_mode="sentence")
-    save_id = str(record_to_save.get("save_id", "")).strip()
-    record_to_save["save_id"] = save_id or str(uuid.uuid4())
-    fast_saved = append_score_row_fast(record_to_save, worksheet_name=SCORES_SHEET)
-    if fast_saved is True:
-        return True
-    return append_score_row_safe(
-        record_to_save,
-        worksheet_name=SCORES_SHEET,
-        retries=SCORE_WRITE_RETRIES,
-        retry_base_sec=SCORE_WRITE_RETRY_BASE_SEC,
-    )
+    return append_score_record(record, fallback_mode="sentence")
 
 
 def _load_score_totals_for_user(user: str):
-    records = load_sheet_records(SCORES_SHEET, refresh=True)
-    if records is None:
-        return None
-    return compute_user_score_totals(records, user)
-
-
-def _update_stats(sheet_name: str, user: str, points: float, ts: str, totals=None):
-    del points
-    current_totals = totals if totals is not None else _load_score_totals_for_user(user)
-    if current_totals is None:
-        return False
-    total_points = current_totals["sentence"] if sheet_name == USER_STATS_SHEET else current_totals["overall"]
-    return upsert_user_total(
-        sheet_name,
-        user=user,
-        total_points=total_points,
-        last_updated=ts,
-        retries=SCORE_WRITE_RETRIES,
-        retry_base_sec=SCORE_WRITE_RETRY_BASE_SEC,
-    )
+    return load_score_totals_for_user(user)
 
 
 def update_user_stats(user: str, points: float, ts: str, totals=None):
-    return _update_stats(USER_STATS_SHEET, user, points, ts, totals=totals)
+    del points
+    return update_sentence_user_stats(user=user, last_updated=ts, totals=totals)
 
 
 def update_user_stats_main(user: str, points: float, ts: str, totals=None):
-    return _update_stats(USER_STATS_MAIN, user, points, ts, totals=totals)
+    del points
+    return update_overall_user_stats(user=user, last_updated=ts, totals=totals)
 
 
 def load_rankings(force_refresh: bool = False, *, include_status: bool = False):
@@ -601,16 +579,16 @@ def _resolve_overall_ranking_table(
         if main_rank:
             notice = None
             if all_scores_status.get("source") == "cache":
-                notice = "전체 랭킹은 이전에 가져온 Scores 를 임시로 표시하고 있습니다. 잠시 후 다시 불러와 주세요."
+                notice = "전체 랭킹은 이전에 가져온 Scores를 임시로 표시하고 있습니다. 잠시 후 다시 불러와 주세요."
             elif main_rank_status.get("source") == "cache":
                 notice = "전체 랭킹의 누적은 이전에 가져온 보조 집계 시트를 임시로 표시하고 있습니다. 잠시 후 다시 불러와 주세요."
             return main_rank, all_scores, notice
         if all_scores:
             notice = None
             if all_scores_status.get("source") == "cache":
-                notice = "전체 랭킹은 이전에 가져온 Scores 를 임시로 표시하고 있습니다. 잠시 후 다시 불러와 주세요."
+                notice = "전체 랭킹은 이전에 가져온 Scores를 임시로 표시하고 있습니다. 잠시 후 다시 불러와 주세요."
             else:
-                notice = "전체 랭킹은 Scores 를 직접 집계해 표시하고 있습니다."
+                notice = "전체 랭킹은 Scores를 직접 집계해 표시하고 있습니다."
             return all_scores, all_scores, notice
         return None, None, None
 
@@ -658,46 +636,16 @@ def summarize_scores(scores):
 
 
 def summarize_rankings_from_stats(stats_data, score_rows=None):
-    totals = {}
-    if stats_data and isinstance(stats_data, list):
-        first_row = stats_data[0] if stats_data else {}
-        is_raw_log = "total_points" not in first_row and "points" in first_row
-    else:
-        is_raw_log = False
-
-    if is_raw_log:
-        for r in stats_data or []:
-            user = str(r.get("user", "")).strip()
-            if not user:
-                continue
-            totals[user] = totals.get(user, 0.0) + safe_float(r.get("points", 0), 0.0)
-    else:
-        for r in stats_data or []:
-            user = str(r.get("user", "")).strip()
-            if not user:
-                continue
-            val = r.get("total_points")
-            if val is None:
-                for k in r.keys():
-                    if "total_points" in k:
-                        val = r[k]
-                        break
-            totals[user] = max(safe_float(totals.get(user, 0.0), 0.0), safe_float(val, 0.0))
-
     scores = score_rows if score_rows is not None else load_scores()
-    score_totals, totals_today, totals_month, _ = summarize_scores(scores)
-    if totals:
-        for user, log_total in score_totals.items():
-            totals[user] = max(safe_float(totals.get(user, 0.0), 0.0), safe_float(log_total, 0.0))
-    else:
-        totals = score_totals
-    hof = {u: p for u, p in totals.items() if p >= HOF_THRESHOLD}
-    return totals, totals_today, totals_month, hof
+    return shared_summarize_rankings_from_stats(
+        stats_data,
+        score_rows=scores,
+        hof_threshold=HOF_THRESHOLD,
+    )
 
 
 def rank_dict(d, top_n=None):
-    items = sorted(d.items(), key=lambda x: x[1], reverse=True)
-    return items[:top_n] if top_n else items
+    return shared_rank_dict(d, top_n=top_n)
 
 
 def show_rankings(stats_data, key_suffix: str = "", score_rows=None):
@@ -732,12 +680,12 @@ def show_rankings(stats_data, key_suffix: str = "", score_rows=None):
 
 def render_cross_language_footer(current_key: str):
     links = [
-        ("vocab_zh", "词汇版（中文）", "https://esperantowords4choicequizzes-cxina-versio.streamlit.app"),
-        ("sentence_zh", "例句版（中文）", "https://esperantowords4choicequizzes-fwvq3dnm2jq85gbaztjlyy.streamlit.app"),
-        ("vocab_ko", "어휘 버전(한국어)", "https://esperantowords4choicequizzes-korea-versio.streamlit.app"),
-        ("sentence_ko", "문장 버전(한국어)", "https://esperantowords4choicequizzes-korea-version-frazoj.streamlit.app"),
-        ("vocab_ja", "語彙版（日本語）", "https://esperantowords4choicequizzes-bzgev2astlasx4app3futb.streamlit.app"),
-        ("sentence_ja", "文章版（日本語）", "https://esperantowords4choicequizzes-tiexjo7fx5elylbsywxgxz.streamlit.app"),
+        ("vocab_zh", "词汇版（中文）", "https://esperanto-quiz-zh.streamlit.app/?quiz=vocab&classic=1"),
+        ("sentence_zh", "例句版（中文）", "https://esperanto-quiz-zh.streamlit.app/?quiz=sentence&classic=1"),
+        ("vocab_ko", "단어 버전(한국어)", "https://esperanto-quiz-ko.streamlit.app/?quiz=vocab&classic=1"),
+        ("sentence_ko", "예문 버전(한국어)", "https://esperanto-quiz-ko.streamlit.app/?quiz=sentence&classic=1"),
+        ("vocab_ja", "語彙版（日本語）", "https://esperanto-quiz.streamlit.app/?quiz=vocab&classic=1"),
+        ("sentence_ja", "文章版（日本語）", "https://esperanto-quiz.streamlit.app/?quiz=sentence&classic=1"),
     ]
     foreign_links = [item for item in links if item[0] != current_key]
     link_html = " ・ ".join(
@@ -753,14 +701,22 @@ def render_cross_language_footer(current_key: str):
     )
 
 
-def main():
-    st.set_page_config(
-        page_title="에스페란토 예문 퀴즈",
-        page_icon="📘",
-        layout="centered",
-    )
+def main(*, set_page_config_once: bool = True):
+    if set_page_config_once:
+        st.set_page_config(
+            page_title="에스페란토 퀴즈",
+            page_icon="📘",
+            layout="centered",
+        )
+    if get_classic_quiz_mode(default="sentence") == "vocab":
+        from app_Korea_versio import main as vocab_main
+
+        vocab_main(set_page_config_once=False)
+        return
 
     is_mobile = is_mobile_client()
+    if render_mobile_app_entry(is_mobile, source="sentence_ko", target_lang="ko", default_mode="sentence"):
+        return
     if "mobile_compact_ui" not in st.session_state:
         st.session_state.mobile_compact_ui = is_mobile
     if "compact_hide_option_audio" not in st.session_state:
@@ -1103,18 +1059,25 @@ def main():
         unsafe_allow_html=True,
     )
 
+    render_classic_session_loader("sentence", target_lang="ko")
+    render_classic_session_restore_prompt("sentence", target_lang="ko")
+
+    def persist_classic_session():
+        render_classic_session_writer("sentence", target_lang="ko")
+
     show_intro_block = not (compact_ui and bool(st.session_state.get("questions")))
     if show_intro_block:
-        st.write("주제별 예문에서 4지선다로 출제합니다. 단어 버전보다 점수 계수를 약 2.0배로 조정했습니다.")
+        render_classic_mode_switch("sentence", "ko")
+        st.write("주제별 예문에서 4지선다로 출제합니다. 점수 계수를 단어 버전의 약 2.0배로 조정했습니다.")
         with st.expander("점수 계산 규칙"):
             st.markdown(
                 "\n".join(
                     [
                         f"- 기본점: (레벨 + 11.5) × {SENTENCE_SCORE_SCALE:.4g}(예: Lv5→{base_points_for_level(5):.1f}점)",
-                        f"- 연속 정답 보너스: 2문제째부터 연속 정답 1회당 +{STREAK_BONUS * STREAK_BONUS_SCALE:.1f}",
-                        f"- 정확도 보너스: 최종 정답률 × 문제수 × {ACCURACY_BONUS_PER_Q:.1f}",
-                        "- 스파르타 모드: 복습 분량은 0.7배로 합산(정확도 보너스 없음)",
-                        "- 같은 문제수라면 단어 버전보다 약 2.0배 점수가 오르는 설정입니다.",
+                        f"- 연속 정답 보너스: 2번째 문제부터 연속 정답 1회당 +{STREAK_BONUS * STREAK_BONUS_SCALE:.1f}",
+                        f"- 정확도 보너스: 최종 정답률 × 문제 수 × {ACCURACY_BONUS_PER_Q:.1f}",
+                        f"- 스파르타 모드: 복습 분량은 {SPARTAN_SCORE_MULTIPLIER:.1f}배로 합산(정확도 보너스 없음)",
+                        "- 같은 문제 수라면 단어 버전보다 약 2.0배 점수가 오르는 설정입니다.",
                     ]
                 )
             )
@@ -1194,7 +1157,7 @@ def main():
         )[0]
         st.session_state.direction = direction
         st.checkbox(
-            "스파르타 모드(모든 문제 후 틀린 것만 정답할 때까지 무작위 출제 · 점수 0.7배)",
+            f"스파르타 모드(모든 문제를 푼 뒤 틀린 문제만 맞힐 때까지 무작위 출제 · 점수 {SPARTAN_SCORE_MULTIPLIER:.1f}배)",
             key="spartan_mode",
             disabled=bool(st.session_state.questions),
         )
@@ -1204,44 +1167,42 @@ def main():
             key="show_option_audio",
             help="OFF로 하면 선택지별 오디오 플레이어를 숨겨 가볍게 합니다.",
         )
-        st.checkbox(
-            "모바일 최적화 UI(문항+4지선다를 한 화면 우선)",
-            key="mobile_compact_ui",
-            help="모바일에서는 ON 권장. 데스크톱 표시에는 영향이 없습니다.",
-        )
-        if compact_ui:
+        if is_mobile:
             st.checkbox(
-                "모바일 최적화 시 선택지 음성을 자동으로 숨기기",
-                key="compact_hide_option_audio",
-                help="문항 음성은 유지하고, 선택지별 음성만 숨겨 세로 스크롤을 줄입니다.",
+                "기존판 모바일 표시 압축",
+                key="mobile_compact_ui",
+                help="모바일 전용 UI에 문제가 있을 때 쓰는 예비 설정입니다. 모바일에서 기존 Streamlit판을 열었을 때만 사용합니다.",
             )
-            st.checkbox(
-                "모바일 최적화 시 문제문 음성 플레이어 숨기기",
-                key="compact_hide_prompt_audio",
-                help="문항+4지선다를 한 화면에 담기 쉽게 합니다. 필요할 때만 OFF로 바꿔 표시하세요.",
-            )
-            st.checkbox(
-                "초압축 모드(소형 화면용)",
-                key="mobile_ultra_compact",
-                help="문항 영역과 버튼을 더 압축합니다.",
-            )
-            st.checkbox(
-                "모바일에서 상단 메뉴 숨기기",
-                key="mobile_hide_streamlit_chrome",
-                help="세로 공간을 늘립니다. 원래대로 돌리려면 OFF로 바꾸세요.",
-            )
+            if compact_ui:
+                st.checkbox(
+                    "모바일 최적화 시 선택지 음성을 자동으로 숨기기",
+                    key="compact_hide_option_audio",
+                    help="문항 음성은 유지하고, 선택지별 음성만 숨겨 세로 스크롤을 줄입니다.",
+                )
+                st.checkbox(
+                    "모바일 최적화 시 문항 음성 플레이어 숨기기",
+                    key="compact_hide_prompt_audio",
+                    help="문항+4지선다를 한 화면에 담기 쉽게 합니다. 필요할 때만 OFF로 바꿔 표시하세요.",
+                )
+                st.checkbox(
+                    "초압축 모드(소형 화면용)",
+                    key="mobile_ultra_compact",
+                    help="문항 영역과 버튼을 더 압축합니다.",
+                )
+                st.checkbox(
+                    "모바일에서 상단 메뉴 숨기기",
+                    key="mobile_hide_streamlit_chrome",
+                    help="세로 공간을 늘립니다. 원래대로 돌리려면 OFF로 바꾸세요.",
+                )
+            st.caption(f"기기 판정: 모바일 / 기존판 압축: {'ON' if compact_ui else 'OFF'}")
         st.caption("출제 방향과 상관없이 토글을 켜면 선택지에 음성이 표시됩니다. 모바일에서 무거우면 OFF를 권장합니다.")
-        st.caption(
-            f"기기 판정: {'모바일' if is_mobile else '데스크톱'} / "
-            f"최적화 UI: {'ON' if compact_ui else 'OFF'}"
-        )
 
         if st.button("퀴즈 시작", use_container_width=True):
             rng = random.Random()
             entries = groups.get((topic, subtopic), [])
             qs = build_questions(entries, selected_levels, rng, direction)
             if len(qs) < 4:
-                st.warning("4문제 이상이 되도록 레벨을 늘려주세요.")
+                st.warning("4문제 이상이 되도록 레벨을 더 선택해 주세요.")
             else:
                 st.session_state.questions = qs
                 st.session_state.q_index = 0
@@ -1272,6 +1233,7 @@ def main():
 
         st.markdown("---")
         if st.button("🏠 홈으로 돌아가기", use_container_width=True, type="primary"):
+            request_classic_session_clear("sentence")
             st.session_state.questions = []
             st.session_state.q_index = 0
             st.session_state.correct = 0
@@ -1300,7 +1262,7 @@ def main():
 
         st.markdown("---")
         st.markdown(
-            "[💚 단어 퀴즈는 여기](https://esperantowords4choicequizzes-korea-versio.streamlit.app/)"
+            "[💚 단어 퀴즈는 여기](https://esperanto-quiz-ko.streamlit.app/?quiz=vocab&classic=1)"
         )
 
     normalized_sentence_user_name = str(st.session_state.get("sentence_user_name", "")).strip()
@@ -1419,6 +1381,7 @@ def main():
     if questions:
         q0 = questions[0]
         if "prompt_eo" not in q0 or "prompt_ja" not in q0:
+            request_classic_session_clear("sentence")
             st.session_state.questions = []
             st.session_state.q_index = 0
             st.session_state.correct = 0
@@ -1435,6 +1398,7 @@ def main():
             st.session_state.spartan_attempts = 0
             st.session_state.spartan_correct_count = 0
             st.warning("문제 데이터를 다시 생성합니다. 사이드바에서 다시 '퀴즈 시작'을 눌러주세요.")
+            persist_classic_session()
             return
 
     if not questions:
@@ -1464,6 +1428,7 @@ def main():
             show_rankings(overall_rank_rows, key_suffix="_main", score_rows=overall_rank_scores)
         elif overall_rank_notice:
             st.warning(overall_rank_notice)
+        persist_classic_session()
         render_cross_language_footer("sentence_ko")
         return
 
@@ -1482,16 +1447,23 @@ def main():
 
     if q_idx >= len(questions) and not st.session_state.in_spartan_round:
         total = len(questions)
-        accuracy = st.session_state.correct / total if total else 0
-        acc_bonus = accuracy * total * ACCURACY_BONUS_PER_Q
         raw_main = st.session_state.points_main
         raw_spartan_raw = st.session_state.points_spartan_raw
         raw_spartan_scaled = st.session_state.points_spartan_scaled
+        base_points = raw_main + raw_spartan_scaled
+        summary = compute_result_summary(
+            mode="sentence",
+            total=total,
+            correct=st.session_state.correct,
+            main_points=raw_main,
+            spartan_scaled_points=raw_spartan_scaled,
+        )
+        accuracy = summary["accuracy"]
+        acc_bonus = summary["accuracyBonus"]
+        points = summary["points"]
         sp_attempts = st.session_state.spartan_attempts
         sp_correct = st.session_state.spartan_correct_count
         sp_accuracy = sp_correct / sp_attempts if sp_attempts else 0
-        base_points = raw_main + raw_spartan_scaled
-        points = base_points + acc_bonus
         st.subheader("결과")
         st.metric("정답률", f"{accuracy*100:.1f}%")
         st.metric("점수", f"{points:.1f}")
@@ -1524,10 +1496,11 @@ def main():
         st.caption("음성으로 다시 확인할 수 있습니다.")
         st.write(f"정답 {st.session_state.correct}/{total}")
         st.write(
-            f"내역: 본편 기본+연속 보너스 {raw_main:.1f} / 스파르타 {raw_spartan_scaled:.1f}(정확도 보너스 없음·0.7배 포함) / 정확도 보너스 {acc_bonus:.1f}"
+            f"내역: 본편 기본+연속 보너스 {raw_main:.1f} / 스파르타 {raw_spartan_scaled:.1f}"
+            f"(정확도 보너스 없음·{SPARTAN_SCORE_MULTIPLIER:.1f}배 포함) / 정확도 보너스 {acc_bonus:.1f}"
         )
         if st.session_state.spartan_mode and sp_attempts:
-            st.caption(f"스파르타 모드: 복습분을 일반의 {SPARTAN_SCORE_MULTIPLIER*100:.0f}%로 합산(정확도 보너스 없음)")
+            st.caption(f"스파르타 모드: 복습분을 일반 점수의 {SPARTAN_SCORE_MULTIPLIER*100:.0f}%로 합산(정확도 보너스 없음)")
             st.caption(f"스파르타 정확도: {sp_accuracy*100:.1f}% ({sp_correct}/{sp_attempts})")
         if normalized_sentence_user_name:
             st.caption("같은 사용자명의 점수가 있으면 누적에 합산합니다.")
@@ -1536,6 +1509,8 @@ def main():
                 if st.session_state.get("score_sync_warning"):
                     st.warning(st.session_state.score_sync_warning)
             else:
+                if st.session_state.get("score_sync_warning"):
+                    st.warning(st.session_state.score_sync_warning)
                 st.caption("저장하면 랭킹에 반영됩니다. 실패하면 다시 시도해주세요.")
                 if st.button("점수 저장", use_container_width=True):
                     now = datetime.datetime.utcnow().isoformat()
@@ -1587,8 +1562,6 @@ def main():
                             now,
                             totals=totals,
                         )
-                        st.session_state.score_saved = True
-                        st.session_state.pending_save_id = None
                         optimistic_projection = (
                             overall_points + points if overall_available else user_total_sentence + points
                         )
@@ -1606,7 +1579,16 @@ def main():
                         st.session_state.cached_scores_all_status = _load_status()
                         st.session_state.cached_main_rank = []
                         st.session_state.cached_main_rank_status = _load_status()
-                        st.session_state.score_sync_warning = None if (ok_sentence and ok_main) else "점수 로그는 저장했지만 누적 점수 동기화가 일시적으로 실패했습니다. 잠시 후 다시 시도해주세요."
+                        if ok_sentence and ok_main:
+                            st.session_state.score_saved = True
+                            st.session_state.pending_save_id = None
+                            st.session_state.score_sync_warning = None
+                        else:
+                            st.session_state.score_saved = False
+                            st.session_state.score_sync_warning = (
+                                "점수 로그는 저장되었습니다. 누적 점수 반영만 실패했으므로 "
+                                "다시 누르면 같은 저장 ID로 안전하게 재업데이트합니다."
+                            )
                         st.rerun()
         recent = scores  # 既に読み込んだデータを再利用
         if recent:
@@ -1700,7 +1682,7 @@ def main():
                 st.write(f"　정답 [{w['answer_ja']} / {w['answer']}], 내 답변 [{w['selected_ja']} / {w['selected']}]")
                 play_phrase_audio(w["phrase_id"], w["answer"], autoplay=False, caption="🔊 발음 확인")
         if correct_list:
-            st.markdown("### 정답한 문제(확인용)")
+            st.markdown("### 맞힌 문제(확인용)")
             st.caption("음성으로 확인만 가능합니다.")
             for c in correct_list:
                 st.write(f"- {c['prompt_ja']} / {c['prompt_eo']}: {c['answer_ja']} / {c['answer']}")
@@ -1727,6 +1709,7 @@ def main():
             st.session_state.spartan_attempts = 0
             st.session_state.spartan_correct_count = 0
             st.rerun()
+        persist_classic_session()
         render_cross_language_footer("sentence_ko")
         return
 
@@ -1755,7 +1738,7 @@ def main():
     title_prefix = "복습" if in_spartan else f"Q{q_idx+1}/{len(questions)}"
     if in_spartan and not compact_question_ui:
         st.caption(f"스파르타 복습 남은 {len(st.session_state.spartan_pending)}문제 / 총 {len(questions)}문제")
-        st.caption("틀린 문제만 무작위로 출제합니다. 정답하면 목록에서 사라집니다.")
+        st.caption("틀린 문제만 무작위로 출제합니다. 맞히면 목록에서 사라집니다.")
     question_box_cls = "question-box tight" if ultra_compact_ui else "question-box"
     st.markdown(
         f"<div class='{question_box_cls}'><h3 class='question-title'>{title_prefix}: {prompt_text}</h3></div>",
@@ -1796,12 +1779,12 @@ def main():
                 question["options"][question["answer_index"]]["phrase_id"],
                 question["options"][question["answer_index"]]["phrase"],
                 autoplay=True,
-                caption="🔊 발음 듣기(문제문·자동 재생)",
+                caption="🔊 발음 듣기(문항·자동 재생)",
                 instance=f"prompt-{q_idx}",
                 show_caption=not compact_question_ui,
             )
         elif compact_question_ui:
-            st.markdown("<div class='question-audio-hint'>🔇 문제문 음성은 모바일 최적화에서 숨김</div>", unsafe_allow_html=True)
+            st.markdown("<div class='question-audio-hint'>🔇 문항 음성은 모바일 최적화에서 숨김</div>", unsafe_allow_html=True)
 
     if st.session_state.showing_result:
         if st.session_state.last_is_correct:
@@ -1824,6 +1807,7 @@ def main():
                 st.session_state.q_index += 1
                 st.session_state.showing_result = False
             st.rerun()
+        persist_classic_session()
         render_cross_language_footer("sentence_ko")
         return
 
@@ -1871,11 +1855,14 @@ def main():
                 st.session_state.spartan_correct_count += 1
             st.session_state.streak += 1
             opt = question["options"][clicked]
-            streak_bonus = max(0, st.session_state.streak - 1) * STREAK_BONUS * STREAK_BONUS_SCALE
-            earned = base_points_for_level(opt["level"]) + streak_bonus
+            earned = score_for_correct(
+                mode="sentence",
+                streak=st.session_state.streak,
+                level=opt["level"],
+            )
             if in_spartan:
                 st.session_state.points_spartan_raw += earned
-                scaled = earned * SPARTAN_SCORE_MULTIPLIER
+                scaled = scale_spartan_points(earned)
                 st.session_state.points_spartan_scaled += scaled
                 st.session_state.points_raw += scaled
                 st.session_state.spartan_pending = [
@@ -1903,6 +1890,7 @@ def main():
             st.session_state.showing_result = True
             st.rerun()
 
+    persist_classic_session()
     render_cross_language_footer("sentence_ko")
 
 

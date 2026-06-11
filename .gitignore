@@ -1,16 +1,26 @@
-# Python caches
-__pycache__/
-*.py[cod]
-*.pyo
+# Secrets
+.streamlit/secrets.toml
+.streamlit/secrets.*.toml
+!.streamlit/secrets.example.toml
+.env
+.env.*
+!.env.example
+gen-lang-client-*.json
+
+# Local deployment note
+Streamlit Cloudアップロード用_Chrome生成AI指示書.md
 
 # OS noise
 .DS_Store
-*:Zone.Identifier
 
-# Streamlit secrets (do not commit real credentials)
-.streamlit/secrets.toml
+# Python/runtime generated files
+__pycache__/
+*.py[cod]
 
-# Google service account keys (keep out of VCS)
-gen-lang-client-*.json
-gen-lang-client-*.json:Zone.Identifier
-*.serviceaccount.json
+# Test artifacts
+test-results/
+playwright-report/
+
+# Local audio replacement backups
+Esperanto例文5000文_収録音声/archived_replaced_audio_*/
+node_modules/
