@@ -1,13 +1,16 @@
-const CACHE_VERSION = "esperanto-mobile-pwa-2026-06-11-grammar-round6";
+const CACHE_VERSION = "esperanto-mobile-pwa-2026-09-07-history-recovery-2";
 const APP_CACHE = `${CACHE_VERSION}:app`;
 const RUNTIME_CACHE = `${CACHE_VERSION}:runtime`;
 const RUNTIME_CACHE_MAX_ENTRIES = 400;
 
 const APP_SHELL = [
   "./mobile_app/index.html",
-  "./mobile_app/styles.css",
+  "./mobile_app/styles.css?v=2026-09-07-history-recovery-2",
   "./mobile_app/app.js",
   "./mobile_app/quiz_core.mjs",
+  "./mobile_app/quiz_questions.mjs",
+  "./mobile_app/learning_sync.mjs",
+  "./mobile_app/legacy_session_migration.mjs",
   "./mobile_app/manifest.webmanifest",
   "./mobile_app/icon.svg",
   "./mobile_app/data/vocab.json",
@@ -28,7 +31,7 @@ self.addEventListener("activate", (event) => {
     caches.keys()
       .then((keys) => Promise.all(
         keys
-          .filter((key) => !key.startsWith(CACHE_VERSION))
+          .filter((key) => key.startsWith("esperanto-mobile-pwa-") && !key.startsWith(CACHE_VERSION))
           .map((key) => caches.delete(key)),
       ))
       .then(() => self.clients.claim()),
@@ -99,6 +102,17 @@ async function networkFirst(request) {
     const cached = await cache.match(request);
     if (cached) {
       return cached;
+    }
+    // The first visit precedes worker activation, so its directory/query URL
+    // may never have been cached. Both entry URLs use the installed app shell.
+    if (request.mode === "navigate") {
+      const indexUrl = new URL("./mobile_app/index.html", self.location.href);
+      const requestPath = new URL(request.url).pathname;
+      const directoryPath = indexUrl.pathname.slice(0, -"index.html".length);
+      if (requestPath === directoryPath || requestPath === indexUrl.pathname) {
+        const shell = await cache.match(indexUrl.href);
+        if (shell) return shell;
+      }
     }
     throw error;
   }
